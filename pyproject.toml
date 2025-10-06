@@ -1,0 +1,45 @@
+[project]
+name = "orange-hrm-test-framework"
+version = "0.1.0"
+description = "Web testing automation framework for OrangeHRM"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=8.4.2",
+    "selenium>=4.35.0",
+    "python-dotenv>=1.0.0",
+    "pytest-xdist>=3.6.0",
+    "pytest-html>=4.1.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src", "tests", "utils"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = """
+    -v
+    --tb=short
+    --strict-markers
+    --html=reports/report.html
+    --self-contained-html
+"""
+markers = [
+    "smoke: Quick smoke tests",
+    "regression: Full regression tests",
+    "login: Login related tests",
+]
+
+[dependency-groups]
+dev = [
+    "black>=24.0.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+]
