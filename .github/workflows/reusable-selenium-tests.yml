@@ -1,0 +1,190 @@
+name: Reusable Selenium Test Workflow
+
+on:
+  workflow_call:
+    inputs:
+      browser:
+        description: 'Browser to test (chrome, firefox, edge)'
+        required: true
+        type: string
+      test-path:
+        description: 'Path to tests'
+        required: false
+        type: string
+        default: 'tests/'
+      pytest-markers:
+        description: 'Pytest markers to run'
+        required: false
+        type: string
+        default: ''
+      parallel-workers:
+        description: 'Number of parallel workers'
+        required: false
+        type: number
+        default: 1
+      python-version:
+        description: 'Python version'
+        required: false
+        type: string
+        default: '3.12'
+      headless:
+        description: 'Run in headless mode'
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      ORANGEHRM_URL:
+        required: false
+      ORANGEHRM_USERNAME:
+        required: false
+      ORANGEHRM_PASSWORD:
+        required: false
+    outputs:
+      test-status:
+        description: "Test execution status"
+        value: ${{ jobs.selenium-test.outputs.status }}
+
+jobs:
+  selenium-test:
+    name: Test - ${{ inputs.browser }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      status: ${{ steps.test-execution.outcome }}
+
+    services:
+      selenium-hub:
+        image: selenium/hub:4.16.1
+        ports:
+          - 4444:4444
+        options: >-
+          --health-cmd "curl -f http://localhost:4444/wd/hub/status || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      chrome:
+        image: selenium/node-chrome:4.16.1
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 5
+        options: --shm-size=2gb
+
+      firefox:
+        image: selenium/node-firefox:4.16.1
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 5
+        options: --shm-size=2gb
+
+      edge:
+        image: selenium/node-edge:4.16.1
+        env:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 5
+        options: --shm-size=2gb
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Wait for Selenium Grid
+        run: |
+          timeout 120 bash -c '
+            until curl -sf http://localhost:4444/wd/hub/status | jq -e ".value.ready == true" > /dev/null 2>&1; do
+              echo "Waiting for Selenium Grid..."
+              sleep 3
+            done
+          '
+
+      - name: Verify Grid Status
+        run: |
+          curl -s http://localhost:4444/wd/hub/status | jq .
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          URL=${{ secrets.ORANGEHRM_URL || 'https://opensource-demo.orangehrmlive.com/web/index.php' }}
+          ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME || 'Admin' }}
+          ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD || 'admin123' }}
+          SELENIUM_GRID_URL=http://localhost:4444
+          BROWSER=${{ inputs.browser }}
+          HEADLESS=${{ inputs.headless }}
+          DEFAULT_TIMEOUT=15
+          PAGE_LOAD_TIMEOUT=30
+          SCREENSHOT_ON_FAILURE=True
+          EOF
+
+      - name: Run tests
+        id: test-execution
+        run: |
+          PYTEST_ARGS="${{ inputs.test-path }} \
+            --browser=${{ inputs.browser }} \
+            -v \
+            --tb=short \
+            --html=reports/report-${{ inputs.browser }}.html \
+            --self-contained-html"
+
+          if [ "${{ inputs.headless }}" == "true" ]; then
+            PYTEST_ARGS="$PYTEST_ARGS --headless"
+          fi
+
+          if [ -n "${{ inputs.pytest-markers }}" ]; then
+            PYTEST_ARGS="$PYTEST_ARGS -m '${{ inputs.pytest-markers }}'"
+          fi
+
+          if [ ${{ inputs.parallel-workers }} -gt 1 ]; then
+            PYTEST_ARGS="$PYTEST_ARGS -n ${{ inputs.parallel-workers }}"
+          fi
+
+          uv run pytest $PYTEST_ARGS
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          if [ -f reports/report-${{ inputs.browser }}.html ]; then
+            echo "### Test Results - ${{ inputs.browser }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Browser: ${{ inputs.browser }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Status: ${{ steps.test-execution.outcome }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Parallel workers: ${{ inputs.parallel-workers }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ inputs.browser }}-${{ github.run_number }}
+          path: |
+            reports/*.html
+            logs/*.log
+          retention-days: 30
+          compression-level: 9
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ inputs.browser }}-${{ github.run_number }}
+          path: reports/screenshots/
+          retention-days: 30

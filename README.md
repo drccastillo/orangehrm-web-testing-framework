@@ -1,380 +1,407 @@
-# OrangeHRM Web Testing Automation Framework
+# OrangeHRM Test Automation Framework
 
-Framework de automatización de pruebas web para OrangeHRM usando Python, Pytest, Selenium y Docker.
+**Modern test automation framework for OrangeHRM using Screaming Architecture principles.**
 
-## 🏗️ Arquitectura y Patrones de Diseño
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![Pytest](https://img.shields.io/badge/pytest-8.0%2B-green.svg)](https://pytest.org)
+[![Selenium](https://img.shields.io/badge/selenium-4.35%2B-yellow.svg)](https://selenium.dev)
 
-### Patrones Implementados:
-- **Page Object Model (POM)**: Encapsulación de elementos y acciones de cada página
-- **Base Page Pattern**: Clase base con métodos reutilizables para todas las páginas
-- **Factory Pattern**: Configuración dinámica de navegadores
-- **Singleton Pattern**: Gestión centralizada de configuración
-- **Method Chaining**: Interfaz fluida para acciones en páginas
+---
 
-### Estructura del Proyecto:
+## 🎯 Architecture
+
+This project uses **Screaming Architecture** where the structure "screams" what the system does:
+
 ```
-web-testing-framework/
-├── src/
-│   ├── config/
-│   │   ├── __init__.py
-│   │   └── config.py              # Configuración centralizada
-│   └── pages/
-│       ├── __init__.py
-│       ├── base_page.py           # Clase base con métodos comunes
-│       └── login_page.py          # Page Object Model para login
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py                # Fixtures y configuración de pytest
-│   └── test_login.py              # Tests de login
-├── utils/
-│   └── __init__.py
-├── reports/                        # Reportes HTML y screenshots
-├── .env                            # Variables de entorno
-├── .gitignore
-├── docker-compose.yml             # Selenium Grid con Chrome, Firefox, Edge
-├── pyproject.toml                 # Dependencias y configuración (uv)
-└── README.md
+orangehrm/                  # ← Features (what the system tests)
+├── authentication/         # ← Authentication feature
+├── employees/              # ← Employee management (future)
+└── leave/                  # ← Leave management (future)
+
+framework/                  # ← Generic infrastructure
+shared/                     # ← OrangeHRM shared components
 ```
 
-## 🚀 Configuración Inicial
+**See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.**
 
-### Prerequisitos:
-- Python 3.10+
-- Docker y Docker Compose
-- UV package manager
+---
 
-### Instalación:
+## 🚀 Quick Start
 
-1. **Instalar UV** (si no lo tienes):
+### 1. Install UV
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-2. **Instalar dependencias**:
+### 2. Install Dependencies
 ```bash
 uv sync
 ```
 
-3. **Configurar variables de entorno**:
-El archivo `.env` ya contiene:
-```env
-URL=http://localhost:8080/web/index.php
-USER=******
-PASSWORD=********
-```
-
-4. **Iniciar Selenium Grid**:
+### 3. Start Selenium Grid
 ```bash
 docker-compose up -d
 ```
 
-Verificar que el grid está corriendo:
-- Hub: http://localhost:4444
-- Grid Console: http://localhost:4444/ui
-
-## 🧪 Ejecutar Tests
-
-### Ejecutar todos los tests:
+### 4. Run Tests
 ```bash
+# All authentication tests
+uv run pytest orangehrm/authentication/ -v
+
+# Smoke tests only
+uv run pytest -m smoke
+
+# Specific browser
+uv run pytest --browser=firefox
+
+# Unit tests only (fast, no browser)
+uv run pytest -m unit
+```
+
+---
+
+## 📁 Project Structure
+
+```
+web-testing-framework/
+│
+├── orangehrm/              # 🎯 DOMAIN - Features
+│   └── authentication/     # Authentication feature
+│       ├── pages/          # Page objects
+│       ├── tests/          # E2E & unit tests
+│       ├── data/           # Test data
+│       └── README.md       # Feature docs
+│
+├── framework/              # 🏗️ INFRASTRUCTURE (Generic)
+│   ├── browser/            # WebDriver management
+│   │   └── unittests/      # Unit tests
+│   ├── page/               # Base page classes
+│   │   └── unittests/      # Unit tests
+│   ├── data/               # Data factories
+│   │   └── unittests/      # Unit tests
+│   ├── config/             # Configuration
+│   │   └── unittests/      # Unit tests (12 tests)
+│   └── utils/              # Logger, exceptions
+│       └── unittests/      # Unit tests (32 tests)
+│
+├── shared/                 # 🔄 SHARED (OrangeHRM-specific)
+│   ├── components/         # UI components (navigation)
+│   ├── locators/           # Shared locators
+│   └── workflows/          # Common actions (quick_login)
+│       └── unittests/      # Unit tests (12 tests)
+│
+├── integration/            # 🔗 Integration tests
+│
+├── logs/                   # 📝 Runtime: Execution logs
+│   ├── test_automation_YYYYMMDD.log
+│   └── pytest.log
+│
+├── reports/                # 📊 Runtime: Test reports
+│   ├── report.html         # HTML test report
+│   └── screenshots/        # Failure screenshots
+│
+├── conftest.py             # Global pytest config
+├── pytest.ini              # Pytest settings
+└── pyproject.toml          # Dependencies (UV)
+```
+
+**Key Principle**: Unit tests live next to the code they test (`framework/*/unittests/`)
+
+---
+
+## 🧪 Running Tests
+
+### By Test Type
+```bash
+# Unit tests (fast, no browser) - 56 tests
+uv run pytest -m unit -v
+
+# E2E tests (browser required)
+uv run pytest -m authentication -v
+
+# All tests
 uv run pytest
 ```
 
-### Ejecutar tests específicos:
+### By Feature
 ```bash
-# Solo tests de login
-uv run pytest tests/test_login.py
-
-# Tests con marker 'smoke'
-uv run pytest -m smoke
-
-# Tests con marker 'login'
-uv run pytest -m login
-
-# Tests de regresión
-uv run pytest -m regression
+uv run pytest orangehrm/authentication/
+uv run pytest orangehrm/employees/
 ```
 
-### Ejecutar en diferentes navegadores:
+### By Marker
 ```bash
-# Chrome (default)
-uv run pytest --browser=chrome
-
-# Firefox
-uv run pytest --browser=firefox
-
-# Edge
-uv run pytest --browser=edge
+uv run pytest -m smoke              # Smoke tests
+uv run pytest -m authentication     # Auth tests
+uv run pytest -m "smoke and authentication"
 ```
 
-### Ejecutar en modo headless:
+### By Browser
 ```bash
-uv run pytest --headless
+uv run pytest --browser=chrome      # Chrome
+uv run pytest --browser=firefox     # Firefox
+uv run pytest --browser=edge        # Edge
+uv run pytest --headless            # Headless mode
 ```
 
-### Ejecutar tests en paralelo:
+### Parallel Execution
 ```bash
-uv run pytest -n auto
+uv run pytest -n auto               # Auto workers
+uv run pytest -n 4                  # 4 workers
 ```
 
-### Generar reporte HTML:
-```bash
-uv run pytest --html=reports/report.html --self-contained-html
-```
+---
 
-## 📝 Escribir Nuevos Tests
+## 📝 Writing Tests
 
-### Ejemplo usando LoginPage:
-
+### E2E Test Example
 ```python
 import pytest
-from src.config.config import Config
-from src.pages.login_page import LoginPage
+from orangehrm.authentication.pages import LoginPage
+from orangehrm.authentication.data import valid_admin_user
 
+@pytest.mark.authentication
 @pytest.mark.smoke
-def test_my_login(login_page: LoginPage):
-    # El fixture 'login_page' ya navega a la página
+def test_login(login_page: LoginPage):
+    """Test successful login."""
+    user = valid_admin_user()
 
-    # Opción 1: Método directo
-    login_page.login(Config.USERNAME, Config.PASSWORD)
+    login_page.login(user.username, user.password)
 
-    # Opción 2: Method chaining
-    login_page.enter_username(Config.USERNAME)\
-              .enter_password(Config.PASSWORD)
-    login_page.click_login_button()
-
-    # Verificaciones
     assert "dashboard" in login_page.get_current_url()
 ```
 
-### Crear un Nuevo Page Object:
-
+### Unit Test Example
 ```python
-from selenium.webdriver.common.by import By
-from src.pages.base_page import BasePage
+import pytest
+import unittest
+from framework.config.settings import Config
 
-class DashboardPage(BasePage):
-    # Locators
-    WELCOME_TEXT = (By.CSS_SELECTOR, ".oxd-topbar-header-breadcrumb")
-
-    def __init__(self, driver, timeout=10):
-        super().__init__(driver, timeout)
-
-    def get_welcome_message(self):
-        return self.get_text(self.WELCOME_TEXT)
+@pytest.mark.unit
+class TestConfig(unittest.TestCase):
+    def test_config_has_base_url(self):
+        """Test that Config has BASE_URL attribute."""
+        self.assertTrue(hasattr(Config, 'BASE_URL'))
+        self.assertIsInstance(Config.BASE_URL, str)
 ```
 
-## 🔧 Configuración Avanzada
+### Using Shared Components
+```python
+from shared.components import OrangeHRMNavigation
+from shared.workflows import quick_login
 
-### Variables de Entorno Disponibles (.env):
+def test_navigation(driver):
+    quick_login(driver)
+
+    nav = OrangeHRMNavigation(driver)
+    nav.navigate_to_pim()
+```
+
+---
+
+## 🏗️ Design Patterns
+
+- **Screaming Architecture**: Structure shows features, not tools
+- **Factory Pattern**: `DriverFactory` for browser creation
+- **Strategy Pattern**: `BrowserStrategy` for different browsers
+- **Builder Pattern**: `UserDataBuilder` for test data
+- **Repository Pattern**: `TestDataRepository` for data management
+- **Page Object Model**: Encapsulate page logic
+- **Co-located Tests**: Unit tests next to code they test
+
+**See [IMPROVEMENTS.md](IMPROVEMENTS.md) for details.**
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables (.env)
 ```env
-# Application
 URL=http://localhost:8080/web/index.php
-USER=********
-PASSWORD=*******
-
-# Selenium Grid
+ORANGEHRM_USERNAME=Admin
+ORANGEHRM_PASSWORD=admin123
 SELENIUM_GRID_URL=http://localhost:4444
-
-# Browser
 BROWSER=chrome
 HEADLESS=False
-
-# Timeouts
-DEFAULT_TIMEOUT=10
-PAGE_LOAD_TIMEOUT=30
-IMPLICIT_WAIT=5
-
-# Window
-WINDOW_WIDTH=1920
-WINDOW_HEIGHT=1080
-MAXIMIZE_WINDOW=True
-
-# Screenshots
-SCREENSHOT_ON_FAILURE=True
 ```
 
-## 🎯 Características del Framework
-
-### Base Page (base_page.py):
-- ✅ Esperas explícitas automáticas
-- ✅ Métodos reutilizables (click, send_keys, get_text, etc.)
-- ✅ Manejo de frames
-- ✅ Ejecución de JavaScript
-- ✅ Scroll a elementos
-- ✅ Verificación de visibilidad y presencia
-- ✅ Logging integrado en todas las acciones
-
-### Login Page (login_page.py):
-- ✅ Locators centralizados
-- ✅ Métodos de alto nivel (login, enter_username, etc.)
-- ✅ Method chaining
-- ✅ Validaciones específicas de la página
-- ✅ Logging de acciones de login
-
-### Fixtures (conftest.py):
-- ✅ `driver`: WebDriver configurado y conectado al Grid
-- ✅ `login_page`: LoginPage con navegación automática
-- ✅ Screenshots automáticos en fallos
-- ✅ Configuración de navegadores desde CLI
-- ✅ Logging del ciclo de vida del WebDriver
-
-### Logger Utility (utils/logger.py):
-- ✅ Logger centralizado con configuración automática
-- ✅ Logs a consola (INFO y superiores)
-- ✅ Logs a archivo (DEBUG y superiores)
-- ✅ Archivos de log diarios en `logs/` (raíz del proyecto)
-- ✅ Decoradores `@log_test_step` y `@log_action`
-- ✅ Mixin `LoggerMixin` para agregar logging a cualquier clase
-
-### Custom Exceptions (utils/exceptions.py):
-- ✅ Jerarquía de excepciones personalizada
-- ✅ `FrameworkException`: Excepción base
-- ✅ `ElementNotFoundException`: Elemento no encontrado
-- ✅ `ElementNotClickableException`: Elemento no clickeable
-- ✅ `InvalidParameterException`: Parámetro inválido
-- ✅ `PageNotLoadedException`: Página no cargada
-- ✅ `ConfigurationException`: Error de configuración
-
-### Locators (src/pages/locators/):
-- ✅ Locators centralizados en archivos separados
-- ✅ Mantenimiento más fácil
-- ✅ Reutilización entre tests
-- ✅ Separación de responsabilidades
-
-### Markers de Pytest:
-- `@pytest.mark.smoke`: Tests rápidos de humo
-- `@pytest.mark.regression`: Tests completos de regresión
-- `@pytest.mark.login`: Tests específicos de login
-
-## 📊 Reportes y Logs
-
-Los reportes se generan automáticamente en:
-- **HTML Report**: `reports/report.html`
-- **Screenshots**: `reports/screenshots/` (solo en fallos)
-- **Logs**: `logs/test_automation_YYYYMMDD.log` (logs diarios en raíz)
-
-## 🧪 Unit Tests
-
-El proyecto incluye unit tests para validar componentes del framework sin necesidad de navegador:
-
+### Selenium Grid
 ```bash
-# Ejecutar todos los unit tests
-uv run pytest unittests/ -v
-
-# Ejecutar tests de un módulo específico
-uv run pytest unittests/test_config.py -v
-uv run pytest unittests/test_logger.py -v
-uv run pytest unittests/test_exceptions.py -v
-uv run pytest unittests/test_locators.py -v
-```
-
-### Unit Tests Disponibles:
-- **test_config.py**: Tests de configuración y variables de entorno
-- **test_logger.py**: Tests del sistema de logging
-- **test_exceptions.py**: Tests de excepciones personalizadas
-- **test_locators.py**: Tests de locators de páginas
-
-## 🐳 Docker Compose
-
-El `docker-compose.yml` incluye:
-- Selenium Hub (puerto 4444)
-- Chrome Node (VNC: 5900)
-- Firefox Node (VNC: 5901)
-- Edge Node (VNC: 5902)
-
-### Comandos útiles:
-```bash
-# Iniciar grid
+# Start
 docker-compose up -d
 
-# Ver logs
+# Status
+docker-compose ps
+
+# Logs
 docker-compose logs -f
 
-# Detener grid
+# Stop
 docker-compose down
-
-# Escalar nodos
-docker-compose up -d --scale chrome=3
 ```
 
-## 🔍 Debugging
+---
 
-### Ver sesiones del navegador con VNC:
+## 📊 Reports & Logs
+
+### HTML Reports
 ```bash
-# Instalar VNC viewer, luego conectar a:
-# Chrome: localhost:5900
-# Firefox: localhost:5901
-# Edge: localhost:5902
-# Password: secret (default)
+uv run pytest --html=reports/report.html
 ```
 
-### Ver logs en tiempo real:
+### Locations (Runtime Artifacts)
+```
+logs/                       # Execution logs (NOT versioned)
+├── test_automation_20251006.log
+└── pytest.log
+
+reports/                    # Test reports (NOT versioned)
+├── report.html
+└── screenshots/
+    └── test_failed_*.png
+```
+
+**See [LOGS_AND_REPORTS.md](LOGS_AND_REPORTS.md) for detailed documentation.**
+
+---
+
+## 🎯 Key Features
+
+✅ **Screaming Architecture** - Clear feature organization
+✅ **Unit Tests Co-located** - Tests next to code (56 tests)
+✅ **High Cohesion** - Related code together
+✅ **Low Coupling** - Independent features
+✅ **Selenium Grid** - Multi-browser testing
+✅ **Parallel Execution** - Fast test runs
+✅ **HTML Reports** - Beautiful test reports
+✅ **Auto Screenshots** - Capture failures
+✅ **Comprehensive Logging** - Debug easily
+✅ **Type Safety** - MyPy support
+✅ **CI/CD Ready** - GitHub Actions workflows
+
+---
+
+## 📚 Documentation
+
+### Architecture & Guides
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Complete architecture documentation
+- [QUICK_START.md](QUICK_START.md) - 5-minute getting started guide
+- [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) - Migration from old structure
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
+
+### Testing & Quality
+- [UNIT_TESTS_GUIDE.md](UNIT_TESTS_GUIDE.md) - Unit testing comprehensive guide
+- [UNIT_TESTS_MIGRATION_COMPLETE.md](UNIT_TESTS_MIGRATION_COMPLETE.md) - Unit tests migration summary
+- [LOGS_AND_REPORTS.md](LOGS_AND_REPORTS.md) - Logs and reports documentation
+
+### Design & CI/CD
+- [IMPROVEMENTS.md](IMPROVEMENTS.md) - Design patterns & CI/CD
+- [CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md) - Cleanup actions performed
+
+### Features
+- [orangehrm/authentication/README.md](orangehrm/authentication/README.md) - Authentication feature
+
+---
+
+## 🧪 Test Statistics
+
+| Test Type | Count | Location | Speed |
+|-----------|-------|----------|-------|
+| **Unit Tests** | 56 | `framework/*/unittests/`, `shared/*/unittests/` | < 0.1s |
+| **E2E Tests** | 8 | `orangehrm/*/tests/` | ~5-10s each |
+| **Total** | 64 | - | - |
+
+### Unit Tests Breakdown
+- Config tests: 12 tests in `framework/config/unittests/`
+- Logger tests: 13 tests in `framework/utils/unittests/`
+- Exception tests: 19 tests in `framework/utils/unittests/`
+- Workflows tests: 12 tests in `shared/workflows/unittests/`
+
+### E2E Tests Breakdown
+- Login tests: 8 tests in `orangehrm/authentication/tests/test_login.py`
+
+---
+
+## 🔮 Future Features
+
+Planned features following the same clean structure:
+- `orangehrm/employees/` - Employee management
+- `orangehrm/leave/` - Leave management
+- `orangehrm/time/` - Time tracking
+- `orangehrm/recruitment/` - Recruitment
+- `orangehrm/performance/` - Performance reviews
+
+---
+
+## 🛠️ Development
+
+### Linting
 ```bash
-# Ver logs del día actual
-tail -f reports/logs/test_automation_$(date +%Y%m%d).log
-
-# Ver logs con filtro
-grep "ERROR" reports/logs/test_automation_*.log
-grep "LoginPage" reports/logs/test_automation_*.log
+uv run black orangehrm/ framework/ shared/
+uv run ruff check orangehrm/ framework/ shared/
+uv run mypy orangehrm/ framework/ shared/
 ```
 
-## 📝 Uso del Logger
+### Unit Tests
+```bash
+# Run all unit tests
+uv run pytest -m unit -v
 
-### En Page Objects:
-```python
-from utils.logger import TestLogger
+# Run specific module tests
+uv run pytest framework/config/unittests/ -v
+uv run pytest framework/utils/unittests/test_logger.py -v
 
-class MyPage(BasePage):
-    def __init__(self, driver):
-        super().__init__(driver)
-        # El logger ya está disponible vía self.logger desde BasePage
-
-    def my_action(self):
-        self.logger.info("Executing my action")
-        # ... código ...
+# With coverage
+uv run pytest -m unit --cov=framework --cov-report=html
 ```
 
-### En Tests:
-```python
-from utils.logger import TestLogger, log_test_step
+### E2E Tests
+```bash
+# Run all E2E tests
+uv run pytest orangehrm/ -v
 
-logger = TestLogger.get_logger(__name__)
-
-@log_test_step("Verify user can login")
-def test_login(login_page):
-    logger.info("Starting login test")
-    # ... código del test ...
+# Run specific feature
+uv run pytest orangehrm/authentication/ -v
 ```
 
-### Usar LoggerMixin:
-```python
-from utils.logger import LoggerMixin
+---
 
-class MyHelper(LoggerMixin):
-    def do_something(self):
-        self.logger.info("Doing something")
-        # ... código ...
-```
+## 🤝 Contributing
 
-### Niveles de Log:
-- **DEBUG**: Información detallada para debugging (solo en archivo)
-- **INFO**: Confirmación de que las cosas funcionan (consola y archivo)
-- **WARNING**: Indicación de algo inesperado
-- **ERROR**: Error que no detiene la ejecución
-- **CRITICAL**: Error grave que puede detener el programa
+### Adding New Features
+1. Create feature directory: `orangehrm/[feature]/`
+2. Follow structure:
+   ```
+   orangehrm/[feature]/
+   ├── pages/          # Page objects
+   ├── tests/          # E2E & unit tests
+   ├── data/           # Test data
+   └── README.md       # Feature docs
+   ```
+3. Add pytest markers in `pytest.ini`
+4. Document in feature README
 
-## 📚 Referencia
+### Adding Framework Components
+1. Add code in `framework/[module]/`
+2. Add unit tests in `framework/[module]/unittests/`
+3. Mark tests with `@pytest.mark.unit`
+4. Ensure tests are fast (< 1s)
 
-Framework basado en principios de: https://github.com/taquimon/webauto2025
+### Guidelines
+- ✅ Follow Screaming Architecture principles
+- ✅ Put feature code in `orangehrm/[feature]/`
+- ✅ Generic code goes in `framework/`
+- ✅ Shared OrangeHRM code goes in `shared/`
+- ✅ Unit tests next to code they test
+- ✅ Add appropriate pytest markers
+- ✅ Document in README files
 
-## 🤝 Contribuir
+---
 
-1. Seguir el patrón Page Object Model
-2. Usar la clase BasePage para nuevas páginas
-3. Agregar tests con markers apropiados
-4. Documentar métodos públicos
-5. Ejecutar tests antes de commit
-
-## 📄 Licencia
+## 📄 License
 
 MIT
+
+---
+
+**Built with ❤️ using Screaming Architecture principles**

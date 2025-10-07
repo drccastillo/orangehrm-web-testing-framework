@@ -60,6 +60,13 @@ logs/
 .uv/
 uv.lock
 
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Backups
+.backup_old_structure/
+
 # Misc
 *.tmp
 *.bak
