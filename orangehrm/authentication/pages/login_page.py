@@ -89,19 +89,23 @@ class LoginPage(BasePage):
         self.click(self.LOGIN_BUTTON)
         return self
 
-    def login(self, username: str, password: str) -> None:
+    def login(self, username: str, password: str) -> 'LoginPage':
         """
         Perform complete login action.
 
         Args:
             username: Username to login with
             password: Password to login with
+
+        Returns:
+            Self for method chaining
         """
         self.logger.info(f"Attempting login with username: {username}")
         self.enter_username(username)
         self.enter_password(password)
         self.click_login_button()
         self.logger.info("Login action completed")
+        return self
 
     def get_error_message(self) -> str:
         """
@@ -121,9 +125,15 @@ class LoginPage(BasePage):
         """
         return self.is_element_visible(self.ERROR_MESSAGE)
 
-    def click_forgot_password(self) -> None:
-        """Click the 'Forgot Password' link."""
+    def click_forgot_password(self) -> 'LoginPage':
+        """
+        Click the 'Forgot Password' link.
+
+        Returns:
+            Self for method chaining
+        """
         self.click(self.FORGOT_PASSWORD_LINK)
+        return self
 
     def is_login_page_loaded(self) -> bool:
         """

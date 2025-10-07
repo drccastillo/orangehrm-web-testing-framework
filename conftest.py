@@ -17,18 +17,38 @@ from framework.utils import TestLogger
 logger = TestLogger.get_logger(__name__)
 
 
+# ============================================
+# Constants for Pytest Markers
+# ============================================
+
+MARKER_AUTHENTICATION = "authentication"
+MARKER_EMPLOYEES = "employees"
+MARKER_LEAVE = "leave"
+MARKER_SMOKE = "smoke"
+MARKER_REGRESSION = "regression"
+
+
 def pytest_configure(config):
     """Configure pytest session."""
     logger.info("=== Starting OrangeHRM Test Session ===")
     logger.info("Configuring pytest with Screaming Architecture")
+
+    # Validate configuration before running tests
+    try:
+        Config.validate()
+        logger.info("✓ Configuration validated successfully")
+    except ValueError as e:
+        logger.error(f"❌ Configuration validation failed:\n{e}")
+        raise
+
     Config.ensure_directories()
 
     # Register custom markers
-    config.addinivalue_line("markers", "authentication: Authentication feature tests")
-    config.addinivalue_line("markers", "employees: Employee management tests")
-    config.addinivalue_line("markers", "leave: Leave management tests")
-    config.addinivalue_line("markers", "smoke: Quick smoke tests")
-    config.addinivalue_line("markers", "regression: Full regression tests")
+    config.addinivalue_line("markers", f"{MARKER_AUTHENTICATION}: Authentication feature tests")
+    config.addinivalue_line("markers", f"{MARKER_EMPLOYEES}: Employee management tests")
+    config.addinivalue_line("markers", f"{MARKER_LEAVE}: Leave management tests")
+    config.addinivalue_line("markers", f"{MARKER_SMOKE}: Quick smoke tests")
+    config.addinivalue_line("markers", f"{MARKER_REGRESSION}: Full regression tests")
 
 
 # ============================================

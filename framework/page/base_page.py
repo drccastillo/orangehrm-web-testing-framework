@@ -44,6 +44,23 @@ class BasePage:
         self.wait = WebDriverWait(driver, timeout)
         self.logger = TestLogger.get_logger(self.__class__.__name__)
 
+    def _validate_locator(self, locator: Tuple[str, str]) -> None:
+        """
+        Validate that locator is properly formatted.
+
+        Args:
+            locator: Tuple to validate
+
+        Raises:
+            InvalidParameterException: If locator is None or invalid format
+        """
+        if not locator or not isinstance(locator, tuple) or len(locator) != 2:
+            raise InvalidParameterException(
+                "locator",
+                locator,
+                "Locator must be a tuple of (By.STRATEGY, 'value')"
+            )
+
     def find_element(self, locator: Tuple[str, str]) -> WebElement:
         """
         Find a single element using explicit wait.
@@ -58,12 +75,7 @@ class BasePage:
             InvalidParameterException: If locator is None or invalid
             ElementNotFoundException: If element is not found within timeout
         """
-        if not locator or not isinstance(locator, tuple) or len(locator) != 2:
-            raise InvalidParameterException(
-                "locator",
-                locator,
-                "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        self._validate_locator(locator)
 
         try:
             self.logger.debug(f"Finding element: {locator}")
@@ -90,12 +102,7 @@ class BasePage:
         Raises:
             InvalidParameterException: If locator is None or invalid
         """
-        if not locator or not isinstance(locator, tuple) or len(locator) != 2:
-            raise InvalidParameterException(
-                "locator",
-                locator,
-                "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        self._validate_locator(locator)
 
         try:
             elements = self.wait.until(
@@ -120,12 +127,7 @@ class BasePage:
         Example:
             >>> page.click((By.ID, "submit-button"))
         """
-        if not locator or not isinstance(locator, tuple) or len(locator) != 2:
-            raise InvalidParameterException(
-                "locator",
-                locator,
-                "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        self._validate_locator(locator)
 
         self.logger.debug(f"Clicking element: {locator}")
         try:
