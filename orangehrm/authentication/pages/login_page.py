@@ -2,6 +2,7 @@
 Login Page Object Model for OrangeHRM application.
 Contains methods specific to the login page functionality.
 """
+import allure
 from selenium.webdriver.remote.webdriver import WebDriver
 from framework.page import BasePage
 from orangehrm.authentication.pages.locators import LoginLocators
@@ -53,6 +54,7 @@ class LoginPage(BasePage):
     def LOGIN_TITLE(self):
         return self.locators.LOGIN_TITLE
 
+    @allure.step("Enter username: {username}")
     def enter_username(self, username: str) -> 'LoginPage':
         """
         Enter username in the username field.
@@ -66,6 +68,7 @@ class LoginPage(BasePage):
         self.send_keys(self.USERNAME_INPUT, username)
         return self
 
+    @allure.step("Enter password")
     def enter_password(self, password: str) -> 'LoginPage':
         """
         Enter password in the password field.
@@ -79,6 +82,7 @@ class LoginPage(BasePage):
         self.send_keys(self.PASSWORD_INPUT, password)
         return self
 
+    @allure.step("Click login button")
     def click_login_button(self) -> 'LoginPage':
         """
         Click the login button to submit credentials.
@@ -89,6 +93,7 @@ class LoginPage(BasePage):
         self.click(self.LOGIN_BUTTON)
         return self
 
+    @allure.step("Login with username: {username}")
     def login(self, username: str, password: str) -> 'LoginPage':
         """
         Perform complete login action.
@@ -107,6 +112,7 @@ class LoginPage(BasePage):
         self.logger.info("Login action completed")
         return self
 
+    @allure.step("Get error message text")
     def get_error_message(self) -> str:
         """
         Get the error message displayed on failed login.
@@ -116,6 +122,7 @@ class LoginPage(BasePage):
         """
         return self.get_text(self.ERROR_MESSAGE)
 
+    @allure.step("Check if error message is displayed")
     def is_error_message_displayed(self) -> bool:
         """
         Check if error message is displayed.
@@ -135,6 +142,7 @@ class LoginPage(BasePage):
         self.click(self.FORGOT_PASSWORD_LINK)
         return self
 
+    @allure.step("Verify login page is loaded")
     def is_login_page_loaded(self) -> bool:
         """
         Verify if the login page is fully loaded.
@@ -160,6 +168,7 @@ class LoginPage(BasePage):
         """
         return self.get_text(self.LOGIN_TITLE)
 
+    @allure.step("Check if logo is displayed")
     def is_logo_displayed(self) -> bool:
         """
         Check if the OrangeHRM logo is displayed.
@@ -168,6 +177,36 @@ class LoginPage(BasePage):
             True if logo is visible, False otherwise
         """
         return self.is_element_visible(self.LOGIN_LOGO)
+
+    @allure.step("Verify username field is visible")
+    def is_username_field_visible(self) -> bool:
+        """
+        Check if the username input field is visible.
+
+        Returns:
+            True if username field is visible, False otherwise
+        """
+        return self.is_element_visible(self.USERNAME_INPUT)
+
+    @allure.step("Verify password field is visible")
+    def is_password_field_visible(self) -> bool:
+        """
+        Check if the password input field is visible.
+
+        Returns:
+            True if password field is visible, False otherwise
+        """
+        return self.is_element_visible(self.PASSWORD_INPUT)
+
+    @allure.step("Verify login button is visible")
+    def is_login_button_visible(self) -> bool:
+        """
+        Check if the login button is visible.
+
+        Returns:
+            True if login button is visible, False otherwise
+        """
+        return self.is_element_visible(self.LOGIN_BUTTON)
 
     def clear_username(self) -> 'LoginPage':
         """

@@ -5,6 +5,7 @@ This conftest provides global fixtures and configuration available to all tests.
 Feature-specific fixtures should be defined in feature/tests/conftest.py
 """
 import pytest
+import allure
 from datetime import datetime
 from pathlib import Path
 
@@ -164,6 +165,7 @@ def pytest_runtest_makereport(item, call):
 def _take_screenshot(driver, test_name: str, node_id: str = ""):
     """
     Take screenshot with metadata on test failure.
+    Attaches screenshot to Allure report.
 
     Args:
         driver: WebDriver instance
@@ -175,10 +177,39 @@ def _take_screenshot(driver, test_name: str, node_id: str = ""):
     screenshot_path = Config.SCREENSHOTS_DIR / screenshot_name
 
     try:
+        # Save screenshot to file
         driver.save_screenshot(str(screenshot_path))
         logger.info(f"📸 Screenshot saved: {screenshot_path}")
 
-        # Save metadata
+        # Attach screenshot to Allure report
+        with open(screenshot_path, 'rb') as screenshot_file:
+            allure.attach(
+                screenshot_file.read(),
+                name=f"Screenshot - {test_name}",
+                attachment_type=allure.attachment_type.PNG
+            )
+
+        # Attach current URL to Allure
+        try:
+            allure.attach(
+                driver.current_url,
+                name="Page URL at failure",
+                attachment_type=allure.attachment_type.TEXT
+            )
+        except:
+            pass
+
+        # Attach page source to Allure for debugging
+        try:
+            allure.attach(
+                driver.page_source,
+                name="Page Source",
+                attachment_type=allure.attachment_type.HTML
+            )
+        except:
+            pass
+
+        # Save metadata file
         metadata_path = screenshot_path.with_suffix('.txt')
         with open(metadata_path, 'w') as f:
             f.write(f"Test: {test_name}\n")

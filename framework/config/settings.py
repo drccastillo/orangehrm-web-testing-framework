@@ -42,6 +42,8 @@ class Config:
 
     # Reports Configuration
     REPORTS_DIR = Path(__file__).parent.parent.parent / 'reports'
+    ALLURE_RESULTS_DIR = REPORTS_DIR / 'allure-results'
+    ALLURE_REPORT_DIR = REPORTS_DIR / 'allure-report'
 
     @classmethod
     def get_selenium_grid_url(cls, browser: str = None) -> str:
@@ -108,3 +110,5 @@ class Config:
         """Create necessary directories if they don't exist."""
         cls.SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
         cls.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+        cls.ALLURE_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        cls.ALLURE_REPORT_DIR.mkdir(parents=True, exist_ok=True)

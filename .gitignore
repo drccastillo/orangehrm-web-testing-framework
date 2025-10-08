@@ -45,7 +45,11 @@ htmlcov/
 reports/
 *.html
 *.xml
+*.xlsx
 screenshots/
+allure-results/
+allure-report/
+.allure/
 
 # Logs
 logs/

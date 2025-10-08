@@ -5,17 +5,23 @@ This test demonstrates the use of highlight_element and blink_element methods
 for visual debugging purposes. Effects are slowed down to be visible to the human eye.
 """
 import pytest
+import allure
 import time
 from orangehrm.authentication.pages import LoginPage
-from framework.utils.logger import log_test_step, TestLogger
+from framework.utils.logger import TestLogger
 
 
 @pytest.mark.authentication
 @pytest.mark.demo
+@allure.feature("Authentication")
+@allure.story("Visual Debugging Demo")
 class TestLoginDemo:
     """Demo test class for visual debugging effects."""
 
-    @log_test_step("Demo: Visual login with highlight and blink effects")
+    @allure.title("Demo: Visual login with highlight and blink effects")
+    @allure.description("Demonstrate successful login with visual debugging effects (highlight and blink)")
+    @allure.severity(allure.severity_level.TRIVIAL)
+    @allure.tag("demo", "visual", "debugging")
     def test_login_with_visual_effects(self, login_page: LoginPage, valid_user):
         """
         Demonstrate successful login with visual debugging effects.
@@ -102,7 +108,10 @@ class TestLoginDemo:
         logger.info("✅ DEMO COMPLETE: Login successful with visual effects!")
         logger.info("="*80)
 
-    @log_test_step("Demo: Highlight multiple elements simultaneously")
+    @allure.title("Demo: Highlight multiple elements simultaneously")
+    @allure.description("Demo showing all login page elements highlighted at once for visual verification")
+    @allure.severity(allure.severity_level.TRIVIAL)
+    @allure.tag("demo", "visual", "debugging")
     def test_highlight_all_login_elements(self, login_page: LoginPage):
         """
         Demo showing all login page elements highlighted at once.
@@ -145,7 +154,10 @@ class TestLoginDemo:
         logger.info("✅ DEMO COMPLETE: All elements highlighted and blinked!")
         logger.info("="*80)
 
-    @log_test_step("Demo: Custom border styles and colors")
+    @allure.title("Demo: Custom border styles and colors")
+    @allure.description("Demo showing different highlight border styles and colors for customization options")
+    @allure.severity(allure.severity_level.TRIVIAL)
+    @allure.tag("demo", "visual", "debugging", "customization")
     def test_custom_highlight_styles(self, login_page: LoginPage):
         """
         Demo showing different highlight border styles and colors.
