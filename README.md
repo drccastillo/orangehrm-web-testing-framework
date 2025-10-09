@@ -10,19 +10,41 @@
 
 ## 🎯 Architecture
 
-This project uses **Screaming Architecture** where the structure "screams" what the system does:
+### Modern Clean Architecture (Oct 2024)
+
+**Key Principles**:
+- ✅ **NO BasePage** - Complete removal of inheritance hierarchy
+- ✅ **Mixins Pattern** - Interface Segregation Principle (ISP)
+- ✅ **Composition over Inheritance** - Flexible component-based design
+- ✅ **Chain of Responsibility** - Wait strategies with fallback chains
+- ✅ **Dependency Injection** - ConfigInterface for testability
+
+### Screaming Architecture
+
+Structure "screams" what the system does:
 
 ```
 orangehrm/                  # ← Features (what the system tests)
 ├── authentication/         # ← Authentication feature
-├── employees/              # ← Employee management (future)
-└── leave/                  # ← Leave management (future)
+│   ├── pages/              # ← Page objects (Mixins)
+│   ├── tests/              # ← E2E & unit tests
+│   └── data/               # ← Test data
+├── dashboard/              # ← Dashboard feature
+└── [future features]/      # ← Employee, Leave, Time, etc.
 
 framework/                  # ← Generic infrastructure
+├── page/
+│   ├── components/         # ← ElementFinder, Interactor, Validator
+│   ├── mixins/             # ← Mixins for pages
+│   └── strategies/         # ← Wait strategies
+├── config/                 # ← ConfigInterface, MockConfig
+└── utils/                  # ← Logger, exceptions
+
 shared/                     # ← OrangeHRM shared components
+└── components/             # ← OrangeHRMNavigation
 ```
 
-**See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.**
+**See [CLAUDE.md](CLAUDE.md) and [ARCHITECTURE.md](ARCHITECTURE.md) for complete documentation.**
 
 ---
 
@@ -75,20 +97,21 @@ web-testing-framework/
 ├── framework/              # 🏗️ INFRASTRUCTURE (Generic)
 │   ├── browser/            # WebDriver management
 │   │   └── unittests/      # Unit tests
-│   ├── page/               # Base page classes
+│   ├── page/               # Page components & mixins
+│   │   ├── components/     # ElementFinder, Interactor, Validator
+│   │   ├── mixins/         # ElementFinderMixin, InteractorMixin, etc.
+│   │   ├── strategies/     # Wait strategies (Chain of Responsibility)
 │   │   └── unittests/      # Unit tests
 │   ├── data/               # Data factories
 │   │   └── unittests/      # Unit tests
-│   ├── config/             # Configuration
+│   ├── config/             # Configuration (ConfigInterface, MockConfig)
 │   │   └── unittests/      # Unit tests (12 tests)
 │   └── utils/              # Logger, exceptions
 │       └── unittests/      # Unit tests (32 tests)
 │
 ├── shared/                 # 🔄 SHARED (OrangeHRM-specific)
-│   ├── components/         # UI components (navigation)
-│   ├── locators/           # Shared locators
-│   └── workflows/          # Common actions (quick_login)
-│       └── unittests/      # Unit tests (12 tests)
+│   └── components/         # UI components (OrangeHRMNavigation)
+│       └── tests/          # Component unit tests (19 tests)
 │
 ├── integration/            # 🔗 Integration tests
 │
@@ -157,18 +180,19 @@ uv run pytest -n 4                  # 4 workers
 ### E2E Test Example
 ```python
 import pytest
-from orangehrm.authentication.pages import LoginPage
-from orangehrm.authentication.data import valid_admin_user
 
 @pytest.mark.authentication
 @pytest.mark.smoke
-def test_login(login_page: LoginPage):
-    """Test successful login."""
-    user = valid_admin_user()
-
-    login_page.login(user.username, user.password)
-
+def test_login(login_page, valid_user):
+    """Test successful login using fixtures."""
+    login_page.login(valid_user.username, valid_user.password)
     assert "dashboard" in login_page.get_current_url()
+
+@pytest.mark.dashboard
+def test_dashboard_navigation(dashboard_page):
+    """Test dashboard using authenticated_session fixture."""
+    # dashboard_page already authenticated via authenticated_session
+    assert dashboard_page.is_dashboard_loaded()
 ```
 
 ### Unit Test Example
@@ -185,31 +209,120 @@ class TestConfig(unittest.TestCase):
         self.assertIsInstance(Config.BASE_URL, str)
 ```
 
+### Creating Page Objects with Mixins
+```python
+from framework.page.mixins import (
+    ElementFinderMixin,
+    ElementInteractorMixin,
+    ElementValidatorMixin
+)
+from framework.page.components import (
+    ElementFinder,
+    ElementInteractor,
+    ElementValidator
+)
+
+class DashboardPage(
+    ElementFinderMixin,
+    ElementInteractorMixin,
+    ElementValidatorMixin
+):
+    """Dashboard page using Mixins pattern (NO BasePage)."""
+
+    WELCOME_TEXT = (By.CSS_SELECTOR, ".oxd-topbar-header-breadcrumb")
+
+    def __init__(self, driver, timeout=10, config=None):
+        self.driver = driver
+        self.timeout = timeout
+        self.config = config or Config()
+
+        # Initialize components (Composition)
+        self.finder = ElementFinder(driver, timeout)
+        self.interactor = ElementInteractor(driver, timeout)
+        self.validator = ElementValidator(driver, timeout)
+
+    def get_welcome_message(self) -> str:
+        """Get welcome text using mixin methods."""
+        return self.get_text(self.WELCOME_TEXT)
+```
+
 ### Using Shared Components
 ```python
-from shared.components import OrangeHRMNavigation
-from shared.workflows import quick_login
+from shared.components.navigation import OrangeHRMNavigation
 
-def test_navigation(driver):
-    quick_login(driver)
-
-    nav = OrangeHRMNavigation(driver)
-    nav.navigate_to_pim()
+def test_navigation(authenticated_session, config_provider):
+    """Test navigation using authenticated_session fixture."""
+    nav = OrangeHRMNavigation(authenticated_session, config=config_provider)
+    nav.navigate_to_module('pim')  # Dynamic navigation
+    nav.logout()
 ```
 
 ---
 
-## 🏗️ Design Patterns
+## 🏗️ Design Patterns & Architecture
 
+**Modern Clean Architecture** (Completed Oct 2024):
+- ✅ **NO BasePage** - Completely removed inheritance hierarchy
+- ✅ **Mixins Pattern** - Pages use only capabilities they need (ISP)
+- ✅ **Composition over Inheritance** - Components instead of rigid inheritance
+- ✅ **Chain of Responsibility** - Wait strategies with fallback chains
+- ✅ **Dependency Injection** - ConfigInterface for flexible configuration
+
+**Core Patterns**:
 - **Screaming Architecture**: Structure shows features, not tools
 - **Factory Pattern**: `DriverFactory` for browser creation
-- **Strategy Pattern**: `BrowserStrategy` for different browsers
+- **Strategy Pattern**: Wait strategies (`VisibilityWaitStrategy`, `ClickableWaitStrategy`, etc.)
 - **Builder Pattern**: `UserDataBuilder` for test data
 - **Repository Pattern**: `TestDataRepository` for data management
-- **Page Object Model**: Encapsulate page logic
+- **Page Object Model**: Mixins + Composition (no inheritance)
 - **Co-located Tests**: Unit tests next to code they test
 
-**See [IMPROVEMENTS.md](IMPROVEMENTS.md) for details.**
+**See [CLAUDE.md](CLAUDE.md) for complete architecture documentation.**
+
+---
+
+## 🧩 Fixtures
+
+### Root Conftest (Shared Fixtures)
+
+Located in [conftest.py](conftest.py):
+
+- `driver` - WebDriver connected to Selenium Grid
+- `config_provider` - ConfigInterface instance for dependency injection
+- `authenticated_session` - Pre-authenticated WebDriver (performs login)
+- `logout_session` - Authenticated session with auto-logout after test
+
+### Feature Conftest (Feature-Specific Fixtures)
+
+Each feature has its own conftest with specialized fixtures:
+
+**Authentication** ([orangehrm/authentication/tests/conftest.py](orangehrm/authentication/tests/conftest.py)):
+- `login_page` - LoginPage instance with navigation to login URL
+- `valid_user` - Valid user data from config
+- `invalid_user_data` - Invalid user data for negative tests
+- `login_page_demo` - LoginPage with visual debugging
+
+**Dashboard** ([orangehrm/dashboard/tests/conftest.py](orangehrm/dashboard/tests/conftest.py)):
+- `dashboard_page` - DashboardPage using `authenticated_session`
+
+### Fixture Usage Example
+
+```python
+def test_login(login_page, valid_user):
+    """Uses feature-specific fixtures."""
+    login_page.login(valid_user.username, valid_user.password)
+    assert "dashboard" in login_page.get_current_url()
+
+def test_dashboard(dashboard_page):
+    """Uses authenticated_session via dashboard_page fixture."""
+    assert dashboard_page.is_dashboard_loaded()
+
+def test_with_logout(logout_session, config_provider):
+    """Session automatically logs out after test."""
+    nav = OrangeHRMNavigation(logout_session, config=config_provider)
+    nav.navigate_to_module('admin')
+    # Automatic logout happens in fixture teardown
+```
 
 ---
 
@@ -267,8 +380,12 @@ reports/                    # Test reports (NOT versioned)
 
 ## 🎯 Key Features
 
+✅ **Modern Clean Architecture** - Mixins + Composition (NO BasePage)
 ✅ **Screaming Architecture** - Clear feature organization
-✅ **Unit Tests Co-located** - Tests next to code (56 tests)
+✅ **Chain of Responsibility** - Flexible wait strategies
+✅ **SOLID Principles** - All 5 principles implemented
+✅ **Dependency Injection** - ConfigInterface for testability
+✅ **Unit Tests Co-located** - Tests next to code (56+ tests)
 ✅ **High Cohesion** - Related code together
 ✅ **Low Coupling** - Independent features
 ✅ **Selenium Grid** - Multi-browser testing
@@ -284,7 +401,8 @@ reports/                    # Test reports (NOT versioned)
 ## 📚 Documentation
 
 ### Architecture & Guides
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Complete architecture documentation
+- **[CLAUDE.md](CLAUDE.md)** - ⭐ Complete architecture & patterns (for AI assistants)
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed architecture documentation
 - [QUICK_START.md](QUICK_START.md) - 5-minute getting started guide
 - [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) - Migration from old structure
 - [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
@@ -315,10 +433,12 @@ reports/                    # Test reports (NOT versioned)
 - Config tests: 12 tests in `framework/config/unittests/`
 - Logger tests: 13 tests in `framework/utils/unittests/`
 - Exception tests: 19 tests in `framework/utils/unittests/`
-- Workflows tests: 12 tests in `shared/workflows/unittests/`
+- Navigation tests: 19 tests in `shared/components/tests/`
+- Wait strategy tests: Multiple tests in `framework/page/strategies/unittests/`
 
 ### E2E Tests Breakdown
-- Login tests: 8 tests in `orangehrm/authentication/tests/test_login.py`
+- Authentication tests: 8 tests in `orangehrm/authentication/tests/`
+- Dashboard tests: Multiple tests in `orangehrm/dashboard/tests/`
 
 ---
 
@@ -389,12 +509,17 @@ uv run pytest orangehrm/authentication/ -v
 
 ### Guidelines
 - ✅ Follow Screaming Architecture principles
+- ✅ Use Mixins pattern (NO BasePage inheritance)
+- ✅ Use Composition (initialize components in `__init__`)
+- ✅ Inject ConfigInterface for testability
+- ✅ Use wait strategies (Chain of Responsibility)
 - ✅ Put feature code in `orangehrm/[feature]/`
 - ✅ Generic code goes in `framework/`
 - ✅ Shared OrangeHRM code goes in `shared/`
 - ✅ Unit tests next to code they test
 - ✅ Add appropriate pytest markers
 - ✅ Document in README files
+- ✅ Use fixtures: `authenticated_session`, `logout_session`, `config_provider`
 
 ---
 

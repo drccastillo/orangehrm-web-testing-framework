@@ -26,7 +26,7 @@ from framework.page.components import (
 from framework.config.interface import ConfigInterface
 from framework.config.settings import Config
 from framework.utils.logger import TestLogger
-from orangehrm.authentication.pages.locators import LoginLocators as Locators
+from orangehrm.authentication.pages.locators.login_locators import LoginLocators as Locators
 
 
 class LoginPage(
