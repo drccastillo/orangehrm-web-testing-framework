@@ -9,8 +9,8 @@ import allure
 from datetime import datetime
 from pathlib import Path
 
-from framework.browser import DriverFactory, DriverManager
-from framework.config import Config
+from framework.browser import DriverFactory
+from framework.config import Config, MockConfig, ConfigInterface
 from framework.utils import TestLogger
 
 
@@ -86,22 +86,49 @@ def driver_factory():
     return DriverFactory()
 
 
-@pytest.fixture(scope="session")
-def driver_manager():
-    """
-    Provide DriverManager singleton instance.
-
-    Manages driver lifecycle and cleanup.
-    """
-    manager = DriverManager()
-    yield manager
-    # Cleanup all drivers at end of session
-    manager.quit_all_drivers()
-
-
 # ============================================
 # Function-scoped fixtures
 # ============================================
+
+@pytest.fixture(scope="session")
+def config_provider():
+    """
+    Provide ConfigInterface instance for dependency injection.
+
+    By default, returns the standard Config class.
+    Can be overridden in feature conftest.py to return MockConfig.
+
+    Returns:
+        ConfigInterface instance (Config by default)
+
+    Example:
+        def test_with_config(config_provider):
+            assert config_provider.base_url is not None
+    """
+    return Config()
+
+
+@pytest.fixture(scope="function")
+def mock_config():
+    """
+    Provide MockConfig for testing without environment dependencies.
+
+    Returns:
+        MockConfig instance with test defaults
+
+    Example:
+        def test_with_mock(mock_config):
+            assert mock_config.base_url == "http://localhost:8080"
+    """
+    return MockConfig(
+        base_url="http://localhost:8080",
+        username="test_user",
+        password="test_password",
+        selenium_grid_url="http://localhost:4444",
+        headless=True,
+        default_timeout=10
+    )
+
 
 @pytest.fixture(scope="function")
 def driver(driver_factory, browser_name, headless):
@@ -136,6 +163,44 @@ def driver(driver_factory, browser_name, headless):
     # Teardown
     logger.info("Closing driver")
     driver.quit()
+
+
+@pytest.fixture(scope="function")
+def authenticated_session(driver, config_provider):
+    """
+    Perform login and return authenticated driver session.
+
+    This is a SHARED fixture for all features that require authentication.
+    Use this instead of duplicating login logic in feature-specific conftest files.
+
+    Args:
+        driver: WebDriver fixture
+        config_provider: ConfigInterface fixture
+
+    Returns:
+        Authenticated WebDriver instance
+
+    Example:
+        def test_dashboard(authenticated_session):
+            # Driver is already logged in
+            authenticated_session.get(f"{Config.BASE_URL}/dashboard")
+
+    Note:
+        This fixture imports LoginPage lazily to avoid circular dependencies.
+    """
+    from orangehrm.authentication.pages import LoginPage
+
+    logger.info("Creating authenticated session (performing login)")
+    login_page = LoginPage(
+        driver,
+        timeout=config_provider.default_timeout,
+        config=config_provider
+    )
+    login_page.navigate_to_login()
+    login_page.login(config_provider.username, config_provider.password)
+    logger.info("✓ Login successful, session authenticated")
+
+    return driver
 
 
 # ============================================

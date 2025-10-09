@@ -1,58 +1,83 @@
 """
-Login Page Object Model for OrangeHRM application.
-Contains methods specific to the login page functionality.
+Login Page Object Model using Mixins pattern (ISP).
+Clean architecture - uses ONLY Mixins, NO BasePage inheritance.
 """
 import allure
+from typing import Optional
 from selenium.webdriver.remote.webdriver import WebDriver
-from framework.page import BasePage
-from orangehrm.authentication.pages.locators import LoginLocators
+
+# Import only the mixins we need
+from framework.page.mixins import (
+    ElementFinderMixin,
+    ElementInteractorMixin,
+    ElementValidatorMixin,
+    NavigationMixin,
+)
+
+# Import components
+from framework.page.components import (
+    ElementFinder,
+    ElementInteractor,
+    ElementValidator,
+    NavigationHelper,
+)
+
+# Import config and locators
+from framework.config.interface import ConfigInterface
+from framework.config.settings import Config
+from framework.utils.logger import TestLogger
+from orangehrm.authentication.pages.locators import LoginLocators as Locators
 
 
-class LoginPage(BasePage):
+class LoginPage(
+    ElementFinderMixin,
+    ElementInteractorMixin,
+    ElementValidatorMixin,
+    NavigationMixin,
+):
     """
-    Page Object Model for the OrangeHRM Login Page.
-    Inherits common functionality from BasePage.
+    Login Page using Mixins pattern (NEW CLEAN ARCHITECTURE).
+
+    Uses ONLY Mixins - NO BasePage inheritance.
+    Follows Interface Segregation Principle (ISP).
+
+    Mixins included:
+    - ElementFinderMixin: Finding elements
+    - ElementInteractorMixin: Clicking, typing, etc.
+    - ElementValidatorMixin: Checking visibility, presence
+    - NavigationMixin: URL navigation
+
+    Note: VisualDebugMixin and JavaScriptMixin NOT included (not needed).
     """
 
-    def __init__(self, driver: WebDriver, timeout: int = 10):
+    def __init__(
+        self,
+        driver: WebDriver,
+        timeout: int = 10,
+        config: Optional[ConfigInterface] = None
+    ):
         """
-        Initialize the Login Page.
+        Initialize Login Page with only required components.
 
         Args:
             driver: Selenium WebDriver instance
-            timeout: Default timeout for explicit waits in seconds
+            timeout: Default timeout for waits
+            config: Configuration instance (defaults to Config class)
         """
-        super().__init__(driver, timeout)
-        self.locators = LoginLocators
+        # Store essentials
+        self.driver = driver
+        self.timeout = timeout
+        self.config = config if config is not None else Config()
+        self.logger = TestLogger.get_logger(self.__class__.__name__)
 
-    # Expose locators as properties for backward compatibility
-    @property
-    def USERNAME_INPUT(self):
-        return self.locators.USERNAME_INPUT
+        # Initialize ONLY the components we need (Composition)
+        self.finder = ElementFinder(driver, timeout)
+        self.interactor = ElementInteractor(driver, timeout)
+        self.validator = ElementValidator(driver, timeout)
+        self.navigation = NavigationHelper(driver)
 
-    @property
-    def PASSWORD_INPUT(self):
-        return self.locators.PASSWORD_INPUT
-
-    @property
-    def LOGIN_BUTTON(self):
-        return self.locators.LOGIN_BUTTON
-
-    @property
-    def ERROR_MESSAGE(self):
-        return self.locators.ERROR_MESSAGE
-
-    @property
-    def FORGOT_PASSWORD_LINK(self):
-        return self.locators.FORGOT_PASSWORD_LINK
-
-    @property
-    def LOGIN_LOGO(self):
-        return self.locators.LOGIN_LOGO
-
-    @property
-    def LOGIN_TITLE(self):
-        return self.locators.LOGIN_TITLE
+        # Note: No VisualDebugger, no JavaScriptExecutor
+        # This is ISP - only include what you need!
 
     @allure.step("Enter username: {username}")
     def enter_username(self, username: str) -> 'LoginPage':
@@ -65,7 +90,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.USERNAME_INPUT, username)
+        self.send_keys(Locators.USERNAME_INPUT, username)
         return self
 
     @allure.step("Enter password")
@@ -79,7 +104,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.PASSWORD_INPUT, password)
+        self.send_keys(Locators.PASSWORD_INPUT, password)
         return self
 
     @allure.step("Click login button")
@@ -90,7 +115,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.click(self.LOGIN_BUTTON)
+        self.click(Locators.LOGIN_BUTTON)
         return self
 
     @allure.step("Login with username: {username}")
@@ -120,7 +145,7 @@ class LoginPage(BasePage):
         Returns:
             Error message text
         """
-        return self.get_text(self.ERROR_MESSAGE)
+        return self.get_text(Locators.ERROR_MESSAGE)
 
     @allure.step("Check if error message is displayed")
     def is_error_message_displayed(self) -> bool:
@@ -130,7 +155,7 @@ class LoginPage(BasePage):
         Returns:
             True if error message is visible, False otherwise
         """
-        return self.is_element_visible(self.ERROR_MESSAGE)
+        return self.is_element_visible(Locators.ERROR_MESSAGE)
 
     def click_forgot_password(self) -> 'LoginPage':
         """
@@ -139,7 +164,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.click(self.FORGOT_PASSWORD_LINK)
+        self.click(Locators.FORGOT_PASSWORD_LINK)
         return self
 
     @allure.step("Verify login page is loaded")
@@ -152,9 +177,9 @@ class LoginPage(BasePage):
         """
         self.logger.debug("Checking if login page is loaded")
         is_loaded = (
-            self.is_element_visible(self.USERNAME_INPUT) and
-            self.is_element_visible(self.PASSWORD_INPUT) and
-            self.is_element_visible(self.LOGIN_BUTTON)
+            self.is_element_visible(Locators.USERNAME_INPUT) and
+            self.is_element_visible(Locators.PASSWORD_INPUT) and
+            self.is_element_visible(Locators.LOGIN_BUTTON)
         )
         self.logger.debug(f"Login page loaded: {is_loaded}")
         return is_loaded
@@ -166,7 +191,7 @@ class LoginPage(BasePage):
         Returns:
             Login title text
         """
-        return self.get_text(self.LOGIN_TITLE)
+        return self.get_text(Locators.LOGIN_TITLE)
 
     @allure.step("Check if logo is displayed")
     def is_logo_displayed(self) -> bool:
@@ -176,7 +201,7 @@ class LoginPage(BasePage):
         Returns:
             True if logo is visible, False otherwise
         """
-        return self.is_element_visible(self.LOGIN_LOGO)
+        return self.is_element_visible(Locators.LOGIN_LOGO)
 
     @allure.step("Verify username field is visible")
     def is_username_field_visible(self) -> bool:
@@ -186,7 +211,7 @@ class LoginPage(BasePage):
         Returns:
             True if username field is visible, False otherwise
         """
-        return self.is_element_visible(self.USERNAME_INPUT)
+        return self.is_element_visible(Locators.USERNAME_INPUT)
 
     @allure.step("Verify password field is visible")
     def is_password_field_visible(self) -> bool:
@@ -196,7 +221,7 @@ class LoginPage(BasePage):
         Returns:
             True if password field is visible, False otherwise
         """
-        return self.is_element_visible(self.PASSWORD_INPUT)
+        return self.is_element_visible(Locators.PASSWORD_INPUT)
 
     @allure.step("Verify login button is visible")
     def is_login_button_visible(self) -> bool:
@@ -206,7 +231,7 @@ class LoginPage(BasePage):
         Returns:
             True if login button is visible, False otherwise
         """
-        return self.is_element_visible(self.LOGIN_BUTTON)
+        return self.is_element_visible(Locators.LOGIN_BUTTON)
 
     def clear_username(self) -> 'LoginPage':
         """
@@ -215,7 +240,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        username_field = self.find_element(self.USERNAME_INPUT)
+        username_field = self.find_element(Locators.USERNAME_INPUT)
         username_field.clear()
         return self
 
@@ -226,6 +251,17 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        password_field = self.find_element(self.PASSWORD_INPUT)
+        password_field = self.find_element(Locators.PASSWORD_INPUT)
         password_field.clear()
+        return self
+
+    @allure.step("Navigate to login page")
+    def navigate_to_login(self) -> 'LoginPage':
+        """
+        Navigate to login page using injected config.
+
+        Returns:
+            Self for method chaining
+        """
+        self.navigate_to(self.config.base_url)
         return self

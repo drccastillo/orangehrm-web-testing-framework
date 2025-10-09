@@ -1,6 +1,7 @@
 """
 Configuration module for test framework.
 Loads environment variables and provides configuration settings.
+Implements ConfigInterface for dependency injection.
 """
 import os
 from pathlib import Path
@@ -12,38 +13,136 @@ load_dotenv(dotenv_path=env_path)
 
 
 class Config:
-    """Configuration class containing all test settings."""
+    """
+    Configuration class implementing ConfigInterface.
 
-    # Application URLs and Credentials
-    BASE_URL = os.getenv('URL')
-    USERNAME = os.getenv('ORANGEHRM_USERNAME')
-    PASSWORD = os.getenv('ORANGEHRM_PASSWORD')
+    Provides test settings loaded from environment variables.
+    Supports both class-level access (backward compatible) and instance-level access.
+    """
 
-    # Selenium Grid Configuration
-    SELENIUM_GRID_URL = os.getenv('SELENIUM_GRID_URL')
+    # Class-level attributes (backward compatible)
+    _BASE_URL = os.getenv('URL')
+    _USERNAME = os.getenv('ORANGEHRM_USERNAME')
+    _PASSWORD = os.getenv('ORANGEHRM_PASSWORD')
+    _SELENIUM_GRID_URL = os.getenv('SELENIUM_GRID_URL')
+    _DEFAULT_BROWSER = os.getenv('BROWSER', 'chrome')
+    _HEADLESS = os.getenv('HEADLESS', 'False').lower() == 'true'
+    _DEFAULT_TIMEOUT = int(os.getenv('DEFAULT_TIMEOUT', '10'))
+    _PAGE_LOAD_TIMEOUT = int(os.getenv('PAGE_LOAD_TIMEOUT', '30'))
+    _IMPLICIT_WAIT = int(os.getenv('IMPLICIT_WAIT', '5'))
+    _WINDOW_WIDTH = int(os.getenv('WINDOW_WIDTH', '1920'))
+    _WINDOW_HEIGHT = int(os.getenv('WINDOW_HEIGHT', '1080'))
+    _MAXIMIZE_WINDOW = os.getenv('MAXIMIZE_WINDOW', 'True').lower() == 'true'
+    _SCREENSHOT_ON_FAILURE = os.getenv('SCREENSHOT_ON_FAILURE', 'True').lower() == 'true'
+    _SCREENSHOTS_DIR = Path(__file__).parent.parent.parent / 'reports' / 'screenshots'
+    _REPORTS_DIR = Path(__file__).parent.parent.parent / 'reports'
+    _ALLURE_RESULTS_DIR = _REPORTS_DIR / 'allure-results'
+    _ALLURE_REPORT_DIR = _REPORTS_DIR / 'allure-report'
 
-    # Browser Configuration
-    DEFAULT_BROWSER = os.getenv('BROWSER', 'chrome')
-    HEADLESS = os.getenv('HEADLESS', 'False').lower() == 'true'
+    # Backward compatible class attributes (static access)
+    BASE_URL = _BASE_URL
+    USERNAME = _USERNAME
+    PASSWORD = _PASSWORD
+    SELENIUM_GRID_URL = _SELENIUM_GRID_URL
+    DEFAULT_BROWSER = _DEFAULT_BROWSER
+    HEADLESS = _HEADLESS
+    DEFAULT_TIMEOUT = _DEFAULT_TIMEOUT
+    PAGE_LOAD_TIMEOUT = _PAGE_LOAD_TIMEOUT
+    IMPLICIT_WAIT = _IMPLICIT_WAIT
+    WINDOW_WIDTH = _WINDOW_WIDTH
+    WINDOW_HEIGHT = _WINDOW_HEIGHT
+    MAXIMIZE_WINDOW = _MAXIMIZE_WINDOW
+    SCREENSHOT_ON_FAILURE = _SCREENSHOT_ON_FAILURE
+    SCREENSHOTS_DIR = _SCREENSHOTS_DIR
+    REPORTS_DIR = _REPORTS_DIR
+    ALLURE_RESULTS_DIR = _ALLURE_RESULTS_DIR
+    ALLURE_REPORT_DIR = _ALLURE_REPORT_DIR
 
-    # Timeouts (in seconds)
-    DEFAULT_TIMEOUT = int(os.getenv('DEFAULT_TIMEOUT', '10'))
-    PAGE_LOAD_TIMEOUT = int(os.getenv('PAGE_LOAD_TIMEOUT', '30'))
-    IMPLICIT_WAIT = int(os.getenv('IMPLICIT_WAIT', '5'))
+    # ConfigInterface implementation (instance properties)
+    @property
+    def base_url(self) -> str:
+        """Base URL of the application under test."""
+        return self._BASE_URL
 
-    # Window Configuration
-    WINDOW_WIDTH = int(os.getenv('WINDOW_WIDTH', '1920'))
-    WINDOW_HEIGHT = int(os.getenv('WINDOW_HEIGHT', '1080'))
-    MAXIMIZE_WINDOW = os.getenv('MAXIMIZE_WINDOW', 'True').lower() == 'true'
+    @property
+    def username(self) -> str:
+        """Default username for authentication."""
+        return self._USERNAME
 
-    # Screenshots Configuration
-    SCREENSHOT_ON_FAILURE = os.getenv('SCREENSHOT_ON_FAILURE', 'True').lower() == 'true'
-    SCREENSHOTS_DIR = Path(__file__).parent.parent.parent / 'reports' / 'screenshots'
+    @property
+    def password(self) -> str:
+        """Default password for authentication."""
+        return self._PASSWORD
 
-    # Reports Configuration
-    REPORTS_DIR = Path(__file__).parent.parent.parent / 'reports'
-    ALLURE_RESULTS_DIR = REPORTS_DIR / 'allure-results'
-    ALLURE_REPORT_DIR = REPORTS_DIR / 'allure-report'
+    @property
+    def selenium_grid_url(self) -> str:
+        """Selenium Grid hub URL."""
+        return self._SELENIUM_GRID_URL
+
+    @property
+    def default_browser(self) -> str:
+        """Default browser name (chrome, firefox, edge)."""
+        return self._DEFAULT_BROWSER
+
+    @property
+    def headless(self) -> bool:
+        """Whether to run browser in headless mode."""
+        return self._HEADLESS
+
+    @property
+    def default_timeout(self) -> int:
+        """Default timeout for element waits."""
+        return self._DEFAULT_TIMEOUT
+
+    @property
+    def page_load_timeout(self) -> int:
+        """Timeout for page loads."""
+        return self._PAGE_LOAD_TIMEOUT
+
+    @property
+    def implicit_wait(self) -> int:
+        """Implicit wait timeout (usually 0 for explicit waits only)."""
+        return self._IMPLICIT_WAIT
+
+    @property
+    def window_width(self) -> int:
+        """Browser window width."""
+        return self._WINDOW_WIDTH
+
+    @property
+    def window_height(self) -> int:
+        """Browser window height."""
+        return self._WINDOW_HEIGHT
+
+    @property
+    def maximize_window(self) -> bool:
+        """Whether to maximize browser window."""
+        return self._MAXIMIZE_WINDOW
+
+    @property
+    def screenshot_on_failure(self) -> bool:
+        """Whether to take screenshot on test failure."""
+        return self._SCREENSHOT_ON_FAILURE
+
+    @property
+    def screenshots_dir(self) -> Path:
+        """Directory for storing screenshots."""
+        return self._SCREENSHOTS_DIR
+
+    @property
+    def reports_dir(self) -> Path:
+        """Directory for storing test reports."""
+        return self._REPORTS_DIR
+
+    @property
+    def allure_results_dir(self) -> Path:
+        """Directory for Allure results."""
+        return self._ALLURE_RESULTS_DIR
+
+    @property
+    def allure_report_dir(self) -> Path:
+        """Directory for generated Allure reports."""
+        return self._ALLURE_REPORT_DIR
 
     @classmethod
     def get_selenium_grid_url(cls, browser: str = None) -> str:

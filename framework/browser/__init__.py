@@ -1,10 +1,10 @@
 """
 Browser management module.
-Provides driver factory and manager for Selenium WebDriver.
+Provides driver factory for Selenium WebDriver.
+Driver lifecycle is managed by pytest fixtures in conftest.py
 """
 from .factory import (
     DriverFactory,
-    DriverManager,
     BrowserStrategy,
     ChromeStrategy,
     FirefoxStrategy,
@@ -13,7 +13,6 @@ from .factory import (
 
 __all__ = [
     'DriverFactory',
-    'DriverManager',
     'BrowserStrategy',
     'ChromeStrategy',
     'FirefoxStrategy',
