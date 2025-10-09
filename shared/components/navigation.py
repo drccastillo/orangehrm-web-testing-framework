@@ -154,6 +154,49 @@ class OrangeHRMNavigation(
         self.click(self.USER_DROPDOWN)
         self.click(self.LOGOUT_LINK)
 
+    def navigate_to_module(self, module: str) -> 'OrangeHRMNavigation':
+        """
+        Navigate to a specific module by name (dynamic navigation).
+
+        This method provides a flexible way to navigate to modules using
+        string names instead of calling specific methods. Useful for
+        parameterized tests or data-driven navigation.
+
+        Args:
+            module: Module name (admin, pim, leave, time, recruitment, dashboard)
+                   Case-insensitive
+
+        Returns:
+            Self for method chaining
+
+        Raises:
+            ValueError: If module name is invalid
+
+        Example:
+            >>> nav = OrangeHRMNavigation(driver)
+            >>> nav.navigate_to_module('admin')  # Navigate to admin
+            >>> nav.navigate_to_module('PIM')    # Case-insensitive
+            >>> nav.navigate_to_module('leave').logout()  # Method chaining
+        """
+        self.logger.info(f"Navigating to module: {module}")
+
+        module_map = {
+            'admin': self.navigate_to_admin,
+            'pim': self.navigate_to_pim,
+            'leave': self.navigate_to_leave,
+            'time': self.navigate_to_time,
+            'recruitment': self.navigate_to_recruitment,
+            'dashboard': self.navigate_to_dashboard,
+        }
+
+        module_lower = module.lower()
+        if module_lower in module_map:
+            module_map[module_lower]()
+            return self
+        else:
+            self.logger.error(f"Unknown module: {module}")
+            raise ValueError(f"Unknown module: {module}")
+
     def is_navigation_visible(self) -> bool:
         """
         Check if navigation bar is visible (indicates logged in state).

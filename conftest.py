@@ -203,6 +203,54 @@ def authenticated_session(driver, config_provider):
     return driver
 
 
+@pytest.fixture(scope="function")
+def logout_session(authenticated_session, config_provider):
+    """
+    Provide authenticated session with automatic logout after test.
+
+    This fixture performs login before the test and logout after the test completes.
+    Use this when you need to test features that require a clean session afterwards
+    or when testing logout functionality itself.
+
+    Args:
+        authenticated_session: Authenticated WebDriver fixture
+        config_provider: ConfigInterface fixture
+
+    Yields:
+        Authenticated WebDriver instance
+
+    Example:
+        def test_user_profile(logout_session):
+            # Test runs with authenticated session
+            # Logout happens automatically after test
+            logout_session.get(f"{Config.BASE_URL}/profile")
+
+    Note:
+        This fixture imports OrangeHRMNavigation lazily to avoid circular dependencies.
+        Logout is performed in teardown phase, even if test fails.
+    """
+    from shared.components.navigation import OrangeHRMNavigation
+
+    logger.info("Providing authenticated session with auto-logout")
+
+    # Yield authenticated driver for test
+    yield authenticated_session
+
+    # Teardown: logout after test completes
+    try:
+        logger.info("Performing automatic logout (teardown)")
+        nav = OrangeHRMNavigation(
+            authenticated_session,
+            timeout=config_provider.default_timeout,
+            config=config_provider
+        )
+        nav.logout()
+        logger.info("✓ Logout successful")
+    except Exception as e:
+        logger.warning(f"Logout failed during teardown: {e}")
+        # Don't fail the test if logout fails
+
+
 # ============================================
 # Hooks
 # ============================================
