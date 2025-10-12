@@ -43,9 +43,6 @@ framework/                  # ← Generic infrastructure
 shared/                     # ← OrangeHRM shared components
 └── components/             # ← OrangeHRMNavigation
 ```
-
-**See [CLAUDE.md](CLAUDE.md) and [ARCHITECTURE.md](ARCHITECTURE.md) for complete documentation.**
-
 ---
 
 ## 🚀 Quick Start
@@ -277,7 +274,6 @@ def test_navigation(authenticated_session, config_provider):
 - **Page Object Model**: Mixins + Composition (no inheritance)
 - **Co-located Tests**: Unit tests next to code they test
 
-**See [CLAUDE.md](CLAUDE.md) for complete architecture documentation.**
 
 ---
 
@@ -399,22 +395,6 @@ reports/                    # Test reports (NOT versioned)
 ---
 
 ## 📚 Documentation
-
-### Architecture & Guides
-- **[CLAUDE.md](CLAUDE.md)** - ⭐ Complete architecture & patterns (for AI assistants)
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed architecture documentation
-- [QUICK_START.md](QUICK_START.md) - 5-minute getting started guide
-- [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) - Migration from old structure
-- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
-
-### Testing & Quality
-- [UNIT_TESTS_GUIDE.md](UNIT_TESTS_GUIDE.md) - Unit testing comprehensive guide
-- [UNIT_TESTS_MIGRATION_COMPLETE.md](UNIT_TESTS_MIGRATION_COMPLETE.md) - Unit tests migration summary
-- [LOGS_AND_REPORTS.md](LOGS_AND_REPORTS.md) - Logs and reports documentation
-
-### Design & CI/CD
-- [IMPROVEMENTS.md](IMPROVEMENTS.md) - Design patterns & CI/CD
-- [CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md) - Cleanup actions performed
 
 ### Features
 - [orangehrm/authentication/README.md](orangehrm/authentication/README.md) - Authentication feature
