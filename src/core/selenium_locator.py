@@ -56,30 +56,3 @@ class SeleniumLocator(Locator):
                 f"Supported strategies: {list(self.STRATEGY_MAP.keys())}"
             )
         return (by_type, self.value)
-
-    @classmethod
-    def from_tuple(cls, locator_tuple: tuple[str, str], description: str = "") -> "SeleniumLocator":
-        """
-        Create SeleniumLocator from legacy tuple format.
-
-        Utility method for migrating existing code.
-
-        Args:
-            locator_tuple: Legacy (By.X, "value") tuple
-            description: Optional description
-
-        Returns:
-            SeleniumLocator instance
-
-        Example:
-            >>> legacy = (By.ID, "username")
-            >>> locator = SeleniumLocator.from_tuple(legacy, "Username field")
-        """
-        by_strategy, value = locator_tuple
-
-        # Reverse lookup: By.X -> LocatorStrategy
-        for strategy, by_const in cls.STRATEGY_MAP.items():
-            if by_const == by_strategy:
-                return cls(strategy, value, description)
-
-        raise ValueError(f"Unsupported Selenium By strategy: {by_strategy}")

@@ -20,9 +20,6 @@ from utils.exceptions import (
 )
 from utils.logger import TestLogger
 
-# Type alias for backward compatibility
-LocatorType = tuple[str, str] | SeleniumLocator
-
 
 class BasePage:
     """
@@ -50,119 +47,85 @@ class BasePage:
         self.logger = TestLogger.get_logger(self.__class__.__name__)
         self.highlighter = highlighter or ElementHighlighter(driver)
 
-    def _normalize_locator(self, locator: LocatorType) -> tuple[str, str]:
-        """
-        Convert SeleniumLocator to native tuple format.
-
-        Args:
-            locator: Either a SeleniumLocator or tuple
-
-        Returns:
-            Native Selenium tuple format (By.STRATEGY, "value")
-        """
-        if isinstance(locator, SeleniumLocator):
-            return locator.to_native()
-        return locator
-
-    def find_element(self, locator: LocatorType) -> WebElement:
+    def find_element(self, locator: SeleniumLocator) -> WebElement:
         """
         Find a single element using explicit wait.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             WebElement if found
 
         Raises:
-            InvalidParameterException: If locator is None or invalid
             ElementNotFoundException: If element is not found within timeout
         """
-        native_locator = self._normalize_locator(locator)
-
-        if not native_locator or not isinstance(native_locator, tuple) or len(native_locator) != 2:
-            raise InvalidParameterException(
-                "locator", locator, "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        native_locator = locator.to_native()
 
         try:
             element = self.wait.until(
                 EC.presence_of_element_located(native_locator),
-                message=f"Element not found: {native_locator}",
+                message=f"Element not found: {locator.description}",
             )
             return element
         except TimeoutException as e:
-            self.logger.error(f"Timeout waiting for element: {native_locator}")
+            self.logger.error(f"Timeout waiting for element: {locator.description}")
             raise ElementNotFoundException(
-                native_locator, f"Timeout waiting for element: {native_locator}"
+                native_locator, f"Timeout waiting for element: {locator.description}"
             ) from e
 
-    def find_elements(self, locator: LocatorType) -> list[WebElement]:
+    def find_elements(self, locator: SeleniumLocator) -> list[WebElement]:
         """
         Find multiple elements using explicit wait.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             List of WebElements (empty list if none found)
-
-        Raises:
-            InvalidParameterException: If locator is None or invalid
         """
-        native_locator = self._normalize_locator(locator)
-
-        if not native_locator or not isinstance(native_locator, tuple) or len(native_locator) != 2:
-            raise InvalidParameterException(
-                "locator", locator, "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        native_locator = locator.to_native()
 
         try:
             elements = self.wait.until(
                 EC.presence_of_all_elements_located(native_locator),
-                message=f"Elements not found: {native_locator}",
+                message=f"Elements not found: {locator.description}",
             )
             return elements
         except TimeoutException:
             return []
 
-    def click(self, locator: LocatorType) -> None:
+    def click(self, locator: SeleniumLocator) -> None:
         """
         Click on an element after waiting for it to be clickable.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Raises:
-            InvalidParameterException: If locator is None or invalid
             ElementNotClickableException: If element is not clickable
 
         Example:
-            >>> page.click((By.ID, "submit-button"))
+            >>> page.click(LoginLocators.SUBMIT_BUTTON)
         """
-        native_locator = self._normalize_locator(locator)
-
-        if not native_locator or not isinstance(native_locator, tuple) or len(native_locator) != 2:
-            raise InvalidParameterException(
-                "locator", locator, "Locator must be a tuple of (By.STRATEGY, 'value')"
-            )
+        native_locator = locator.to_native()
 
         try:
             element = self.wait.until(
                 EC.element_to_be_clickable(native_locator),
-                message=f"Element not clickable: {native_locator}",
+                message=f"Element not clickable: {locator.description}",
             )
             element.click()
         except TimeoutException as e:
-            self.logger.error(f"Element not clickable: {native_locator}")
+            self.logger.error(f"Element not clickable: {locator.description}")
             raise ElementNotClickableException(native_locator) from e
 
-    def send_keys(self, locator: LocatorType, text: str, clear_first: bool = True) -> None:
+    def send_keys(self, locator: SeleniumLocator, text: str, clear_first: bool = True) -> None:
         """
         Type text into an input field.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
             text: Text to type
             clear_first: Whether to clear the field before typing
 
@@ -181,28 +144,28 @@ class BasePage:
             element.clear()
         element.send_keys(text)
 
-    def get_text(self, locator: LocatorType) -> str:
+    def get_text(self, locator: SeleniumLocator) -> str:
         """
         Get the text content of an element.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             Text content of the element
 
         Example:
-            >>> error_text = page.get_text((By.CSS_SELECTOR, ".error-message"))
+            >>> error_text = page.get_text(LoginLocators.ERROR_MESSAGE)
         """
         element = self.find_element(locator)
         return element.text
 
-    def get_attribute(self, locator: LocatorType, attribute: str) -> str:
+    def get_attribute(self, locator: SeleniumLocator, attribute: str) -> str:
         """
         Get an attribute value from an element.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
             attribute: Name of the attribute
 
         Returns:
@@ -219,33 +182,33 @@ class BasePage:
         element = self.find_element(locator)
         return element.get_attribute(attribute)
 
-    def is_element_visible(self, locator: LocatorType) -> bool:
+    def is_element_visible(self, locator: SeleniumLocator) -> bool:
         """
         Check if an element is visible on the page.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             True if element is visible, False otherwise
 
         Example:
-            >>> if page.is_element_visible((By.ID, "error-message")):
+            >>> if page.is_element_visible(LoginLocators.ERROR_MESSAGE):
             ...     print("Error displayed")
         """
-        native_locator = self._normalize_locator(locator)
+        native_locator = locator.to_native()
         try:
             self.wait.until(EC.visibility_of_element_located(native_locator))
             return True
         except TimeoutException:
             return False
 
-    def is_element_present(self, locator: LocatorType) -> bool:
+    def is_element_present(self, locator: SeleniumLocator) -> bool:
         """
         Check if an element is present in the DOM.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             True if element is present, False otherwise
@@ -256,17 +219,17 @@ class BasePage:
         except (TimeoutException, NoSuchElementException):
             return False
 
-    def wait_for_element_to_disappear(self, locator: LocatorType) -> bool:
+    def wait_for_element_to_disappear(self, locator: SeleniumLocator) -> bool:
         """
         Wait for an element to disappear from the page.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
 
         Returns:
             True if element disappeared, False otherwise
         """
-        native_locator = self._normalize_locator(locator)
+        native_locator = locator.to_native()
         try:
             self.wait.until(EC.invisibility_of_element_located(native_locator))
             return True
@@ -313,12 +276,12 @@ class BasePage:
 
         self.driver.get(url)
 
-    def switch_to_frame(self, locator: LocatorType) -> None:
+    def switch_to_frame(self, locator: SeleniumLocator) -> None:
         """
         Switch to an iframe.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
         """
         frame = self.find_element(locator)
         self.driver.switch_to.frame(frame)
@@ -348,19 +311,19 @@ class BasePage:
 
         return self.driver.execute_script(script, *args)
 
-    def scroll_to_element(self, locator: LocatorType) -> None:
+    def scroll_to_element(self, locator: SeleniumLocator) -> None:
         """
         Scroll to an element on the page.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
         """
         element = self.find_element(locator)
         self.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def highlight_element(
         self,
-        locator: LocatorType,
+        locator: SeleniumLocator,
         duration: int | None = None,
         color: str | None = None,
         border: str | None = None,
@@ -369,7 +332,7 @@ class BasePage:
         Highlight an element on the page for visual debugging.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
             duration: Duration to highlight in seconds (default: 2)
             color: Border color for highlighting (default: "red")
             border: Border style (default: "3px solid")
@@ -381,13 +344,13 @@ class BasePage:
         self.highlighter.highlight_element(element, duration=duration, color=color, border=border)
 
     def blink_element(
-        self, locator: LocatorType, times: int | None = None, color: str | None = None
+        self, locator: SeleniumLocator, times: int | None = None, color: str | None = None
     ) -> None:
         """
         Blink an element multiple times for visual debugging.
 
         Args:
-            locator: SeleniumLocator or tuple containing (By.STRATEGY, "locator_value")
+            locator: SeleniumLocator value object
             times: Number of times to blink (default: 3)
             color: Border color for blinking (default: "red")
 
