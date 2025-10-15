@@ -1,27 +1,53 @@
 """
-Locators for the Login Page.
-Centralizes all element locators for easier maintenance.
+Locators for the Login Page using value objects (Phase 2.1).
+Replaces primitive tuples with rich SeleniumLocator objects.
 """
 
-from selenium.webdriver.common.by import By
+from src.core.locator import LocatorStrategy
+from src.core.selenium_locator import SeleniumLocator
 
 
 class LoginLocators:
-    """Locator constants for the Login Page."""
+    """
+    Locator value objects for the Login Page.
+
+    Uses SeleniumLocator instead of primitive tuples for:
+    - Type safety
+    - Self-documentation
+    - Framework-agnostic representation
+    - Validation at creation time
+
+    Example:
+        >>> LoginLocators.USERNAME_INPUT
+        SeleniumLocator(Username input field)
+
+        >>> LoginLocators.USERNAME_INPUT.to_native()
+        (By.NAME, "username")
+    """
 
     # Input fields
-    USERNAME_INPUT: tuple[str, str] = (By.NAME, "username")
-    PASSWORD_INPUT: tuple[str, str] = (By.NAME, "password")
+    USERNAME_INPUT = SeleniumLocator(LocatorStrategy.NAME, "username", "Username input field")
+    PASSWORD_INPUT = SeleniumLocator(LocatorStrategy.NAME, "password", "Password input field")
 
     # Buttons
-    LOGIN_BUTTON: tuple[str, str] = (By.CSS_SELECTOR, "button[type='submit']")
+    LOGIN_BUTTON = SeleniumLocator(
+        LocatorStrategy.CSS, "button[type='submit']", "Login submit button"
+    )
 
     # Links
-    FORGOT_PASSWORD_LINK: tuple[str, str] = (By.CSS_SELECTOR, ".orangehrm-login-forgot-header")
+    FORGOT_PASSWORD_LINK = SeleniumLocator(
+        LocatorStrategy.CSS,
+        ".orangehrm-login-forgot-header",
+        "Forgot password link",
+    )
 
     # Messages and alerts
-    ERROR_MESSAGE: tuple[str, str] = (By.CSS_SELECTOR, ".oxd-alert-content-text")
+    ERROR_MESSAGE = SeleniumLocator(
+        LocatorStrategy.CSS, ".oxd-alert-content-text", "Login error message"
+    )
 
     # Branding elements
-    LOGIN_LOGO: tuple[str, str] = (By.CSS_SELECTOR, ".orangehrm-login-branding img")
-    LOGIN_TITLE: tuple[str, str] = (By.CSS_SELECTOR, ".orangehrm-login-title")
+    LOGIN_LOGO = SeleniumLocator(
+        LocatorStrategy.CSS, ".orangehrm-login-branding img", "OrangeHRM logo"
+    )
+    LOGIN_TITLE = SeleniumLocator(LocatorStrategy.CSS, ".orangehrm-login-title", "Login page title")

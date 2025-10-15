@@ -112,13 +112,18 @@ def _get_browser_options(browser_name: str, headless: bool):
     Get browser-specific options.
 
     Args:
-        browser_name: Name of the browser
+        browser_name: Name of the browser (chrome, chromium, firefox, edge)
         headless: Whether to run in headless mode
 
     Returns:
         Browser options object
     """
-    if browser_name.lower() == "chrome":
+    # Normalize browser name (pytest-playwright uses "chromium", Selenium uses "chrome")
+    browser_lower = browser_name.lower()
+    if browser_lower == "chromium":
+        browser_lower = "chrome"
+
+    if browser_lower == "chrome":
         options = ChromeOptions()
         if headless:
             options.add_argument("--headless=new")
@@ -127,13 +132,13 @@ def _get_browser_options(browser_name: str, headless: bool):
         options.add_argument("--disable-gpu")
         return options
 
-    elif browser_name.lower() == "firefox":
+    elif browser_lower == "firefox":
         options = FirefoxOptions()
         if headless:
             options.add_argument("--headless")
         return options
 
-    elif browser_name.lower() == "edge":
+    elif browser_lower == "edge":
         options = EdgeOptions()
         if headless:
             options.add_argument("--headless")
@@ -191,13 +196,11 @@ def pytest_addoption(parser):
 
     Args:
         parser: Pytest parser
+
+    Note:
+        --browser option is provided by pytest-playwright plugin,
+        so we don't need to register it here.
     """
-    parser.addoption(
-        "--browser",
-        action="store",
-        default=Config.DEFAULT_BROWSER,
-        help="Browser to use for tests: chrome, firefox, edge",
-    )
     parser.addoption(
         "--headless",
         action="store_true",
