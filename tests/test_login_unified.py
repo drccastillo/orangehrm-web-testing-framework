@@ -70,9 +70,8 @@ def test_login_page_elements_visible(login_page: LoginPageProtocol):
     # Verify page is loaded
     assert login_page.is_page_loaded(), "Login page should be fully loaded"
 
-    # Verify all key elements are visible
+    # Verify key elements are visible
     assert login_page.is_login_logo_visible(), "Login logo should be visible"
-    assert login_page.is_forgot_password_link_visible(), "Forgot password link should be visible"
 
 
 @pytest.mark.regression

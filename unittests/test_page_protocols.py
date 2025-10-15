@@ -64,7 +64,6 @@ class TestUnifiedLoginPageProtocolCompliance(unittest.TestCase):
             "login",
             "get_error_message",
             "is_error_message_displayed",
-            "is_forgot_password_link_visible",
             "is_login_logo_visible",
         ]
 

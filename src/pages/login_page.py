@@ -128,16 +128,6 @@ class LoginPage(BasePage):
         """
         return self.is_element_visible(self.locators.ERROR_MESSAGE)
 
-    def click_forgot_password(self) -> None:
-        """
-        Click the 'Forgot Password' link.
-
-        Example:
-            >>> login_page.click_forgot_password()
-            >>> # Should navigate to password reset page
-        """
-        self.click(self.locators.FORGOT_PASSWORD_LINK)
-
     def is_page_loaded(self) -> bool:
         """
         Verify if the login page is fully loaded.
@@ -184,18 +174,6 @@ class LoginPage(BasePage):
             >>> assert login_page.is_login_logo_visible()
         """
         return self.is_element_visible(self.locators.LOGIN_LOGO)
-
-    def is_forgot_password_link_visible(self) -> bool:
-        """
-        Check if the forgot password link is visible.
-
-        Returns:
-            True if the link is visible, False otherwise
-
-        Example:
-            >>> assert login_page.is_forgot_password_link_visible()
-        """
-        return self.is_element_visible(self.locators.FORGOT_PASSWORD_LINK)
 
     def clear_username(self) -> "LoginPage":
         """

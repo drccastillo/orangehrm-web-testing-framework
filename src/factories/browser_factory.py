@@ -301,8 +301,8 @@ class BrowserFactory:
             )
         page = context.new_page()
 
-        # Wrap in adapter
-        return PlaywrightBrowserAdapter(page, timeout=timeout)
+        # Wrap in adapter and pass playwright instance for proper cleanup
+        return PlaywrightBrowserAdapter(page, timeout=timeout, playwright=playwright)
 
     @classmethod
     def get_supported_browsers(cls) -> list[str]:

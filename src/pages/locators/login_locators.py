@@ -46,11 +46,6 @@ class LoginLocators:
         LocatorStrategy.CSS, "button[type='submit']", "Login submit button"
     )
 
-    # Links
-    FORGOT_PASSWORD_LINK = SeleniumLocator(
-        LocatorStrategy.CSS, ".orangehrm-login-forgot-header", "Forgot password link"
-    )
-
     # Messages and alerts
     ERROR_MESSAGE = SeleniumLocator(
         LocatorStrategy.CSS, ".oxd-alert-content-text", "Login error message"

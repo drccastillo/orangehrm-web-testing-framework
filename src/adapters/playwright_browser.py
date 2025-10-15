@@ -7,7 +7,7 @@ compatible with BrowserProtocol.
 
 from typing import Any
 
-from playwright.sync_api import Page
+from playwright.sync_api import Page, Playwright
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from selenium.webdriver.common.by import By
 
@@ -32,25 +32,28 @@ class PlaywrightBrowserAdapter:
         page: Playwright Page instance
         timeout: Default timeout for operations in seconds
         logger: Logger instance for debugging
+        playwright: Playwright instance (for cleanup)
 
     Example:
         >>> from playwright.sync_api import sync_playwright
-        >>> with sync_playwright() as p:
-        ...     browser = p.chromium.launch()
-        ...     page = browser.new_page()
-        ...     adapter = PlaywrightBrowserAdapter(page, timeout=10)
-        ...     adapter.navigate("https://example.com")
+        >>> pw = sync_playwright().start()
+        >>> browser = pw.chromium.launch()
+        >>> page = browser.new_page()
+        >>> adapter = PlaywrightBrowserAdapter(page, timeout=10, playwright=pw)
+        >>> adapter.navigate("https://example.com")
     """
 
-    def __init__(self, page: Page, timeout: int = 10):
+    def __init__(self, page: Page, timeout: int = 10, playwright: Playwright | None = None):
         """
         Initialize the Playwright browser adapter.
 
         Args:
             page: Playwright Page instance
             timeout: Default timeout for operations in seconds
+            playwright: Playwright instance (optional, for proper cleanup)
         """
         self._page = page
+        self._playwright = playwright
         self._timeout_seconds = timeout
         self._timeout_ms = timeout * 1000  # Playwright uses milliseconds
         self._page.set_default_timeout(self._timeout_ms)
@@ -272,6 +275,10 @@ class PlaywrightBrowserAdapter:
         # Close the browser if available
         if self._page.context and self._page.context.browser:
             self._page.context.browser.close()
+        # Close the Playwright instance if available
+        if self._playwright:
+            self._playwright.stop()
+            self.logger.debug("Playwright instance stopped")
 
     def switch_to_frame(self, locator: Locator) -> None:
         """

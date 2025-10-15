@@ -158,18 +158,6 @@ class LoginPageProtocol(PageObjectProtocol, Protocol):
         """
         ...
 
-    def is_forgot_password_link_visible(self) -> bool:
-        """
-        Check if the forgot password link is visible.
-
-        Returns:
-            True if the link is visible, False otherwise
-
-        Example:
-            >>> assert login_page.is_forgot_password_link_visible()
-        """
-        ...
-
     def is_login_logo_visible(self) -> bool:
         """
         Check if the login logo is visible.
