@@ -11,37 +11,45 @@ Web test automation framework for OrangeHRM using Python, Pytest, Selenium, and 
 - **Singleton Pattern**: Centralized configuration management
 - **Method Chaining**: Fluent interface for page actions
 
-### Project Structure:
+### Project Structure (Unified Architecture):
 ```
 web-testing-framework/
 ├── src/
+│   ├── core/                       # Core abstractions
+│   │   ├── browser_protocol.py    # Unified browser interface
+│   │   ├── element_protocol.py    # Unified element interface
+│   │   └── locator.py              # Locator value objects
+│   ├── adapters/                   # Framework adapters
+│   │   ├── selenium_browser.py    # Selenium adapter
+│   │   ├── playwright_browser.py  # Playwright adapter
+│   │   ├── selenium_element.py    # Selenium element adapter
+│   │   └── playwright_element.py  # Playwright element adapter
+│   ├── factories/
+│   │   └── browser_factory.py     # Browser creation with Strategy pattern
+│   ├── pages/                      # Unified page objects
+│   │   ├── base_page.py           # Works with BOTH frameworks
+│   │   ├── login_page.py          # Works with BOTH frameworks
+│   │   ├── protocols.py           # Page protocols
+│   │   └── locators/
+│   │       └── login_locators.py  # Framework-agnostic locators
 │   ├── config/
-│   │   ├── __init__.py
-│   │   └── config.py              # Centralized configuration
-│   ├── pages_selenium/
-│   │   ├── __init__.py
-│   │   ├── base_page.py           # Base class with common methods
-│   │   └── login_page.py          # Page Object Model for login
-│   └── pages_playwright/
-│       ├── __init__.py
-│       ├── base_page_pw.py        # Base class for Playwright
-│       └── login_page_pw.py       # Page Object for Playwright
-├── tests_selenium/
-│   ├── __init__.py
-│   ├── conftest.py                # Pytest fixtures and configuration
-│   └── test_login.py              # Login tests
-├── tests_playwright/
-│   ├── conftest.py                # Playwright fixtures
-│   └── test_login_pw.py           # Playwright tests
-├── utils/
-│   └── __init__.py
-├── reports_selenium/               # Selenium HTML reports and screenshots
-├── reports_playwright/             # Playwright reports, videos, and traces
+│   │   ├── protocols.py           # ConfigService protocol
+│   │   └── environment_config.py  # Config implementation
+│   └── utils/
+│       ├── logger.py              # Logging system
+│       ├── exceptions.py          # Custom exceptions
+│       └── element_highlighter.py # Visual debugging
+├── tests/                          # Unified tests
+│   ├── conftest.py                # Supports --framework flag
+│   └── test_login_unified.py      # Works with both Selenium & Playwright
+├── unittests/                      # Framework unit tests (142 tests)
+├── reports/                        # Test reports and screenshots
+├── logs/                           # Daily test logs
 ├── .env                            # Environment variables
-├── .gitignore
-├── compose.yml                     # Selenium Grid with Chrome, Firefox, Edge
-├── pyproject.toml                  # Dependencies and configuration (uv)
-└── README.md
+├── compose.yml                     # Selenium Grid (Docker)
+├── pyproject.toml                  # Dependencies (uv)
+├── CHECKPOINT.md                   # Quick status reference
+└── REFACTORING_SUMMARY.md         # Complete refactoring documentation
 ```
 
 ## 🚀 Initial Setup
@@ -80,185 +88,113 @@ Verify the grid is running:
 - Hub: http://localhost:4444
 - Grid Console: http://localhost:4444/ui
 
-## 🧪 Running Tests
+## 🧪 Running Tests (Unified Architecture)
 
-### Run all tests:
+### Run with Selenium (Default):
 ```bash
-uv run pytest
+# All tests
+uv run pytest tests/ -p no:playwright
+
+# Specific test file
+uv run pytest tests/test_login_unified.py -p no:playwright
+
+# With specific browser
+uv run pytest tests/ --framework=selenium --browser=firefox -p no:playwright
+
+# Headless mode
+uv run pytest tests/ --framework=selenium --headless -p no:playwright
+
+# With markers
+uv run pytest tests/ -m smoke -p no:playwright
 ```
 
-### Run specific tests:
+### Run with Playwright:
 ```bash
-# Only login tests
-uv run pytest tests/test_login.py
+# All tests
+uv run pytest tests/ --framework=playwright -p no:playwright
 
-# Tests with 'smoke' marker
-uv run pytest -m smoke
+# With specific browser (chromium, firefox, webkit)
+uv run pytest tests/ --framework=playwright --browser=chromium -p no:playwright
 
-# Tests with 'login' marker
-uv run pytest -m login
+# Headless mode (default for Playwright)
+uv run pytest tests/ --framework=playwright --headless -p no:playwright
 
-# Regression tests
-uv run pytest -m regression
+# With markers
+uv run pytest tests/ --framework=playwright -m smoke -p no:playwright
 ```
 
-### Run in different browsers:
+### Run Unit Tests:
 ```bash
-# Chrome (default)
-uv run pytest --browser=chrome
+# All 142 unit tests
+uv run pytest unittests/ -v
 
-# Firefox
-uv run pytest --browser=firefox
-
-# Edge
-uv run pytest --browser=edge
+# Specific test module
+uv run pytest unittests/test_browser_adapters.py -v
+uv run pytest unittests/test_page_protocols.py -v
 ```
 
-### Run in headless mode:
+### Run in parallel:
 ```bash
-uv run pytest --headless
-```
-
-### Run tests in parallel:
-```bash
-uv run pytest -n auto
+uv run pytest tests/ -n auto -p no:playwright
 ```
 
 ### Generate HTML report:
 ```bash
-uv run pytest --html=reports_selenium/report.html --self-contained-html
+uv run pytest tests/ --html=reports/report.html --self-contained-html -p no:playwright
 ```
 
-## 🎭 Playwright Framework (New)
+## 🎯 Unified Architecture - Key Features
 
-### Overview
-In addition to the Selenium Grid framework, the project now includes a complete implementation with **Playwright**, which offers better performance, integrated auto-waiting, and advanced debugging tools.
+### One Codebase, Two Frameworks!
 
-### Playwright Structure:
-```
-src/pages_playwright/
-├── base_page_pw.py           # Base Page for Playwright
-├── login_page_pw.py           # Login Page using Playwright
-└── locators/
-    └── login_locators_pw.py   # Locators (string selectors)
+This framework uses a **unified architecture** that allows the same page objects and tests to work with **both Selenium and Playwright**:
 
-tests_playwright/
-├── conftest.py                # Playwright fixtures
-├── test_login_pw.py           # Complete tests
-└── test_login_simple_pw.py    # Simple tests
+**Key Benefits:**
+- ✅ **90% Less Code Duplication**: Single page objects work with both frameworks
+- ✅ **Switch Frameworks via Flag**: `--framework=selenium` or `--framework=playwright`
+- ✅ **Protocol-Based Design**: Type-safe interfaces with structural typing
+- ✅ **Adapter Pattern**: Clean separation between framework specifics and business logic
+- ✅ **Single Source of Truth**: Maintain one LoginPage instead of two
 
-reports_playwright/
-├── report.html                # HTML report
-├── screenshots/               # Screenshots on failures
-├── videos/                    # Test videos
-└── traces/                    # Traces for debugging
-```
+**Architecture Layers:**
 
-### Playwright Installation:
+1. **BrowserProtocol**: Unified interface for browser operations
+2. **Adapters**: Convert framework-specific APIs (WebDriver/Page) to BrowserProtocol
+3. **Unified Pages**: Single page objects using BrowserProtocol
+4. **Framework-Agnostic Tests**: Tests work with any framework via `--framework` flag
 
-Playwright is already installed with the project dependencies, but you need to install the browsers:
-
-```bash
-# Browsers were already installed during setup
-# If you need to reinstall them:
-uv run playwright install chromium firefox
-```
-
-### Running Tests with Playwright:
-
-```bash
-# Run all Playwright tests
-uv run pytest tests_playwright/ -v
-
-# Run with specific browser (chromium, firefox, webkit)
-uv run pytest tests_playwright/ --browser chromium
-uv run pytest tests_playwright/ --browser firefox
-
-# Run in headed mode (see the browser)
-uv run pytest tests_playwright/ --headed
-
-# Generate HTML report
-uv run pytest tests_playwright/ --html=reports_playwright/report.html --self-contained-html
-
-# Run with specific markers
-uv run pytest tests_playwright/ -m smoke
-uv run pytest tests_playwright/ -m playwright
-
-# Run in parallel
-uv run pytest tests_playwright/ -n auto
-
-# Run with custom URL
-URL="https://opensource-demo.orangehrmlive.com" uv run pytest tests_playwright/
-```
-
-### Playwright Features:
-
-**Advantages over Selenium:**
-- ✅ **Auto-waiting**: No need for complex explicit waits
-- ✅ **Faster**: Better performance than Selenium
-- ✅ **Multi-browser**: Chromium, Firefox, WebKit (Safari)
-- ✅ **Trace Viewer**: Time-travel debugging
-- ✅ **Videos**: Automatic test recording
-- ✅ **Network Interception**: Intercept and mock requests
-- ✅ **Multi-context**: Multiple simultaneous browser sessions
-
-**Key differences with Selenium:**
-
-| Aspect | Selenium | Playwright |
-|---------|----------|------------|
-| Locators | Tuples `(By.ID, "value")` | Strings `"#value"` |
-| Waits | Explicit (WebDriverWait) | Integrated auto-waiting |
-| Click | `element.click()` | `page.click(selector)` |
-| Input | `send_keys(text)` | `fill(selector, text)` |
-| Setup | Selenium Grid (Docker) | Local (simpler) |
-
-### Example Test with Playwright:
+**Example - Same Test, Both Frameworks:**
 
 ```python
 import pytest
-from src.config.config import Config
-from src.pages_playwright.login_page_pw import LoginPagePW
+from src.pages.protocols import LoginPageProtocol
 
-@pytest.mark.playwright
 @pytest.mark.smoke
-def test_login(login_page_pw: LoginPagePW):
-    # The login_page_pw fixture already navigates to the page
-    login_page_pw.login(Config.USERNAME, Config.PASSWORD)
+def test_login(login_page: LoginPageProtocol, config_service):
+    """This test works with BOTH Selenium and Playwright!"""
 
-    # Playwright waits automatically
-    assert "dashboard" in login_page_pw.get_current_url()
+    login_page.login(config_service.username, config_service.password)
+
+    assert "dashboard" in login_page.get_current_url()
+
+# Run with Selenium:
+# pytest tests/test_login_unified.py --framework=selenium -p no:playwright
+
+# Run with Playwright:
+# pytest tests/test_login_unified.py --framework=playwright -p no:playwright
 ```
 
-### Debugging with Playwright:
+**Locator Conversion Innovation:**
 
-```bash
-# Generate traces for debugging
-uv run pytest tests_playwright/ --tracing on
-
-# View trace with Playwright Inspector
-uv run playwright show-trace reports_playwright/traces/trace.zip
-
-# Interactive debug mode
-PWDEBUG=1 uv run pytest tests_playwright/test_login_simple_pw.py
-
-# View videos of executed tests
-ls reports_playwright/videos/
-```
-
-### Create a New Page Object for Playwright:
+The framework automatically converts Selenium-style locators to Playwright selectors:
 
 ```python
-from src.pages_playwright.base_page_pw import BasePagePW
+# Define once (Selenium format)
+USERNAME = SeleniumLocator(LocatorStrategy.NAME, "username", "Username field")
 
-class DashboardPagePW(BasePagePW):
-    # Locators (strings instead of tuples)
-    WELCOME_TEXT = ".oxd-topbar-header-breadcrumb"
-
-    def __init__(self, page, timeout=10):
-        super().__init__(page, timeout)
-
-    def get_welcome_message(self):
-        return self.get_text(self.WELCOME_TEXT)
+# Selenium uses: (By.NAME, "username")
+# Playwright converts to: "[name='username']"
+# Both work automatically!
 ```
 
 ## 📊 Allure Reports
@@ -428,46 +364,76 @@ allure serve reports_playwright/allure-results
 allure open reports_playwright/allure-report
 ```
 
-## 📝 Writing New Tests
+## 📝 Writing New Tests (Unified Architecture)
 
-### Example using LoginPage:
+### Example using Unified LoginPage:
 
 ```python
 import pytest
-from src.config.config import Config
-from src.pages_selenium.login_page import LoginPage
+from src.pages.protocols import LoginPageProtocol
+from src.config.protocols import ConfigService
 
 @pytest.mark.smoke
-def test_my_login(login_page: LoginPage):
+def test_my_login(login_page: LoginPageProtocol, config_service: ConfigService):
+    """
+    This test works with BOTH Selenium and Playwright!
+    No framework-specific code needed.
+    """
     # The 'login_page' fixture already navigates to the page
 
     # Option 1: Direct method
-    login_page.login(Config.USERNAME, Config.PASSWORD)
+    login_page.login(config_service.username, config_service.password)
 
-    # Option 2: Method chaining
-    login_page.enter_username(Config.USERNAME)\
-              .enter_password(Config.PASSWORD)
+    # Option 2: Method chaining (fluent interface)
+    login_page.enter_username(config_service.username)\
+              .enter_password(config_service.password)
     login_page.click_login_button()
 
     # Verifications
     assert "dashboard" in login_page.get_current_url()
 ```
 
-### Create a New Page Object:
+### Create a New Unified Page Object:
 
 ```python
-from selenium.webdriver.common.by import By
-from src.pages_selenium.base_page import BasePage
+from src.core.locator import LocatorStrategy
+from src.core.selenium_locator import SeleniumLocator
+from src.core.browser_protocol import BrowserProtocol
+from src.pages.base_page import BasePage
+
+class DashboardLocators:
+    """Framework-agnostic locators"""
+    WELCOME_TEXT = SeleniumLocator(
+        LocatorStrategy.CSS,
+        ".oxd-topbar-header-breadcrumb",
+        "Welcome message text"
+    )
+    LOGOUT_BUTTON = SeleniumLocator(
+        LocatorStrategy.XPATH,
+        "//a[@href='/web/index.php/auth/logout']",
+        "Logout button"
+    )
 
 class DashboardPage(BasePage):
-    # Locators
-    WELCOME_TEXT = (By.CSS_SELECTOR, ".oxd-topbar-header-breadcrumb")
+    """Unified Dashboard page - works with both Selenium and Playwright!"""
 
-    def __init__(self, driver, timeout=10):
-        super().__init__(driver, timeout)
+    def __init__(self, browser: BrowserProtocol, timeout: int = 10):
+        super().__init__(browser, timeout)
+        self.locators = DashboardLocators
 
-    def get_welcome_message(self):
-        return self.get_text(self.WELCOME_TEXT)
+    def get_welcome_message(self) -> str:
+        """Get the welcome message text"""
+        return self.get_text(self.locators.WELCOME_TEXT)
+
+    def logout(self) -> None:
+        """Click the logout button"""
+        self.click(self.locators.LOGOUT_BUTTON)
+
+# Use it in tests - works with both frameworks!
+def test_dashboard(browser):  # browser can be Selenium or Playwright adapter
+    dashboard = DashboardPage(browser)
+    message = dashboard.get_welcome_message()
+    assert "Dashboard" in message
 ```
 
 ## 🔧 Advanced Configuration
