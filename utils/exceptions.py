@@ -3,10 +3,11 @@ Custom exceptions for the test automation framework.
 Provides specific error types for better error handling and debugging.
 """
 
+from typing import Any
 
-class FrameworkException(Exception):
+
+class FrameworkException(Exception):  # noqa: N818
     """Base exception for all framework-related errors."""
-    pass
 
 
 class ElementNotFoundException(FrameworkException):
@@ -48,7 +49,7 @@ class PageNotLoadedException(FrameworkException):
 class InvalidParameterException(FrameworkException):
     """Raised when an invalid parameter is passed to a method."""
 
-    def __init__(self, parameter_name: str, value: any, message: str = None):
+    def __init__(self, parameter_name: str, value: Any, message: str = None):
         self.parameter_name = parameter_name
         self.value = value
         self.message = message or f"Invalid parameter '{parameter_name}': {value}"

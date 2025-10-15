@@ -2,15 +2,18 @@
 Unit tests for custom exception classes.
 Tests exception hierarchy and error messages.
 """
+
 import unittest
+
 from selenium.webdriver.common.by import By
+
 from utils.exceptions import (
-    FrameworkException,
-    ElementNotFoundException,
+    ConfigurationException,
     ElementNotClickableException,
+    ElementNotFoundException,
+    FrameworkException,
     InvalidParameterException,
     PageNotLoadedException,
-    ConfigurationException
 )
 
 
@@ -143,5 +146,5 @@ class TestConfigurationException(unittest.TestCase):
         self.assertIn("BROWSER", str(error))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

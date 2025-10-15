@@ -1,10 +1,13 @@
 """
 Demo test with slow execution to view in VNC.
 """
-import pytest
+
 import time
+
+import pytest
+
 from src.config.config import Config
-from src.pages.login_page import LoginPage
+from src.pages_selenium.login_page import LoginPage
 from utils.logger import TestLogger
 
 # Initialize logger

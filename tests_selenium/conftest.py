@@ -2,17 +2,18 @@
 Pytest configuration and fixtures for the test framework.
 Contains setup and teardown logic for tests.
 """
-import pytest
+
 from datetime import datetime
-from pathlib import Path
+
+import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
-from src.config.config import Config
-from src.pages.login_page import LoginPage
-from utils.logger import TestLogger
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+from src.config.config import Config
+from src.pages_selenium.login_page import LoginPage
+from utils.logger import TestLogger
 
 # Initialize logger for conftest
 logger = TestLogger.get_logger(__name__)
@@ -20,9 +21,7 @@ logger = TestLogger.get_logger(__name__)
 
 def pytest_configure(config):
     """Create necessary directories before running tests."""
-    logger.info("Configuring pytest session")
     Config.ensure_directories()
-    logger.info("Configuration completed")
 
 
 @pytest.fixture(scope="session")
@@ -55,16 +54,11 @@ def driver(browser_name, headless):
     Yields:
         WebDriver instance
     """
-    logger.info(f"Setting up WebDriver for browser: {browser_name}, headless: {headless}")
-
     # Configure browser options
     options = _get_browser_options(browser_name, headless)
 
     # Create remote WebDriver connected to Selenium Grid
-    driver = webdriver.Remote(
-        command_executor=Config.get_selenium_grid_url(),
-        options=options
-    )
+    driver = webdriver.Remote(command_executor=Config.get_selenium_grid_url(), options=options)
 
     # Configure driver
     driver.set_page_load_timeout(Config.PAGE_LOAD_TIMEOUT)
@@ -75,14 +69,10 @@ def driver(browser_name, headless):
     else:
         driver.set_window_size(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT)
 
-    logger.info("WebDriver initialized successfully")
-
     yield driver
 
     # Teardown
-    logger.info("Closing WebDriver")
     driver.quit()
-    logger.info("WebDriver closed successfully")
 
 
 @pytest.fixture(scope="function")
@@ -155,7 +145,7 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call" and report.failed:
         logger.error(f"Test failed: {item.name}")
         if Config.SCREENSHOT_ON_FAILURE:
-            driver = item.funcargs.get('driver')
+            driver = item.funcargs.get("driver")
             if driver:
                 _take_screenshot(driver, item.name)
 
@@ -190,11 +180,11 @@ def pytest_addoption(parser):
         "--browser",
         action="store",
         default=Config.DEFAULT_BROWSER,
-        help="Browser to use for tests: chrome, firefox, edge"
+        help="Browser to use for tests: chrome, firefox, edge",
     )
     parser.addoption(
         "--headless",
         action="store_true",
         default=Config.HEADLESS,
-        help="Run tests in headless mode"
+        help="Run tests in headless mode",
     )

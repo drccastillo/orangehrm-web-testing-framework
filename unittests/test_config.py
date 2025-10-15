@@ -2,9 +2,11 @@
 Unit tests for Config class.
 Tests configuration loading and environment variable handling.
 """
-import unittest
+
 import os
+import unittest
 from unittest.mock import patch
+
 from src.config.config import Config
 
 
@@ -13,14 +15,14 @@ class TestConfig(unittest.TestCase):
 
     def test_config_has_required_attributes(self):
         """Test that Config class has all required attributes."""
-        self.assertTrue(hasattr(Config, 'BASE_URL'))
-        self.assertTrue(hasattr(Config, 'USERNAME'))
-        self.assertTrue(hasattr(Config, 'PASSWORD'))
-        self.assertTrue(hasattr(Config, 'DEFAULT_BROWSER'))
-        self.assertTrue(hasattr(Config, 'HEADLESS'))
-        self.assertTrue(hasattr(Config, 'IMPLICIT_WAIT'))
-        self.assertTrue(hasattr(Config, 'DEFAULT_TIMEOUT'))
-        self.assertTrue(hasattr(Config, 'PAGE_LOAD_TIMEOUT'))
+        self.assertTrue(hasattr(Config, "BASE_URL"))
+        self.assertTrue(hasattr(Config, "USERNAME"))
+        self.assertTrue(hasattr(Config, "PASSWORD"))
+        self.assertTrue(hasattr(Config, "DEFAULT_BROWSER"))
+        self.assertTrue(hasattr(Config, "HEADLESS"))
+        self.assertTrue(hasattr(Config, "IMPLICIT_WAIT"))
+        self.assertTrue(hasattr(Config, "DEFAULT_TIMEOUT"))
+        self.assertTrue(hasattr(Config, "PAGE_LOAD_TIMEOUT"))
 
     def test_config_base_url_is_string(self):
         """Test that BASE_URL is a string."""
@@ -39,7 +41,7 @@ class TestConfig(unittest.TestCase):
 
     def test_config_default_browser_is_valid(self):
         """Test that DEFAULT_BROWSER is a valid value."""
-        valid_browsers = ['chrome', 'firefox', 'edge']
+        valid_browsers = ["chrome", "firefox", "edge"]
         self.assertIn(Config.DEFAULT_BROWSER.lower(), valid_browsers)
 
     def test_config_headless_is_boolean(self):
@@ -65,26 +67,26 @@ class TestConfig(unittest.TestCase):
         """Test that SCREENSHOT_ON_FAILURE is a boolean."""
         self.assertIsInstance(Config.SCREENSHOT_ON_FAILURE, bool)
 
-    @patch.dict(os.environ, {'URL': 'http://test.local', 'ORANGEHRM_USERNAME': 'TestUser'})
+    @patch.dict(os.environ, {"URL": "http://test.local", "ORANGEHRM_USERNAME": "TestUser"})
     def test_config_reads_environment_variables(self):
         """Test that Config can read from environment variables."""
         # Note: This test requires reloading the config module
         # For now, we just verify the env vars exist
-        self.assertEqual(os.getenv('URL'), 'http://test.local')
-        self.assertEqual(os.getenv('ORANGEHRM_USERNAME'), 'TestUser')
+        self.assertEqual(os.getenv("URL"), "http://test.local")
+        self.assertEqual(os.getenv("ORANGEHRM_USERNAME"), "TestUser")
 
     def test_config_selenium_grid_url_format(self):
         """Test that SELENIUM_GRID_URL has correct format."""
         self.assertIsInstance(Config.SELENIUM_GRID_URL, str)
-        self.assertTrue(Config.SELENIUM_GRID_URL.startswith('http://'))
-        self.assertIn('4444', Config.SELENIUM_GRID_URL)
+        self.assertTrue(Config.SELENIUM_GRID_URL.startswith("http://"))
+        self.assertIn("4444", Config.SELENIUM_GRID_URL)
 
     def test_config_get_selenium_grid_url_method(self):
         """Test that get_selenium_grid_url method returns correct format."""
         url = Config.get_selenium_grid_url()
         self.assertIsInstance(url, str)
-        self.assertTrue(url.endswith('/wd/hub'))
+        self.assertTrue(url.endswith("/wd/hub"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

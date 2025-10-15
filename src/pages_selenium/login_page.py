@@ -2,9 +2,11 @@
 Login Page Object Model for OrangeHRM application.
 Contains methods specific to the login page functionality.
 """
+
 from selenium.webdriver.remote.webdriver import WebDriver
-from src.pages.base_page import BasePage
-from src.pages.locators.login_locators import LoginLocators
+
+from src.pages_selenium.base_page import BasePage
+from src.pages_selenium.locators.login_locators import LoginLocators
 
 
 class LoginPage(BasePage):
@@ -53,7 +55,7 @@ class LoginPage(BasePage):
     def LOGIN_TITLE(self):
         return self.locators.LOGIN_TITLE
 
-    def enter_username(self, username: str) -> 'LoginPage':
+    def enter_username(self, username: str) -> "LoginPage":
         """
         Enter username in the username field.
 
@@ -66,7 +68,7 @@ class LoginPage(BasePage):
         self.send_keys(self.USERNAME_INPUT, username)
         return self
 
-    def enter_password(self, password: str) -> 'LoginPage':
+    def enter_password(self, password: str) -> "LoginPage":
         """
         Enter password in the password field.
 
@@ -91,11 +93,9 @@ class LoginPage(BasePage):
             username: Username to login with
             password: Password to login with
         """
-        self.logger.info(f"Attempting login with username: {username}")
         self.enter_username(username)
         self.enter_password(password)
         self.click_login_button()
-        self.logger.info("Login action completed")
 
     def get_error_message(self) -> str:
         """
@@ -126,14 +126,11 @@ class LoginPage(BasePage):
         Returns:
             True if login page elements are visible, False otherwise
         """
-        self.logger.debug("Checking if login page is loaded")
-        is_loaded = (
-            self.is_element_visible(self.USERNAME_INPUT) and
-            self.is_element_visible(self.PASSWORD_INPUT) and
-            self.is_element_visible(self.LOGIN_BUTTON)
+        return (
+            self.is_element_visible(self.USERNAME_INPUT)
+            and self.is_element_visible(self.PASSWORD_INPUT)
+            and self.is_element_visible(self.LOGIN_BUTTON)
         )
-        self.logger.debug(f"Login page loaded: {is_loaded}")
-        return is_loaded
 
     def get_login_title(self) -> str:
         """
@@ -153,7 +150,7 @@ class LoginPage(BasePage):
         """
         return self.is_element_visible(self.LOGIN_LOGO)
 
-    def clear_username(self) -> 'LoginPage':
+    def clear_username(self) -> "LoginPage":
         """
         Clear the username field.
 
@@ -164,7 +161,7 @@ class LoginPage(BasePage):
         username_field.clear()
         return self
 
-    def clear_password(self) -> 'LoginPage':
+    def clear_password(self) -> "LoginPage":
         """
         Clear the password field.
 

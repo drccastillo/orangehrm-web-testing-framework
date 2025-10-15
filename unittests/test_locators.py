@@ -2,9 +2,12 @@
 Unit tests for page locators.
 Tests that locators are properly defined and formatted.
 """
+
 import unittest
+
 from selenium.webdriver.common.by import By
-from src.pages.locators.login_locators import LoginLocators
+
+from src.pages_selenium.locators.login_locators import LoginLocators
 
 
 class TestLoginLocators(unittest.TestCase):
@@ -52,20 +55,25 @@ class TestLoginLocators(unittest.TestCase):
 
     def test_forgot_password_link_locator_exists(self):
         """Test that FORGOT_PASSWORD_LINK locator exists."""
-        self.assertTrue(hasattr(LoginLocators, 'FORGOT_PASSWORD_LINK'))
+        self.assertTrue(hasattr(LoginLocators, "FORGOT_PASSWORD_LINK"))
         self.assertIsInstance(LoginLocators.FORGOT_PASSWORD_LINK, tuple)
 
     def test_login_logo_locator_exists(self):
         """Test that LOGIN_LOGO locator exists."""
-        self.assertTrue(hasattr(LoginLocators, 'LOGIN_LOGO'))
+        self.assertTrue(hasattr(LoginLocators, "LOGIN_LOGO"))
         self.assertIsInstance(LoginLocators.LOGIN_LOGO, tuple)
 
     def test_all_locators_use_valid_by_strategies(self):
         """Test that all locators use valid By strategies."""
         valid_strategies = [
-            By.ID, By.NAME, By.CLASS_NAME, By.TAG_NAME,
-            By.LINK_TEXT, By.PARTIAL_LINK_TEXT,
-            By.CSS_SELECTOR, By.XPATH
+            By.ID,
+            By.NAME,
+            By.CLASS_NAME,
+            By.TAG_NAME,
+            By.LINK_TEXT,
+            By.PARTIAL_LINK_TEXT,
+            By.CSS_SELECTOR,
+            By.XPATH,
         ]
 
         locators = [
@@ -74,12 +82,13 @@ class TestLoginLocators(unittest.TestCase):
             LoginLocators.LOGIN_BUTTON,
             LoginLocators.ERROR_MESSAGE,
             LoginLocators.FORGOT_PASSWORD_LINK,
-            LoginLocators.LOGIN_LOGO
+            LoginLocators.LOGIN_LOGO,
         ]
 
         for locator in locators:
-            self.assertIn(locator[0], valid_strategies,
-                         f"Invalid By strategy for locator: {locator}")
+            self.assertIn(
+                locator[0], valid_strategies, f"Invalid By strategy for locator: {locator}"
+            )
 
     def test_all_locators_have_non_empty_values(self):
         """Test that all locators have non-empty selector values."""
@@ -89,15 +98,13 @@ class TestLoginLocators(unittest.TestCase):
             LoginLocators.LOGIN_BUTTON,
             LoginLocators.ERROR_MESSAGE,
             LoginLocators.FORGOT_PASSWORD_LINK,
-            LoginLocators.LOGIN_LOGO
+            LoginLocators.LOGIN_LOGO,
         ]
 
         for locator in locators:
-            self.assertIsNotNone(locator[1],
-                               f"Locator value is None: {locator}")
-            self.assertGreater(len(locator[1]), 0,
-                             f"Locator value is empty: {locator}")
+            self.assertIsNotNone(locator[1], f"Locator value is None: {locator}")
+            self.assertGreater(len(locator[1]), 0, f"Locator value is empty: {locator}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
