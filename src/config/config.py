@@ -1,52 +1,67 @@
 """
 Configuration module for test framework.
-Loads environment variables and provides configuration settings.
+
+DEPRECATED: This class is maintained for backward compatibility.
+New code should use EnvironmentConfigService with dependency injection.
+
+This class now acts as a Facade that delegates to EnvironmentConfigService,
+eliminating code duplication while maintaining the same public API.
 """
 
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-env_path = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
+from src.config.environment_config import EnvironmentConfigService
 
 
 class Config:
-    """Configuration class containing all test settings."""
+    """
+    Legacy configuration class - now a facade to EnvironmentConfigService.
+
+    DEPRECATED: Use dependency injection with ConfigService protocol instead.
+    This class will be removed in Phase 2 of the refactoring.
+
+    Example (old pattern - being phased out):
+        >>> from src.config.config import Config
+        >>> url = Config.BASE_URL
+
+    Example (new pattern - preferred):
+        >>> from src.config.protocols import ConfigService
+        >>> def test_something(config_service: ConfigService):
+        ...     url = config_service.base_url
+    """
+
+    # Private service instance - all Config attributes delegate to this
+    _service = EnvironmentConfigService()
 
     # Application URLs and Credentials
-    BASE_URL = os.getenv("URL", "http://localhost:8080/web/index.php")
-    USERNAME = os.getenv("ORANGEHRM_USERNAME", "Admin")
-    PASSWORD = os.getenv("ORANGEHRM_PASSWORD", "admin123")
+    BASE_URL = _service.base_url
+    USERNAME = _service.username
+    PASSWORD = _service.password
 
     # Selenium Grid Configuration
-    SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://localhost:4444")
+    SELENIUM_GRID_URL = _service.selenium_grid_url
 
     # Browser Configuration
-    DEFAULT_BROWSER = os.getenv("BROWSER", "chrome")
-    HEADLESS = os.getenv("HEADLESS", "False").lower() == "true"
+    DEFAULT_BROWSER = _service.default_browser
+    HEADLESS = _service.headless
 
     # Timeouts (in seconds)
-    DEFAULT_TIMEOUT = int(os.getenv("DEFAULT_TIMEOUT", "10"))
-    PAGE_LOAD_TIMEOUT = int(os.getenv("PAGE_LOAD_TIMEOUT", "30"))
-    IMPLICIT_WAIT = int(os.getenv("IMPLICIT_WAIT", "5"))
+    DEFAULT_TIMEOUT = _service.default_timeout
+    PAGE_LOAD_TIMEOUT = _service.page_load_timeout
+    IMPLICIT_WAIT = _service.implicit_wait
 
     # Window Configuration
-    WINDOW_WIDTH = int(os.getenv("WINDOW_WIDTH", "1920"))
-    WINDOW_HEIGHT = int(os.getenv("WINDOW_HEIGHT", "1080"))
-    MAXIMIZE_WINDOW = os.getenv("MAXIMIZE_WINDOW", "True").lower() == "true"
+    WINDOW_WIDTH = _service.window_width
+    WINDOW_HEIGHT = _service.window_height
+    MAXIMIZE_WINDOW = _service.maximize_window
 
     # Screenshots Configuration
-    SCREENSHOT_ON_FAILURE = os.getenv("SCREENSHOT_ON_FAILURE", "True").lower() == "true"
-    SCREENSHOTS_DIR = Path(__file__).parent.parent.parent / "reports_selenium" / "screenshots"
+    SCREENSHOT_ON_FAILURE = _service.screenshot_on_failure
+    SCREENSHOTS_DIR = _service.screenshots_dir
 
     # Reports Configuration
-    REPORTS_DIR = Path(__file__).parent.parent.parent / "reports_selenium"
+    REPORTS_DIR = _service.reports_dir
 
     @classmethod
-    def get_selenium_grid_url(cls, browser: str = None) -> str:
+    def get_selenium_grid_url(cls, browser: str | None = None) -> str:
         """
         Get the Selenium Grid URL for remote WebDriver.
 
@@ -54,12 +69,13 @@ class Config:
             browser: Browser name (chrome, firefox, edge)
 
         Returns:
-            Selenium Grid URL
+            Selenium Grid URL with /wd/hub endpoint
         """
-        return f"{cls.SELENIUM_GRID_URL}/wd/hub"
+        return cls._service.get_selenium_grid_url(browser)
 
     @classmethod
     def ensure_directories(cls) -> None:
         """Create necessary directories if they don't exist."""
+        # Use class attributes (not service) to support monkeypatching in tests
         cls.SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
         cls.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
