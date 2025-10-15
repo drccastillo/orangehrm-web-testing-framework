@@ -48,7 +48,9 @@ class TestLogger:
             )
 
             file_formatter = logging.Formatter(
-                fmt="%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
+                fmt=(
+                    "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+                ),
                 datefmt="%Y-%m-%d %H:%M:%S",
             )
 

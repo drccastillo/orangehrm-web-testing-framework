@@ -50,6 +50,7 @@ dev = [
     "autoflake>=2.3.0",
     "bandit>=1.7.0",
     "pydocstyle>=6.3.0",
+    "pylint>=3.3.0",
 ]
 
 # Black configuration
@@ -151,3 +152,33 @@ convention = "google"
 add_ignore = ["D100", "D104", "D105", "D107", "D212", "D205"]
 match = "(?!test_).*\\.py"
 match_dir = "^(?!(tests_|unittests|reports_|logs|\\.)).*"
+
+# Pylint configuration
+[tool.pylint.main]
+py-version = "3.10"
+ignore = [".venv", "build", "dist", "__pycache__"]
+ignore-patterns = ["test_.*\\.py", "conftest\\.py"]
+
+[tool.pylint.messages_control]
+max-line-length = 100
+disable = [
+    "C0114",  # missing-module-docstring
+    "C0115",  # missing-class-docstring
+    "C0116",  # missing-function-docstring
+    "R0903",  # too-few-public-methods (common in Page Objects)
+    "R0904",  # too-many-public-methods (common in Page Objects)
+    "R0913",  # too-many-arguments
+    "W0212",  # protected-access (needed for some framework methods)
+    "C0103",  # invalid-name (allow short variable names)
+    "W1203",  # logging-fstring-interpolation (f-strings are fine in modern Python)
+    "W0718",  # broad-exception-caught (needed for robust error handling)
+    "R0801",  # duplicate-code (base classes naturally share similar code)
+    "W0613",  # unused-argument (common in fixtures and hooks)
+]
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "ex", "Run", "_", "id", "EC", "By", "pw"]
+
+[tool.pylint.design]
+max-attributes = 15
+max-parents = 10

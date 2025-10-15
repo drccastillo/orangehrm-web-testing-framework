@@ -77,9 +77,9 @@ def test_login_invalid_credentials_playwright(login_page_pw: LoginPagePW):
         login_page_pw.login("invalid_user", "invalid_password")
 
     with allure.step("Verify error message is displayed"):
-        assert (
-            login_page_pw.is_error_message_displayed()
-        ), "Error message should be displayed for invalid credentials"
+        assert login_page_pw.is_error_message_displayed(), (
+            "Error message should be displayed for invalid credentials"
+        )
 
     with allure.step("Verify error message content"):
         error_message = login_page_pw.get_error_message()

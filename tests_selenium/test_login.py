@@ -75,9 +75,9 @@ class TestLogin:
             login_page.login("invalid_user", "invalid_password")
 
         with allure.step("Verify error message is displayed"):
-            assert (
-                login_page.is_error_message_displayed()
-            ), "Error message not displayed for invalid credentials"
+            assert login_page.is_error_message_displayed(), (
+                "Error message not displayed for invalid credentials"
+            )
 
         with allure.step("Verify error message content"):
             error_message = login_page.get_error_message()
@@ -113,9 +113,9 @@ class TestLogin:
             allure.attach(
                 current_url, name="Current URL", attachment_type=allure.attachment_type.TEXT
             )
-            assert (
-                "dashboard" not in current_url.lower()
-            ), "Login should not succeed with empty username"
+            assert "dashboard" not in current_url.lower(), (
+                "Login should not succeed with empty username"
+            )
 
     @allure.title("Login with empty password should fail")
     @allure.severity(allure.severity_level.NORMAL)
@@ -144,9 +144,9 @@ class TestLogin:
             allure.attach(
                 current_url, name="Current URL", attachment_type=allure.attachment_type.TEXT
             )
-            assert (
-                "dashboard" not in current_url.lower()
-            ), "Login should not succeed with empty password"
+            assert "dashboard" not in current_url.lower(), (
+                "Login should not succeed with empty password"
+            )
 
     @allure.title("Login with valid username but invalid password shows error")
     @allure.severity(allure.severity_level.CRITICAL)
@@ -168,9 +168,9 @@ class TestLogin:
             login_page.login(Config.USERNAME, "wrong_password123")
 
         with allure.step("Verify error message is displayed"):
-            assert (
-                login_page.is_error_message_displayed()
-            ), "Error message not displayed for invalid password"
+            assert login_page.is_error_message_displayed(), (
+                "Error message not displayed for invalid password"
+            )
 
     @allure.title("All login page elements are visible")
     @allure.severity(allure.severity_level.NORMAL)
@@ -189,19 +189,19 @@ class TestLogin:
             All elements should be visible
         """
         with allure.step("Verify username field is visible"):
-            assert login_page.is_element_visible(
-                login_page.USERNAME_INPUT
-            ), "Username field not visible"
+            assert login_page.is_element_visible(login_page.USERNAME_INPUT), (
+                "Username field not visible"
+            )
 
         with allure.step("Verify password field is visible"):
-            assert login_page.is_element_visible(
-                login_page.PASSWORD_INPUT
-            ), "Password field not visible"
+            assert login_page.is_element_visible(login_page.PASSWORD_INPUT), (
+                "Password field not visible"
+            )
 
         with allure.step("Verify login button is visible"):
-            assert login_page.is_element_visible(
-                login_page.LOGIN_BUTTON
-            ), "Login button not visible"
+            assert login_page.is_element_visible(login_page.LOGIN_BUTTON), (
+                "Login button not visible"
+            )
 
         with allure.step("Verify logo is visible"):
             assert login_page.is_logo_displayed(), "Logo not visible"
@@ -287,9 +287,9 @@ class TestLoginPageInteractions:
 
         # Get the value attribute
         username_value = login_page.get_attribute(login_page.USERNAME_INPUT, "value")
-        assert (
-            username_value == "" or username_value is None
-        ), f"Username field was not cleared, value: {username_value}"
+        assert username_value == "" or username_value is None, (
+            f"Username field was not cleared, value: {username_value}"
+        )
 
     @allure.title("Clear password field")
     @allure.severity(allure.severity_level.MINOR)
@@ -314,6 +314,6 @@ class TestLoginPageInteractions:
 
         # Get the value attribute
         password_value = login_page.get_attribute(login_page.PASSWORD_INPUT, "value")
-        assert (
-            password_value == "" or password_value is None
-        ), f"Password field was not cleared, value: {password_value}"
+        assert password_value == "" or password_value is None, (
+            f"Password field was not cleared, value: {password_value}"
+        )
