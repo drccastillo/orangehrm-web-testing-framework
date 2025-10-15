@@ -155,17 +155,6 @@ class LoginPagePW(BasePagePW):
         """
         return self.is_visible(self.locators.LOGIN_LOGO)
 
-    def is_login_logo_displayed(self) -> bool:
-        """
-        Check if the login logo is displayed.
-
-        Deprecated: Use is_login_logo_visible() instead for protocol compliance.
-
-        Returns:
-            True if logo is visible, False otherwise
-        """
-        return self.is_login_logo_visible()
-
     def is_forgot_password_link_visible(self) -> bool:
         """
         Check if the forgot password link is visible.
