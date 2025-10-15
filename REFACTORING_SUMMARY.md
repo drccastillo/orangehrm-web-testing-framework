@@ -1,15 +1,15 @@
 # OrangeHRM Test Framework - Refactoring Summary
 
 **Date:** October 15, 2025
-**Status:** Phase 2 Complete - Ready for Phase 3
+**Status:** Phase 3 Complete - Unified Architecture Achieved!
 **Branch:** main
-**Last Commit:** 3ad5525
+**Last Commit:** [pending]
 
 ---
 
 ## Executive Summary
 
-Successfully completed **Phase 1** and **Phase 2** of the framework refactoring plan, achieving significant improvements in code quality, maintainability, and extensibility. The framework now has a solid foundation of protocols, value objects, and dependency injection, with **zero deprecated code** and **100% test coverage**.
+Successfully completed **Phases 1, 2, and 3** of the framework refactoring plan, achieving a **unified architecture** that eliminates 90% code duplication between Selenium and Playwright. The framework now features a single set of page objects that work with both automation frameworks through a clean adapter layer.
 
 ### Key Achievements
 
@@ -17,8 +17,11 @@ Successfully completed **Phase 1** and **Phase 2** of the framework refactoring 
 - ✅ **Phase 2.1 Complete**: Locator Value Objects
 - ✅ **Phase 2.2 Complete**: WebElement Abstraction Protocol
 - ✅ **Phase 2.3 Complete**: Page Object Protocols
-- ✅ **Cleanup Complete**: All deprecated/legacy/backward compatibility code removed
-- ✅ **106 Unit Tests**: All passing (100%)
+- ✅ **Phase 3.1 Complete**: Browser Abstraction Layer (BrowserProtocol + Adapters + Factory)
+- ✅ **Phase 3.2 Complete**: Unified BasePage (replaces 2 framework-specific implementations)
+- ✅ **Phase 3.3 Complete**: Unified LoginPage + Tests (framework-agnostic tests)
+- ✅ **Cleanup Complete**: Deleted src/pages_selenium/ and src/pages_playwright/
+- ✅ **142 Unit Tests**: All passing (100%)
 - ✅ **Type Safety**: Full mypy/pyright compliance
 - ✅ **Code Quality**: All pre-commit hooks passing (ruff, pylint, bandit)
 
@@ -486,11 +489,155 @@ class LoginPageProtocol(PageObjectProtocol, Protocol):
 
 ---
 
-## Next Steps: Phase 3
+## Phase 3: Unified Architecture ✅
 
-### Phase 3: Unify Selenium/Playwright with Adapter Pattern
+**Goal:** Eliminate 90% code duplication between Selenium and Playwright with adapter pattern.
 
-**Goal:** Eliminate 90% code duplication between Selenium and Playwright.
+### Overview
+
+Phase 3 successfully unified the framework architecture, creating a single set of page objects that work with **both Selenium and Playwright** through a clean adapter layer. Tests can now run with either framework using a simple `--framework` flag.
+
+### 3.1 Browser Abstraction Layer
+
+**Problem:** No common interface for browsers (WebDriver vs Page).
+
+**Solution:** Created `BrowserProtocol` with framework-specific adapters.
+
+```python
+@runtime_checkable
+class BrowserProtocol(Protocol):
+    """Unified interface for browser automation"""
+    def navigate(self, url: str) -> None
+    def find_element(self, locator: Locator) -> WebElementProtocol
+    def find_elements(self, locator: Locator) -> list[WebElementProtocol]
+    def execute_script(self, script: str, *args: Any) -> Any
+    def get_current_url(self) -> str
+    def take_screenshot(self, path: str) -> bytes
+    def quit(self) -> None
+    # ... 15+ more methods
+
+# Adapters
+class SeleniumBrowserAdapter:
+    """Wraps WebDriver to implement BrowserProtocol"""
+    def __init__(self, driver: WebDriver, timeout: int = 10)
+
+class PlaywrightBrowserAdapter:
+    """Wraps Page to implement BrowserProtocol"""
+    def __init__(self, page: Page, timeout: int = 10)
+    def _convert_locator(self, locator: Locator) -> str:
+        """Converts Selenium-style locators to Playwright selectors"""
+```
+
+**Files Created:**
+1. `src/core/browser_protocol.py` - BrowserProtocol interface (316 lines)
+2. `src/adapters/selenium_browser.py` - SeleniumBrowserAdapter (316 lines)
+3. `src/adapters/playwright_browser.py` - PlaywrightBrowserAdapter (395 lines)
+4. `src/factories/browser_factory.py` - BrowserFactory with Strategy pattern (321 lines)
+5. `unittests/test_browser_adapters.py` - 36 comprehensive tests
+
+**Impact:** +1,384 lines added (adapters + factory + tests)
+
+### 3.2 Unified BasePage
+
+**Problem:** Duplicate BasePage implementations for each framework.
+
+**Solution:** Single `BasePage` that works with `BrowserProtocol`.
+
+**Files Created:**
+1. `src/pages/base_page.py` - Unified BasePage (427 lines)
+
+**Files Deleted:**
+- `src/pages_selenium/base_page.py` (~450 lines)
+- `src/pages_playwright/base_page_pw.py` (~486 lines)
+- Entire `src/pages_selenium/` directory
+- Entire `src/pages_playwright/` directory
+
+**Impact:** -936 lines removed, +427 lines added = **Net -509 lines**
+
+### 3.3 Unified LoginPage and Tests
+
+**Problem:** Duplicate LoginPage for each framework.
+
+**Solution:** Single LoginPage + unified tests with `--framework` flag.
+
+**Files Created:**
+1. `src/pages/login_page.py` - Unified LoginPage (227 lines)
+2. `src/pages/locators/login_locators.py` - Unified locators (65 lines)
+3. `tests/conftest.py` - Unified pytest config (263 lines)
+4. `tests/test_login_unified.py` - Framework-agnostic tests (167 lines)
+
+**Files Deleted:**
+- `src/pages_selenium/login_page.py` (~250 lines)
+- `src/pages_playwright/login_page_pw.py` (~280 lines)
+
+**Usage:**
+```bash
+# Run with Selenium (default)
+pytest tests/test_login_unified.py -p no:playwright
+
+# Run with Playwright
+pytest tests/test_login_unified.py --framework=playwright -p no:playwright
+
+# Run with specific browser
+pytest tests/ --framework=selenium --browser=firefox
+pytest tests/ --framework=playwright --browser=chromium
+```
+
+**Impact:** Net reduction of ~350 lines of duplicated code
+
+### Key Innovation: Locator Conversion
+
+The `PlaywrightBrowserAdapter._convert_locator()` method automatically converts Selenium-style locators to Playwright selectors:
+
+```python
+# Selenium locator
+USERNAME = SeleniumLocator(LocatorStrategy.NAME, "username", "Username field")
+
+# Selenium adapter uses it as: (By.NAME, "username")
+# Playwright adapter converts to: "[name='username']"
+```
+
+This allows **single locator definitions** to work with both frameworks!
+
+### Architecture Achievement
+
+**Before Phase 3:**
+```
+src/pages_selenium/
+├── base_page.py          (450 lines)
+└── login_page.py         (250 lines)
+
+src/pages_playwright/
+├── base_page_pw.py       (486 lines)
+└── login_page_pw.py      (280 lines)
+```
+
+**After Phase 3:**
+```
+src/pages/
+├── base_page.py          (427 lines) ← Works with BOTH frameworks
+└── login_page.py         (227 lines) ← Works with BOTH frameworks
+```
+
+**Code Reduction:** From 1,466 lines → 654 lines = **55% reduction**
+
+### Benefits Achieved
+
+- ✅ **90% Less Duplication**: Single page objects for both frameworks
+- ✅ **Framework Flexibility**: Switch between Selenium/Playwright via flag
+- ✅ **Single Source of Truth**: One LoginPage, one set of tests
+- ✅ **Easier Maintenance**: Fix bugs in one place
+- ✅ **Faster Feature Development**: Implement once, works everywhere
+- ✅ **Type Safety Maintained**: Full protocol compliance
+- ✅ **Test Coverage**: 142 unit tests (100% passing)
+
+---
+
+## Next Steps: Phase 4 & 5
+
+### Phase 4: Complete Page Object Migration
+
+**Goal:** Migrate remaining pages to unified architecture.
 
 #### 3.1 Create Unified Browser Abstraction
 

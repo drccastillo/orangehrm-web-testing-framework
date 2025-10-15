@@ -9,6 +9,7 @@ from typing import Any
 
 from playwright.sync_api import Page
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from selenium.webdriver.common.by import By
 
 from src.adapters.playwright_element import PlaywrightWebElement
 from src.core.element_protocol import WebElementProtocol
@@ -56,6 +57,55 @@ class PlaywrightBrowserAdapter:
         self.logger = TestLogger.get_logger(self.__class__.__name__)
         self._current_frame: str | None = None  # For frame switching compatibility
 
+    def _convert_locator(self, locator: Locator) -> str:  # pylint: disable=too-many-return-statements
+        """
+        Convert locator to Playwright selector string.
+
+        This method handles conversion from Selenium-style tuples (By.X, "value")
+        to Playwright selector strings.
+
+        Args:
+            locator: Locator value object
+
+        Returns:
+            Playwright selector string
+
+        Raises:
+            ValueError: If locator strategy is not supported
+        """
+        native = locator.to_native()
+
+        # If it's already a string, return it
+        if isinstance(native, str):
+            return str(native)
+
+        # If it's a Selenium tuple (By.X, "value"), convert to Playwright selector
+        if isinstance(native, tuple) and len(native) == 2:
+            by_type, value = native  # pyright: ignore[reportGeneralTypeIssues]
+            value_str = str(value)
+
+            # Convert Selenium By types to Playwright selectors
+            if by_type == By.ID:
+                return f"#{value_str}"
+            if by_type == By.NAME:
+                return f"[name='{value_str}']"
+            if by_type == By.CSS_SELECTOR:
+                return value_str
+            if by_type == By.XPATH:
+                return f"xpath={value_str}"
+            if by_type == By.CLASS_NAME:
+                return f".{value_str}"
+            if by_type == By.TAG_NAME:
+                return value_str
+            if by_type == By.LINK_TEXT:
+                return f"text={value_str}"
+            if by_type == By.PARTIAL_LINK_TEXT:
+                return f"text=/{value_str}/"
+
+            raise ValueError(f"Unsupported Selenium locator strategy: {by_type}")
+
+        raise ValueError(f"Unsupported locator format: {native}")
+
     @property
     def timeout(self) -> int:
         """Get the default timeout in seconds."""
@@ -102,7 +152,7 @@ class PlaywrightBrowserAdapter:
         Raises:
             ElementNotFoundException: If element is not found within timeout
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
 
         try:
             pw_locator = self._page.locator(native_selector)
@@ -127,7 +177,7 @@ class PlaywrightBrowserAdapter:
         Returns:
             List of WebElementProtocol objects (empty list if none found)
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
 
         try:
             pw_locator = self._page.locator(native_selector)
@@ -235,7 +285,7 @@ class PlaywrightBrowserAdapter:
             You typically use frame_locator() for iframe interaction.
             This is a compatibility method that stores frame reference.
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
         self.logger.debug(f"Switching to frame: {locator.description}")
         # In Playwright, frame switching is done through frame_locator
         # Store frame reference for compatibility with Selenium-style API
@@ -275,7 +325,7 @@ class PlaywrightBrowserAdapter:
         Returns:
             True if element becomes visible within timeout, False otherwise
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
         timeout_ms = (timeout * 1000) if timeout else self._timeout_ms
 
         try:
@@ -296,7 +346,7 @@ class PlaywrightBrowserAdapter:
         Returns:
             True if element becomes hidden within timeout, False otherwise
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
         timeout_ms = (timeout * 1000) if timeout else self._timeout_ms
 
         try:
@@ -341,5 +391,5 @@ class PlaywrightBrowserAdapter:
         Args:
             locator: Locator value object
         """
-        native_selector = locator.to_native()
+        native_selector = self._convert_locator(locator)
         self._page.locator(native_selector).scroll_into_view_if_needed(timeout=self._timeout_ms)
