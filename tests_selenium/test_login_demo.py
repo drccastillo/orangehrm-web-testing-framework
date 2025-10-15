@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from src.pages_selenium.login_page import LoginPage
+from src.pages.protocols import LoginPageProtocol
 from utils.logger import TestLogger
 
 # Initialize logger
@@ -14,7 +14,7 @@ logger = TestLogger.get_logger(__name__)
 
 
 @pytest.mark.smoke
-def test_login_slow_demo(login_page: LoginPage, test_username: str, test_password: str):
+def test_login_slow_demo(login_page: LoginPageProtocol, test_username: str, test_password: str):
     """
     Slow demo test to view in VNC viewer.
     Connect to http://localhost:7900 to watch in browser!
@@ -22,21 +22,18 @@ def test_login_slow_demo(login_page: LoginPage, test_username: str, test_passwor
     logger.info("Demo test starting - Connect to http://localhost:7900 to watch!")
     time.sleep(2)
 
-    # Highlight and enter username
+    # Enter username
     logger.info("Entering username...")
-    login_page.highlight_element(login_page.USERNAME_INPUT, duration=1)
     login_page.enter_username(test_username)
     time.sleep(1)
 
-    # Highlight and enter password
+    # Enter password
     logger.info("Entering password...")
-    login_page.highlight_element(login_page.PASSWORD_INPUT, duration=1)
     login_page.enter_password(test_password)
     time.sleep(1)
 
-    # Blink and click login button
+    # Click login button
     logger.info("Clicking login button...")
-    login_page.blink_element(login_page.LOGIN_BUTTON, times=2)
     login_page.click_login_button()
     time.sleep(2)
 

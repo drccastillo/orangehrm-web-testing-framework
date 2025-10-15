@@ -7,7 +7,7 @@ import allure
 import pytest
 
 from src.config.protocols import ConfigService
-from src.pages_selenium.login_page import LoginPage
+from src.pages.protocols import LoginPageProtocol
 
 
 @allure.feature("Authentication")
@@ -22,7 +22,7 @@ class TestLogin:
         "Test that a user can successfully log in using valid username and password"
     )
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_successful_login(self, login_page: LoginPage, config_service: ConfigService):
+    def test_successful_login(self, login_page: LoginPageProtocol, config_service: ConfigService):
         """
         Test successful login with valid credentials.
 
@@ -37,7 +37,7 @@ class TestLogin:
             User should be logged in and redirected to dashboard
         """
         with allure.step("Verify login page is loaded"):
-            assert login_page.is_login_page_loaded(), "Login page did not load properly"
+            assert login_page.is_page_loaded(), "Login page did not load properly"
 
         with allure.step(f"Enter username: {config_service.username}"):
             login_page.enter_username(config_service.username)
@@ -58,7 +58,7 @@ class TestLogin:
     @allure.title("Login with invalid credentials shows error message")
     @allure.severity(allure.severity_level.CRITICAL)
     def test_login_with_invalid_credentials(
-        self, login_page: LoginPage, config_service: ConfigService
+        self, login_page: LoginPageProtocol, config_service: ConfigService
     ):
         """
         Test login with invalid credentials.
@@ -90,7 +90,9 @@ class TestLogin:
 
     @allure.title("Login with empty username should fail")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_empty_username(self, login_page: LoginPage, config_service: ConfigService):
+    def test_login_with_empty_username(
+        self, login_page: LoginPageProtocol, config_service: ConfigService
+    ):
         """
         Test login with empty username.
 
@@ -121,7 +123,9 @@ class TestLogin:
 
     @allure.title("Login with empty password should fail")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_empty_password(self, login_page: LoginPage, config_service: ConfigService):
+    def test_login_with_empty_password(
+        self, login_page: LoginPageProtocol, config_service: ConfigService
+    ):
         """
         Test login with empty password.
 
@@ -153,7 +157,7 @@ class TestLogin:
     @allure.title("Login with valid username but invalid password shows error")
     @allure.severity(allure.severity_level.CRITICAL)
     def test_login_with_valid_username_invalid_password(
-        self, login_page: LoginPage, config_service: ConfigService
+        self, login_page: LoginPageProtocol, config_service: ConfigService
     ):
         """
         Test login with valid username but invalid password.
@@ -179,42 +183,34 @@ class TestLogin:
     @allure.title("All login page elements are visible")
     @allure.severity(allure.severity_level.NORMAL)
     def test_login_page_elements_visibility(
-        self, login_page: LoginPage, config_service: ConfigService
+        self, login_page: LoginPageProtocol, config_service: ConfigService
     ):
         """
         Test that all login page elements are visible.
 
         Steps:
             1. Navigate to login page
-            2. Verify username field is visible
-            3. Verify password field is visible
-            4. Verify login button is visible
-            5. Verify logo is visible
+            2. Verify page is loaded (username, password, login button visible)
+            3. Verify logo is visible
+            4. Verify forgot password link is visible
 
         Expected:
             All elements should be visible
         """
-        with allure.step("Verify username field is visible"):
-            assert login_page.is_element_visible(login_page.locators.USERNAME_INPUT), (
-                "Username field not visible"
-            )
-
-        with allure.step("Verify password field is visible"):
-            assert login_page.is_element_visible(login_page.locators.PASSWORD_INPUT), (
-                "Password field not visible"
-            )
-
-        with allure.step("Verify login button is visible"):
-            assert login_page.is_element_visible(login_page.locators.LOGIN_BUTTON), (
-                "Login button not visible"
-            )
+        with allure.step("Verify login page is fully loaded"):
+            assert login_page.is_page_loaded(), "Login page elements not fully loaded"
 
         with allure.step("Verify logo is visible"):
-            assert login_page.is_logo_displayed(), "Logo not visible"
+            assert login_page.is_login_logo_visible(), "Logo not visible"
+
+        with allure.step("Verify forgot password link is visible"):
+            assert login_page.is_forgot_password_link_visible(), "Forgot password link not visible"
 
     @allure.title("Login with method chaining succeeds")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_method_chaining(self, login_page: LoginPage, config_service: ConfigService):
+    def test_login_with_method_chaining(
+        self, login_page: LoginPageProtocol, config_service: ConfigService
+    ):
         """
         Test login using method chaining pattern.
 
@@ -245,7 +241,7 @@ class TestLogin:
     @allure.title("Login page has correct title")
     @allure.severity(allure.severity_level.MINOR)
     @pytest.mark.regression
-    def test_login_page_title(self, login_page: LoginPage, config_service: ConfigService):
+    def test_login_page_title(self, login_page: LoginPageProtocol, config_service: ConfigService):
         """
         Test that login page has correct title.
 
@@ -277,7 +273,9 @@ class TestLoginPageInteractions:
     @pytest.mark.skip(
         reason="OrangeHRM uses React-controlled inputs that don't clear with standard .clear() method"
     )
-    def test_clear_username_field(self, login_page: LoginPage, config_service: ConfigService):
+    def test_clear_username_field(
+        self, login_page: LoginPageProtocol, config_service: ConfigService
+    ):
         """
         Test clearing the username field.
 
@@ -304,7 +302,9 @@ class TestLoginPageInteractions:
     @pytest.mark.skip(
         reason="OrangeHRM uses React-controlled inputs that don't clear with standard .clear() method"
     )
-    def test_clear_password_field(self, login_page: LoginPage, config_service: ConfigService):
+    def test_clear_password_field(
+        self, login_page: LoginPageProtocol, config_service: ConfigService
+    ):
         """
         Test clearing the password field.
 

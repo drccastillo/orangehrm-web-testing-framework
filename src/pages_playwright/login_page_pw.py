@@ -58,20 +58,16 @@ class LoginPagePW(BasePagePW):
         self.fill(self.locators.PASSWORD_INPUT, password)
         return self
 
-    def click_login_button(self) -> "LoginPagePW":
+    def click_login_button(self) -> None:
         """
         Click the login button.
-
-        Returns:
-            Self for method chaining
 
         Example:
             >>> login_page.click_login_button()
         """
         self.click(self.locators.LOGIN_BUTTON)
-        return self
 
-    def login(self, username: str, password: str) -> "LoginPagePW":
+    def login(self, username: str, password: str) -> None:
         """
         Perform complete login operation.
         High-level method that combines username, password, and login.
@@ -80,16 +76,12 @@ class LoginPagePW(BasePagePW):
             username: Username to enter
             password: Password to enter
 
-        Returns:
-            Self for method chaining
-
         Example:
             >>> login_page.login("admin", "admin123")
         """
         self.enter_username(username)
         self.enter_password(password)
         self.click_login_button()
-        return self
 
     def click_forgot_password(self) -> "LoginPagePW":
         """
@@ -141,14 +133,47 @@ class LoginPagePW(BasePagePW):
         """
         return self.get_text(self.locators.LOGIN_TITLE)
 
-    def is_login_logo_displayed(self) -> bool:
+    def is_page_loaded(self) -> bool:
         """
-        Check if the login logo is displayed.
+        Check if the login page is fully loaded.
+
+        Returns:
+            True if login page elements are visible, False otherwise
+        """
+        return (
+            self.is_visible(self.locators.USERNAME_INPUT)
+            and self.is_visible(self.locators.PASSWORD_INPUT)
+            and self.is_visible(self.locators.LOGIN_BUTTON)
+        )
+
+    def is_login_logo_visible(self) -> bool:
+        """
+        Check if the login logo is visible.
 
         Returns:
             True if logo is visible, False otherwise
         """
         return self.is_visible(self.locators.LOGIN_LOGO)
+
+    def is_login_logo_displayed(self) -> bool:
+        """
+        Check if the login logo is displayed.
+
+        Deprecated: Use is_login_logo_visible() instead for protocol compliance.
+
+        Returns:
+            True if logo is visible, False otherwise
+        """
+        return self.is_login_logo_visible()
+
+    def is_forgot_password_link_visible(self) -> bool:
+        """
+        Check if the forgot password link is visible.
+
+        Returns:
+            True if the link is visible, False otherwise
+        """
+        return self.is_visible(self.locators.FORGOT_PASSWORD_LINK)
 
     def is_username_field_displayed(self) -> bool:
         """

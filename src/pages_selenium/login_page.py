@@ -90,7 +90,7 @@ class LoginPage(BasePage):
         """Click the 'Forgot Password' link."""
         self.click(self.locators.FORGOT_PASSWORD_LINK)
 
-    def is_login_page_loaded(self) -> bool:
+    def is_page_loaded(self) -> bool:
         """
         Verify if the login page is fully loaded.
 
@@ -103,6 +103,17 @@ class LoginPage(BasePage):
             and self.is_element_visible(self.locators.LOGIN_BUTTON)
         )
 
+    def is_login_page_loaded(self) -> bool:
+        """
+        Verify if the login page is fully loaded.
+
+        Deprecated: Use is_page_loaded() instead for protocol compliance.
+
+        Returns:
+            True if login page elements are visible, False otherwise
+        """
+        return self.is_page_loaded()
+
     def get_login_title(self) -> str:
         """
         Get the login page title text.
@@ -112,14 +123,34 @@ class LoginPage(BasePage):
         """
         return self.get_text(self.locators.LOGIN_TITLE)
 
-    def is_logo_displayed(self) -> bool:
+    def is_login_logo_visible(self) -> bool:
         """
-        Check if the OrangeHRM logo is displayed.
+        Check if the OrangeHRM login logo is visible.
 
         Returns:
             True if logo is visible, False otherwise
         """
         return self.is_element_visible(self.locators.LOGIN_LOGO)
+
+    def is_logo_displayed(self) -> bool:
+        """
+        Check if the OrangeHRM logo is displayed.
+
+        Deprecated: Use is_login_logo_visible() instead for protocol compliance.
+
+        Returns:
+            True if logo is visible, False otherwise
+        """
+        return self.is_login_logo_visible()
+
+    def is_forgot_password_link_visible(self) -> bool:
+        """
+        Check if the forgot password link is visible.
+
+        Returns:
+            True if the link is visible, False otherwise
+        """
+        return self.is_element_visible(self.locators.FORGOT_PASSWORD_LINK)
 
     def clear_username(self) -> "LoginPage":
         """
