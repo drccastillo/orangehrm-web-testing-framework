@@ -14,6 +14,7 @@ import pytest
 from src.config.environment_config import EnvironmentConfigService
 from src.config.protocols import ConfigService
 from src.factories.browser_factory import BrowserFactory
+from src.pages.leave_page import LeavePage
 from src.pages.login_page import LoginPage
 from utils.logger import TestLogger
 
@@ -153,6 +154,41 @@ def login_page(browser, config_service):
     """
     page = LoginPage(browser, timeout=config_service.default_timeout)
     page.navigate_to(config_service.base_url)
+    yield page
+
+
+@pytest.fixture(scope="function")
+def leave_page(browser, config_service, login_page):
+    """
+    Create unified LeavePage instance after login.
+
+    This LeavePage works with ANY framework through BrowserProtocol.
+
+    Args:
+        browser: Browser adapter (from browser fixture)
+        config_service: Configuration service
+        login_page: Login page fixture (to perform login first)
+
+    Yields:
+        LeavePage: Unified leave page instance
+
+    Example:
+        def test_navigate_to_leave_list(leave_page):
+            leave_page.navigate_to_leave_list()
+            assert "leave/viewLeaveList" in leave_page.get_current_url()
+    """
+    # First login to access leave module
+    login_page.login(config_service.username, config_service.password)
+
+    # Create leave page instance
+    page = LeavePage(browser, timeout=config_service.default_timeout)
+
+    # Navigate to Leave section
+    page.navigate_to_leave_menu()
+
+    # Wait for page to load
+    assert page.is_page_loaded(), "Leave page should be loaded after navigation"
+
     yield page
 
 

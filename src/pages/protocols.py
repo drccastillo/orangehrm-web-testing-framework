@@ -169,3 +169,173 @@ class LoginPageProtocol(PageObjectProtocol, Protocol):
             >>> assert login_page.is_login_logo_visible()
         """
         ...
+
+
+@runtime_checkable
+class LeavePageProtocol(PageObjectProtocol, Protocol):
+    """
+    Protocol for leave page objects.
+
+    Extends PageObjectProtocol with leave-specific operations.
+    Both Selenium and Playwright leave pages must implement this interface.
+
+    Example:
+        >>> def test_apply_leave(leave_page: LeavePageProtocol):
+        ...     leave_page.navigate_to_apply_leave()
+        ...     assert leave_page.is_apply_form_visible()
+    """
+
+    def navigate_to_apply_leave(self) -> None:
+        """
+        Navigate to Apply Leave page.
+
+        Example:
+            >>> leave_page.navigate_to_apply_leave()
+        """
+        ...
+
+    def navigate_to_leave_list(self) -> None:
+        """
+        Navigate to Leave List page.
+
+        Example:
+            >>> leave_page.navigate_to_leave_list()
+        """
+        ...
+
+    def navigate_to_my_leave(self) -> None:
+        """
+        Navigate to My Leave page.
+
+        Example:
+            >>> leave_page.navigate_to_my_leave()
+        """
+        ...
+
+    def is_apply_button_visible(self) -> bool:
+        """
+        Check if the Apply button is visible.
+
+        Returns:
+            True if Apply button is visible, False otherwise
+
+        Example:
+            >>> assert leave_page.is_apply_button_visible()
+        """
+        ...
+
+    def is_leave_list_button_visible(self) -> bool:
+        """
+        Check if the Leave List button is visible.
+
+        Returns:
+            True if Leave List button is visible, False otherwise
+
+        Example:
+            >>> assert leave_page.is_leave_list_button_visible()
+        """
+        ...
+
+    def is_my_leave_button_visible(self) -> bool:
+        """
+        Check if the My Leave button is visible.
+
+        Returns:
+            True if My Leave button is visible, False otherwise
+
+        Example:
+            >>> assert leave_page.is_my_leave_button_visible()
+        """
+        ...
+
+    def is_leave_list_table_visible(self) -> bool:
+        """
+        Check if the leave list table is visible.
+
+        Returns:
+            True if table is visible, False otherwise
+
+        Example:
+            >>> leave_page.navigate_to_leave_list()
+            >>> assert leave_page.is_leave_list_table_visible()
+        """
+        ...
+
+    def apply_leave(
+        self, leave_type: str, from_date: str, to_date: str, comments: str = ""
+    ) -> None:
+        """
+        Apply for leave with specified details.
+
+        Args:
+            leave_type: Type of leave to apply for
+            from_date: Start date of leave (format: YYYY-MM-DD)
+            to_date: End date of leave (format: YYYY-MM-DD)
+            comments: Optional comments for leave request
+
+        Example:
+            >>> leave_page.apply_leave("CAN - FMLA", "2025-01-15", "2025-01-17", "Family emergency")
+        """
+        ...
+
+    def search_leave(self, employee_name: str = "", status: str = "") -> None:
+        """
+        Search for leave records with filters.
+
+        Args:
+            employee_name: Employee name to filter (optional)
+            status: Leave status to filter (optional)
+
+        Example:
+            >>> leave_page.search_leave(employee_name="John Doe", status="Pending")
+        """
+        ...
+
+    def reset_search(self) -> None:
+        """
+        Reset all search filters.
+
+        Example:
+            >>> leave_page.search_leave(employee_name="John Doe")
+            >>> leave_page.reset_search()
+        """
+        ...
+
+    def get_leave_count(self) -> int:
+        """
+        Get the count of leave records displayed.
+
+        Returns:
+            Number of leave records in the list
+
+        Example:
+            >>> count = leave_page.get_leave_count()
+            >>> assert count > 0
+        """
+        ...
+
+    def is_success_message_displayed(self) -> bool:
+        """
+        Check if success message is displayed.
+
+        Returns:
+            True if success message is visible, False otherwise
+
+        Example:
+            >>> leave_page.apply_leave("CAN - FMLA", "2025-01-15", "2025-01-17")
+            >>> assert leave_page.is_success_message_displayed()
+        """
+        ...
+
+    def is_no_records_message_displayed(self) -> bool:
+        """
+        Check if 'No Records Found' message is displayed.
+
+        Returns:
+            True if no records message is visible, False otherwise
+
+        Example:
+            >>> leave_page.search_leave(employee_name="NonExistentUser")
+            >>> assert leave_page.is_no_records_message_displayed()
+        """
+        ...
