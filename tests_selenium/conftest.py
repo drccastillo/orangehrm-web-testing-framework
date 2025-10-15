@@ -11,7 +11,6 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-from src.config.config import Config
 from src.config.environment_config import EnvironmentConfigService
 from src.config.protocols import ConfigService
 from src.pages_selenium.login_page import LoginPage
@@ -20,10 +19,13 @@ from utils.logger import TestLogger
 # Initialize logger for conftest
 logger = TestLogger.get_logger(__name__)
 
+# Initialize config service for module-level access
+_config = EnvironmentConfigService()
+
 
 def pytest_configure(config):
     """Create necessary directories before running tests."""
-    Config.ensure_directories()
+    _config.ensure_directories()
 
 
 @pytest.fixture(scope="session")
@@ -37,7 +39,7 @@ def config_service() -> ConfigService:
     Returns:
         ConfigService implementation (EnvironmentConfigService)
     """
-    return EnvironmentConfigService()
+    return _config
 
 
 @pytest.fixture(scope="session")
@@ -46,7 +48,7 @@ def browser_name(request):
     Get browser name from command line or use default.
     Usage: pytest --browser=firefox
     """
-    return request.config.getoption("--browser", default=Config.DEFAULT_BROWSER)
+    return request.config.getoption("--browser", default=_config.default_browser)
 
 
 @pytest.fixture(scope="session")
@@ -55,7 +57,7 @@ def headless(request):
     Get headless mode from command line or use default.
     Usage: pytest --headless
     """
-    return request.config.getoption("--headless", default=Config.HEADLESS)
+    return request.config.getoption("--headless", default=_config.headless)
 
 
 @pytest.fixture(scope="function")
@@ -74,16 +76,16 @@ def driver(browser_name, headless):
     options = _get_browser_options(browser_name, headless)
 
     # Create remote WebDriver connected to Selenium Grid
-    driver = webdriver.Remote(command_executor=Config.get_selenium_grid_url(), options=options)
+    driver = webdriver.Remote(command_executor=_config.get_selenium_grid_url(), options=options)
 
     # Configure driver
-    driver.set_page_load_timeout(Config.PAGE_LOAD_TIMEOUT)
+    driver.set_page_load_timeout(_config.page_load_timeout)
     # Note: Not using implicit waits - relying on explicit waits only for better control
 
-    if Config.MAXIMIZE_WINDOW:
+    if _config.maximize_window:
         driver.maximize_window()
     else:
-        driver.set_window_size(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT)
+        driver.set_window_size(_config.window_width, _config.window_height)
 
     yield driver
 
@@ -102,9 +104,31 @@ def login_page(driver):
     Yields:
         LoginPage instance
     """
-    page = LoginPage(driver, timeout=Config.DEFAULT_TIMEOUT)
-    page.navigate_to(Config.BASE_URL)
+    page = LoginPage(driver, timeout=_config.default_timeout)
+    page.navigate_to(_config.base_url)
     yield page
+
+
+@pytest.fixture(scope="session")
+def test_username():
+    """
+    Provide test username for login tests.
+
+    Returns:
+        Username string
+    """
+    return _config.username
+
+
+@pytest.fixture(scope="session")
+def test_password():
+    """
+    Provide test password for login tests.
+
+    Returns:
+        Password string
+    """
+    return _config.password
 
 
 def _get_browser_options(browser_name: str, headless: bool):
@@ -165,7 +189,7 @@ def pytest_runtest_makereport(item, call):
     # Take screenshot on test failure
     if report.when == "call" and report.failed:
         logger.error(f"Test failed: {item.name}")
-        if Config.SCREENSHOT_ON_FAILURE:
+        if _config.screenshot_on_failure:
             driver = item.funcargs.get("driver")
             if driver:
                 _take_screenshot(driver, item.name)
@@ -181,7 +205,7 @@ def _take_screenshot(driver, test_name: str):
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     screenshot_name = f"{test_name}_{timestamp}.png"
-    screenshot_path = Config.SCREENSHOTS_DIR / screenshot_name
+    screenshot_path = _config.screenshots_dir / screenshot_name
 
     try:
         driver.save_screenshot(str(screenshot_path))
@@ -204,6 +228,6 @@ def pytest_addoption(parser):
     parser.addoption(
         "--headless",
         action="store_true",
-        default=Config.HEADLESS,
+        default=_config.headless,
         help="Run tests in headless mode",
     )

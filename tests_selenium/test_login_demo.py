@@ -6,7 +6,6 @@ import time
 
 import pytest
 
-from src.config.config import Config
 from src.pages_selenium.login_page import LoginPage
 from utils.logger import TestLogger
 
@@ -15,7 +14,7 @@ logger = TestLogger.get_logger(__name__)
 
 
 @pytest.mark.smoke
-def test_login_slow_demo(login_page: LoginPage):
+def test_login_slow_demo(login_page: LoginPage, test_username: str, test_password: str):
     """
     Slow demo test to view in VNC viewer.
     Connect to http://localhost:7900 to watch in browser!
@@ -26,13 +25,13 @@ def test_login_slow_demo(login_page: LoginPage):
     # Highlight and enter username
     logger.info("Entering username...")
     login_page.highlight_element(login_page.USERNAME_INPUT, duration=1)
-    login_page.enter_username(Config.USERNAME)
+    login_page.enter_username(test_username)
     time.sleep(1)
 
     # Highlight and enter password
     logger.info("Entering password...")
     login_page.highlight_element(login_page.PASSWORD_INPUT, duration=1)
-    login_page.enter_password(Config.PASSWORD)
+    login_page.enter_password(test_password)
     time.sleep(1)
 
     # Blink and click login button

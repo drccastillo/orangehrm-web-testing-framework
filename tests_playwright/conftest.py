@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import BrowserContext, Page
 
-from src.config.config import Config
 from src.config.environment_config import EnvironmentConfigService
 from src.config.protocols import ConfigService
 from src.pages_playwright.login_page_pw import LoginPagePW
@@ -18,10 +17,13 @@ from utils.logger import TestLogger
 # Initialize logger for conftest
 logger = TestLogger.get_logger(__name__)
 
+# Initialize config service for module-level access
+_config = EnvironmentConfigService()
+
 
 def pytest_configure(config):
     """Create necessary directories before running tests."""
-    Config.ensure_directories()
+    _config.ensure_directories()
 
     # Create Playwright-specific directories
     reports_dir = Path(__file__).parent.parent / "reports_playwright"
@@ -44,7 +46,7 @@ def config_service() -> ConfigService:
     Returns:
         ConfigService implementation (EnvironmentConfigService)
     """
-    return EnvironmentConfigService()
+    return _config
 
 
 @pytest.fixture(scope="session")
@@ -81,7 +83,7 @@ def browser_context_args(browser_type_launch_args):
            - pytest --video=off (record none)
     """
     return {
-        "viewport": {"width": Config.WINDOW_WIDTH, "height": Config.WINDOW_HEIGHT},
+        "viewport": {"width": _config.window_width, "height": _config.window_height},
         "ignore_https_errors": True,
         # Video recording: records all tests to this directory
         "record_video_dir": str(Path(__file__).parent.parent / "reports_playwright" / "videos"),
@@ -105,11 +107,11 @@ def page(context: BrowserContext):
     page = context.new_page()
 
     # Set default timeout (CRITICAL: this now actually applies to all tests)
-    page.set_default_timeout(Config.DEFAULT_TIMEOUT * 1000)  # milliseconds
+    page.set_default_timeout(_config.default_timeout * 1000)  # milliseconds
 
     # Set viewport size if not maximized
-    if not Config.MAXIMIZE_WINDOW:
-        page.set_viewport_size({"width": Config.WINDOW_WIDTH, "height": Config.WINDOW_HEIGHT})
+    if not _config.maximize_window:
+        page.set_viewport_size({"width": _config.window_width, "height": _config.window_height})
 
     yield page
 
@@ -128,11 +130,33 @@ def login_page_pw(page: Page):
     Yields:
         LoginPagePW instance
     """
-    login_page = LoginPagePW(page, timeout=Config.DEFAULT_TIMEOUT)
-    login_page.navigate_to(Config.BASE_URL)
+    login_page = LoginPagePW(page, timeout=_config.default_timeout)
+    login_page.navigate_to(_config.base_url)
     login_page.wait_for_login_page_to_load()
 
     yield login_page
+
+
+@pytest.fixture(scope="session")
+def test_username():
+    """
+    Provide test username for login tests.
+
+    Returns:
+        Username string
+    """
+    return _config.username
+
+
+@pytest.fixture(scope="session")
+def test_password():
+    """
+    Provide test password for login tests.
+
+    Returns:
+        Password string
+    """
+    return _config.password
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -153,7 +177,7 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
 
     # Take screenshot on test failure
-    if report.when == "call" and report.failed and Config.SCREENSHOT_ON_FAILURE:
+    if report.when == "call" and report.failed and _config.screenshot_on_failure:
         logger.error(f"Test failed: {item.name}")
 
         # Try to get page object from any available fixture

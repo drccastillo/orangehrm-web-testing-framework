@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import expect
 
-from src.config.config import Config
 from src.pages_playwright.login_page_pw import LoginPagePW
 from utils.logger import TestLogger
 
@@ -18,7 +17,7 @@ logger = TestLogger.get_logger(__name__)
 
 
 @pytest.mark.smoke
-def test_login_visual_demo_pw(login_page_pw: LoginPagePW):
+def test_login_visual_demo_pw(login_page_pw: LoginPagePW, test_username: str, test_password: str):
     """
     Visual demo test using Playwright's highlight and blink features.
 
@@ -38,7 +37,7 @@ def test_login_visual_demo_pw(login_page_pw: LoginPagePW):
     # Highlight and enter username
     logger.info("Highlighting and entering username...")
     login_page_pw.highlight_element(login_page_pw.locators.USERNAME_INPUT, duration=1, color="blue")
-    login_page_pw.enter_username(Config.USERNAME)
+    login_page_pw.enter_username(test_username)
     login_page_pw.page.wait_for_timeout(1000)
 
     # Highlight and enter password
@@ -46,7 +45,7 @@ def test_login_visual_demo_pw(login_page_pw: LoginPagePW):
     login_page_pw.highlight_element(
         login_page_pw.locators.PASSWORD_INPUT, duration=1, color="green"
     )
-    login_page_pw.enter_password(Config.PASSWORD)
+    login_page_pw.enter_password(test_password)
     login_page_pw.page.wait_for_timeout(1000)
 
     # Blink and click login button
@@ -69,7 +68,9 @@ def test_login_visual_demo_pw(login_page_pw: LoginPagePW):
 
 
 @pytest.mark.smoke
-def test_login_demo_with_screenshots_pw(login_page_pw: LoginPagePW):
+def test_login_demo_with_screenshots_pw(
+    login_page_pw: LoginPagePW, test_username: str, test_password: str
+):
     """
     Demo test showing screenshot capabilities at different stages.
     Demonstrates visual debugging workflow with Playwright.
@@ -86,8 +87,8 @@ def test_login_demo_with_screenshots_pw(login_page_pw: LoginPagePW):
     logger.info("Screenshot 1: Login page loaded")
 
     # Screenshot 2: After entering credentials
-    login_page_pw.enter_username(Config.USERNAME)
-    login_page_pw.enter_password(Config.PASSWORD)
+    login_page_pw.enter_username(test_username)
+    login_page_pw.enter_password(test_password)
     login_page_pw.highlight_element(login_page_pw.locators.LOGIN_BUTTON, duration=1, color="green")
     login_page_pw.screenshot(str(screenshots_dir / "02_credentials_entered.png"), full_page=True)
     logger.info("Screenshot 2: Credentials entered")
@@ -111,7 +112,9 @@ def test_login_demo_with_screenshots_pw(login_page_pw: LoginPagePW):
 
 
 @pytest.mark.smoke
-def test_login_demo_blink_variations_pw(login_page_pw: LoginPagePW):
+def test_login_demo_blink_variations_pw(
+    login_page_pw: LoginPagePW, test_username: str, test_password: str
+):
     """
     Demo showcasing different blink variations and colors.
     Educational test to demonstrate visual debugging capabilities.
@@ -132,7 +135,7 @@ def test_login_demo_blink_variations_pw(login_page_pw: LoginPagePW):
     login_page_pw.blink_element(login_page_pw.locators.LOGIN_BUTTON, times=5, color="red")
 
     # Perform actual login
-    login_page_pw.login(Config.USERNAME, Config.PASSWORD)
+    login_page_pw.login(test_username, test_password)
 
     # Verify using Playwright's built-in assertions
     expect(login_page_pw.page).to_have_url(re.compile(r".*dashboard.*"))
