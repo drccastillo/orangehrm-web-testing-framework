@@ -6,7 +6,7 @@ Uses LoginPage object model and BasePage functionality.
 import allure
 import pytest
 
-from src.config.config import Config
+from src.config.protocols import ConfigService
 from src.pages_selenium.login_page import LoginPage
 
 
@@ -22,7 +22,7 @@ class TestLogin:
         "Test that a user can successfully log in using valid username and password"
     )
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_successful_login(self, login_page: LoginPage):
+    def test_successful_login(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test successful login with valid credentials.
 
@@ -39,11 +39,11 @@ class TestLogin:
         with allure.step("Verify login page is loaded"):
             assert login_page.is_login_page_loaded(), "Login page did not load properly"
 
-        with allure.step(f"Enter username: {Config.USERNAME}"):
-            login_page.enter_username(Config.USERNAME)
+        with allure.step(f"Enter username: {config_service.username}"):
+            login_page.enter_username(config_service.username)
 
         with allure.step("Enter password"):
-            login_page.enter_password(Config.PASSWORD)
+            login_page.enter_password(config_service.password)
 
         with allure.step("Click login button"):
             login_page.click_login_button()
@@ -57,7 +57,9 @@ class TestLogin:
 
     @allure.title("Login with invalid credentials shows error message")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_login_with_invalid_credentials(self, login_page: LoginPage):
+    def test_login_with_invalid_credentials(
+        self, login_page: LoginPage, config_service: ConfigService
+    ):
         """
         Test login with invalid credentials.
 
@@ -88,7 +90,7 @@ class TestLogin:
 
     @allure.title("Login with empty username should fail")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_empty_username(self, login_page: LoginPage):
+    def test_login_with_empty_username(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test login with empty username.
 
@@ -103,7 +105,7 @@ class TestLogin:
             Login should fail with appropriate message
         """
         with allure.step("Enter password without username"):
-            login_page.enter_password(Config.PASSWORD)
+            login_page.enter_password(config_service.password)
 
         with allure.step("Click login button"):
             login_page.click_login_button()
@@ -119,7 +121,7 @@ class TestLogin:
 
     @allure.title("Login with empty password should fail")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_empty_password(self, login_page: LoginPage):
+    def test_login_with_empty_password(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test login with empty password.
 
@@ -133,8 +135,8 @@ class TestLogin:
         Expected:
             Login should fail with appropriate message
         """
-        with allure.step(f"Enter username: {Config.USERNAME}"):
-            login_page.enter_username(Config.USERNAME)
+        with allure.step(f"Enter username: {config_service.username}"):
+            login_page.enter_username(config_service.username)
 
         with allure.step("Click login button without password"):
             login_page.click_login_button()
@@ -150,7 +152,9 @@ class TestLogin:
 
     @allure.title("Login with valid username but invalid password shows error")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_login_with_valid_username_invalid_password(self, login_page: LoginPage):
+    def test_login_with_valid_username_invalid_password(
+        self, login_page: LoginPage, config_service: ConfigService
+    ):
         """
         Test login with valid username but invalid password.
 
@@ -165,7 +169,7 @@ class TestLogin:
             Error message should be displayed
         """
         with allure.step("Attempt login with valid username and wrong password"):
-            login_page.login(Config.USERNAME, "wrong_password123")
+            login_page.login(config_service.username, "wrong_password123")
 
         with allure.step("Verify error message is displayed"):
             assert login_page.is_error_message_displayed(), (
@@ -174,7 +178,9 @@ class TestLogin:
 
     @allure.title("All login page elements are visible")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_page_elements_visibility(self, login_page: LoginPage):
+    def test_login_page_elements_visibility(
+        self, login_page: LoginPage, config_service: ConfigService
+    ):
         """
         Test that all login page elements are visible.
 
@@ -189,17 +195,17 @@ class TestLogin:
             All elements should be visible
         """
         with allure.step("Verify username field is visible"):
-            assert login_page.is_element_visible(login_page.USERNAME_INPUT), (
+            assert login_page.is_element_visible(login_page.locators.USERNAME_INPUT), (
                 "Username field not visible"
             )
 
         with allure.step("Verify password field is visible"):
-            assert login_page.is_element_visible(login_page.PASSWORD_INPUT), (
+            assert login_page.is_element_visible(login_page.locators.PASSWORD_INPUT), (
                 "Password field not visible"
             )
 
         with allure.step("Verify login button is visible"):
-            assert login_page.is_element_visible(login_page.LOGIN_BUTTON), (
+            assert login_page.is_element_visible(login_page.locators.LOGIN_BUTTON), (
                 "Login button not visible"
             )
 
@@ -208,7 +214,7 @@ class TestLogin:
 
     @allure.title("Login with method chaining succeeds")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_login_with_method_chaining(self, login_page: LoginPage):
+    def test_login_with_method_chaining(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test login using method chaining pattern.
 
@@ -222,7 +228,9 @@ class TestLogin:
             User should be logged in successfully
         """
         with allure.step("Use method chaining to enter credentials"):
-            login_page.enter_username(Config.USERNAME).enter_password(Config.PASSWORD)
+            login_page.enter_username(config_service.username).enter_password(
+                config_service.password
+            )
 
         with allure.step("Click login button"):
             login_page.click_login_button()
@@ -237,7 +245,7 @@ class TestLogin:
     @allure.title("Login page has correct title")
     @allure.severity(allure.severity_level.MINOR)
     @pytest.mark.regression
-    def test_login_page_title(self, login_page: LoginPage):
+    def test_login_page_title(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test that login page has correct title.
 
@@ -269,7 +277,7 @@ class TestLoginPageInteractions:
     @pytest.mark.skip(
         reason="OrangeHRM uses React-controlled inputs that don't clear with standard .clear() method"
     )
-    def test_clear_username_field(self, login_page: LoginPage):
+    def test_clear_username_field(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test clearing the username field.
 
@@ -286,7 +294,7 @@ class TestLoginPageInteractions:
         login_page.clear_username()
 
         # Get the value attribute
-        username_value = login_page.get_attribute(login_page.USERNAME_INPUT, "value")
+        username_value = login_page.get_attribute(login_page.locators.USERNAME_INPUT, "value")
         assert username_value == "" or username_value is None, (
             f"Username field was not cleared, value: {username_value}"
         )
@@ -296,7 +304,7 @@ class TestLoginPageInteractions:
     @pytest.mark.skip(
         reason="OrangeHRM uses React-controlled inputs that don't clear with standard .clear() method"
     )
-    def test_clear_password_field(self, login_page: LoginPage):
+    def test_clear_password_field(self, login_page: LoginPage, config_service: ConfigService):
         """
         Test clearing the password field.
 
@@ -313,7 +321,7 @@ class TestLoginPageInteractions:
         login_page.clear_password()
 
         # Get the value attribute
-        password_value = login_page.get_attribute(login_page.PASSWORD_INPUT, "value")
+        password_value = login_page.get_attribute(login_page.locators.PASSWORD_INPUT, "value")
         assert password_value == "" or password_value is None, (
             f"Password field was not cleared, value: {password_value}"
         )

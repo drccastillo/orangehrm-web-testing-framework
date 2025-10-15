@@ -9,7 +9,7 @@ import allure
 import pytest
 from playwright.sync_api import expect
 
-from src.config.config import Config
+from src.config.protocols import ConfigService
 from src.pages_playwright.login_page_pw import LoginPagePW
 from utils.logger import TestLogger, log_test_step
 
@@ -25,7 +25,7 @@ logger = TestLogger.get_logger(__name__)
 @pytest.mark.smoke
 @pytest.mark.login
 @log_test_step("Test successful login with valid credentials")
-def test_login_success_playwright(login_page_pw: LoginPagePW):
+def test_login_success_playwright(login_page_pw: LoginPagePW, config_service: ConfigService):
     """
     Test successful login with valid credentials.
 
@@ -40,8 +40,8 @@ def test_login_success_playwright(login_page_pw: LoginPagePW):
         - User should be redirected to dashboard
         - URL should contain 'dashboard'
     """
-    with allure.step(f"Perform login with username: {Config.USERNAME}"):
-        login_page_pw.login(Config.USERNAME, Config.PASSWORD)
+    with allure.step(f"Perform login with username: {config_service.username}"):
+        login_page_pw.login(config_service.username, config_service.password)
 
     with allure.step("Verify successful redirect to dashboard"):
         # Using regex pattern with case-insensitive flag
@@ -58,7 +58,9 @@ def test_login_success_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.smoke
 @pytest.mark.login
 @log_test_step("Test login with invalid credentials")
-def test_login_invalid_credentials_playwright(login_page_pw: LoginPagePW):
+def test_login_invalid_credentials_playwright(
+    login_page_pw: LoginPagePW, config_service: ConfigService
+):
     """
     Test login with invalid credentials.
 
@@ -100,7 +102,7 @@ def test_login_invalid_credentials_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test login with empty username")
-def test_login_empty_username_playwright(login_page_pw: LoginPagePW):
+def test_login_empty_username_playwright(login_page_pw: LoginPagePW, config_service: ConfigService):
     """
     Test login with empty username field.
 
@@ -116,7 +118,7 @@ def test_login_empty_username_playwright(login_page_pw: LoginPagePW):
         - User should remain on login page
     """
     with allure.step("Enter password without username"):
-        login_page_pw.enter_password(Config.PASSWORD)
+        login_page_pw.enter_password(config_service.password)
 
     with allure.step("Click login button"):
         login_page_pw.click_login_button()
@@ -133,7 +135,7 @@ def test_login_empty_username_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test login with empty password")
-def test_login_empty_password_playwright(login_page_pw: LoginPagePW):
+def test_login_empty_password_playwright(login_page_pw: LoginPagePW, config_service: ConfigService):
     """
     Test login with empty password field.
 
@@ -148,8 +150,8 @@ def test_login_empty_password_playwright(login_page_pw: LoginPagePW):
         - Error message or validation should be displayed
         - User should remain on login page
     """
-    with allure.step(f"Enter username: {Config.USERNAME}"):
-        login_page_pw.enter_username(Config.USERNAME)
+    with allure.step(f"Enter username: {config_service.username}"):
+        login_page_pw.enter_username(config_service.username)
 
     with allure.step("Click login button without password"):
         login_page_pw.click_login_button()
@@ -166,7 +168,7 @@ def test_login_empty_password_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test login with empty fields")
-def test_login_empty_fields_playwright(login_page_pw: LoginPagePW):
+def test_login_empty_fields_playwright(login_page_pw: LoginPagePW, config_service: ConfigService):
     """
     Test login with both username and password fields empty.
 
@@ -195,7 +197,9 @@ def test_login_empty_fields_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.smoke
 @pytest.mark.login
 @log_test_step("Test login page elements visibility")
-def test_login_page_elements_visible_playwright(login_page_pw: LoginPagePW):
+def test_login_page_elements_visible_playwright(
+    login_page_pw: LoginPagePW, config_service: ConfigService
+):
     """
     Test that all login page elements are visible.
 
@@ -230,7 +234,9 @@ def test_login_page_elements_visible_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test login with method chaining")
-def test_login_method_chaining_playwright(login_page_pw: LoginPagePW):
+def test_login_method_chaining_playwright(
+    login_page_pw: LoginPagePW, config_service: ConfigService
+):
     """
     Test login using method chaining pattern.
 
@@ -245,8 +251,8 @@ def test_login_method_chaining_playwright(login_page_pw: LoginPagePW):
     """
     with allure.step("Use method chaining to enter credentials and login"):
         (
-            login_page_pw.enter_username(Config.USERNAME)
-            .enter_password(Config.PASSWORD)
+            login_page_pw.enter_username(config_service.username)
+            .enter_password(config_service.password)
             .click_login_button()
         )
 
@@ -264,7 +270,9 @@ def test_login_method_chaining_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test login submission with Enter key")
-def test_login_submit_with_enter_key_playwright(login_page_pw: LoginPagePW):
+def test_login_submit_with_enter_key_playwright(
+    login_page_pw: LoginPagePW, config_service: ConfigService
+):
     """
     Test login submission using Enter key.
 
@@ -284,8 +292,8 @@ def test_login_submit_with_enter_key_playwright(login_page_pw: LoginPagePW):
         to Enter key submission. This is a known behavior of the application.
     """
     with allure.step("Enter credentials"):
-        login_page_pw.enter_username(Config.USERNAME)
-        login_page_pw.enter_password(Config.PASSWORD)
+        login_page_pw.enter_username(config_service.username)
+        login_page_pw.enter_password(config_service.password)
 
     with allure.step("Submit with Enter key"):
         login_page_pw.submit_with_enter_key()
@@ -304,7 +312,7 @@ def test_login_submit_with_enter_key_playwright(login_page_pw: LoginPagePW):
 @pytest.mark.regression
 @pytest.mark.login
 @log_test_step("Test clearing login form")
-def test_clear_login_form_playwright(login_page_pw: LoginPagePW):
+def test_clear_login_form_playwright(login_page_pw: LoginPagePW, config_service: ConfigService):
     """
     Test clearing the login form.
 
@@ -332,7 +340,7 @@ def test_clear_login_form_playwright(login_page_pw: LoginPagePW):
         # If the field is empty, it's application behavior (auto-clear)
         # Try with a valid user that the app accepts
         if not username_value:
-            login_page_pw.enter_username(Config.USERNAME)
+            login_page_pw.enter_username(config_service.username)
             username_value = login_page_pw.get_username_value()
 
         allure.attach(

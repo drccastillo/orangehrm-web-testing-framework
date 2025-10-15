@@ -26,35 +26,6 @@ class LoginPage(BasePage):
         super().__init__(driver, timeout)
         self.locators = LoginLocators
 
-    # Expose locators as properties for backward compatibility
-    @property
-    def USERNAME_INPUT(self):
-        return self.locators.USERNAME_INPUT
-
-    @property
-    def PASSWORD_INPUT(self):
-        return self.locators.PASSWORD_INPUT
-
-    @property
-    def LOGIN_BUTTON(self):
-        return self.locators.LOGIN_BUTTON
-
-    @property
-    def ERROR_MESSAGE(self):
-        return self.locators.ERROR_MESSAGE
-
-    @property
-    def FORGOT_PASSWORD_LINK(self):
-        return self.locators.FORGOT_PASSWORD_LINK
-
-    @property
-    def LOGIN_LOGO(self):
-        return self.locators.LOGIN_LOGO
-
-    @property
-    def LOGIN_TITLE(self):
-        return self.locators.LOGIN_TITLE
-
     def enter_username(self, username: str) -> "LoginPage":
         """
         Enter username in the username field.
@@ -65,7 +36,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.USERNAME_INPUT, username)
+        self.send_keys(self.locators.USERNAME_INPUT, username)
         return self
 
     def enter_password(self, password: str) -> "LoginPage":
@@ -78,12 +49,12 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.PASSWORD_INPUT, password)
+        self.send_keys(self.locators.PASSWORD_INPUT, password)
         return self
 
     def click_login_button(self) -> None:
         """Click the login button to submit credentials."""
-        self.click(self.LOGIN_BUTTON)
+        self.click(self.locators.LOGIN_BUTTON)
 
     def login(self, username: str, password: str) -> None:
         """
@@ -104,7 +75,7 @@ class LoginPage(BasePage):
         Returns:
             Error message text
         """
-        return self.get_text(self.ERROR_MESSAGE)
+        return self.get_text(self.locators.ERROR_MESSAGE)
 
     def is_error_message_displayed(self) -> bool:
         """
@@ -113,11 +84,11 @@ class LoginPage(BasePage):
         Returns:
             True if error message is visible, False otherwise
         """
-        return self.is_element_visible(self.ERROR_MESSAGE)
+        return self.is_element_visible(self.locators.ERROR_MESSAGE)
 
     def click_forgot_password(self) -> None:
         """Click the 'Forgot Password' link."""
-        self.click(self.FORGOT_PASSWORD_LINK)
+        self.click(self.locators.FORGOT_PASSWORD_LINK)
 
     def is_login_page_loaded(self) -> bool:
         """
@@ -127,9 +98,9 @@ class LoginPage(BasePage):
             True if login page elements are visible, False otherwise
         """
         return (
-            self.is_element_visible(self.USERNAME_INPUT)
-            and self.is_element_visible(self.PASSWORD_INPUT)
-            and self.is_element_visible(self.LOGIN_BUTTON)
+            self.is_element_visible(self.locators.USERNAME_INPUT)
+            and self.is_element_visible(self.locators.PASSWORD_INPUT)
+            and self.is_element_visible(self.locators.LOGIN_BUTTON)
         )
 
     def get_login_title(self) -> str:
@@ -139,7 +110,7 @@ class LoginPage(BasePage):
         Returns:
             Login title text
         """
-        return self.get_text(self.LOGIN_TITLE)
+        return self.get_text(self.locators.LOGIN_TITLE)
 
     def is_logo_displayed(self) -> bool:
         """
@@ -148,7 +119,7 @@ class LoginPage(BasePage):
         Returns:
             True if logo is visible, False otherwise
         """
-        return self.is_element_visible(self.LOGIN_LOGO)
+        return self.is_element_visible(self.locators.LOGIN_LOGO)
 
     def clear_username(self) -> "LoginPage":
         """
@@ -157,7 +128,7 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        username_field = self.find_element(self.USERNAME_INPUT)
+        username_field = self.find_element(self.locators.USERNAME_INPUT)
         username_field.clear()
         return self
 
@@ -168,6 +139,6 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        password_field = self.find_element(self.PASSWORD_INPUT)
+        password_field = self.find_element(self.locators.PASSWORD_INPUT)
         password_field.clear()
         return self

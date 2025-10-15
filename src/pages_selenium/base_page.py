@@ -3,7 +3,6 @@ Base Page class implementing common functionality for all page objects.
 Follows the Page Object Model design pattern.
 """
 
-import time
 from typing import Any
 
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -12,6 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,
     ElementNotFoundException,
@@ -26,26 +26,25 @@ class BasePage:
     Provides common methods for interacting with web elements.
     """
 
-    # Constants for visual debugging
-    BLINK_DELAY_SECONDS = 0.2
-    DEFAULT_BORDER_WIDTH = "3px"
-    DEFAULT_HIGHLIGHT_COLOR = "red"
-    DEFAULT_BLINK_COLOR = "red"
-    DEFAULT_BLINK_TIMES = 3
-    DEFAULT_HIGHLIGHT_DURATION = 2
-
-    def __init__(self, driver: WebDriver, timeout: int = 10):
+    def __init__(
+        self,
+        driver: WebDriver,
+        timeout: int = 10,
+        highlighter: ElementHighlighter | None = None,
+    ):
         """
         Initialize the base page.
 
         Args:
             driver: Selenium WebDriver instance
             timeout: Default timeout for explicit waits in seconds
+            highlighter: Optional ElementHighlighter for visual debugging
         """
         self.driver = driver
         self.timeout = timeout
         self.wait = WebDriverWait(driver, timeout)
         self.logger = TestLogger.get_logger(self.__class__.__name__)
+        self.highlighter = highlighter or ElementHighlighter(driver)
 
     def find_element(self, locator: tuple[str, str]) -> WebElement:
         """
@@ -332,7 +331,11 @@ class BasePage:
         self.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def highlight_element(
-        self, locator: tuple[str, str], duration: int = None, color: str = None, border: str = None
+        self,
+        locator: tuple[str, str],
+        duration: int | None = None,
+        color: str | None = None,
+        border: str | None = None,
     ) -> None:
         """
         Highlight an element on the page for visual debugging.
@@ -346,23 +349,12 @@ class BasePage:
         Example:
             >>> page.highlight_element(page.LOGIN_BUTTON, duration=3, color="blue")
         """
-        duration = duration or self.DEFAULT_HIGHLIGHT_DURATION
-        color = color or self.DEFAULT_HIGHLIGHT_COLOR
-        border = border or f"{self.DEFAULT_BORDER_WIDTH} solid"
-
         element = self.find_element(locator)
-        original_style = element.get_attribute("style")
+        self.highlighter.highlight_element(element, duration=duration, color=color, border=border)
 
-        # Apply highlight style
-        highlight_style = f"{original_style}; border: {border} {color} !important;"
-        self._set_element_style(element, highlight_style)
-
-        time.sleep(duration)
-
-        # Restore original style
-        self._set_element_style(element, original_style or "")
-
-    def blink_element(self, locator: tuple[str, str], times: int = None, color: str = None) -> None:
+    def blink_element(
+        self, locator: tuple[str, str], times: int | None = None, color: str | None = None
+    ) -> None:
         """
         Blink an element multiple times for visual debugging.
 
@@ -374,32 +366,5 @@ class BasePage:
         Example:
             >>> page.blink_element(page.SUBMIT_BUTTON, times=5, color="green")
         """
-        times = times or self.DEFAULT_BLINK_TIMES
-        color = color or self.DEFAULT_BLINK_COLOR
-
         element = self.find_element(locator)
-        original_style = element.get_attribute("style")
-
-        for _ in range(times):
-            # Highlight on
-            highlight_style = (
-                f"{original_style}; "
-                f"border: {self.DEFAULT_BORDER_WIDTH} solid {color} !important; "
-                f"background-color: yellow !important;"
-            )
-            self._set_element_style(element, highlight_style)
-            time.sleep(self.BLINK_DELAY_SECONDS)
-
-            # Highlight off
-            self._set_element_style(element, original_style or "")
-            time.sleep(self.BLINK_DELAY_SECONDS)
-
-    def _set_element_style(self, element: WebElement, style: str) -> None:
-        """
-        Private helper method to set element style.
-
-        Args:
-            element: WebElement to modify
-            style: CSS style string to apply
-        """
-        self.execute_script("arguments[0].setAttribute('style', arguments[1]);", element, style)
+        self.highlighter.blink_element(element, times=times, color=color)

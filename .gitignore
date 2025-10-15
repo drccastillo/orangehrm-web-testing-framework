@@ -78,3 +78,7 @@ uv.lock
 # Misc
 *.tmp
 *.bak
+
+# Misc
+.claude/
+CLAUDE.md

@@ -12,6 +12,8 @@ from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 from src.config.config import Config
+from src.config.environment_config import EnvironmentConfigService
+from src.config.protocols import ConfigService
 from src.pages_selenium.login_page import LoginPage
 from utils.logger import TestLogger
 
@@ -22,6 +24,20 @@ logger = TestLogger.get_logger(__name__)
 def pytest_configure(config):
     """Create necessary directories before running tests."""
     Config.ensure_directories()
+
+
+@pytest.fixture(scope="session")
+def config_service() -> ConfigService:
+    """
+    Provide configuration service via dependency injection.
+
+    This replaces direct Config class access, enabling testability.
+    Tests should inject config_service instead of using Config.X directly.
+
+    Returns:
+        ConfigService implementation (EnvironmentConfigService)
+    """
+    return EnvironmentConfigService()
 
 
 @pytest.fixture(scope="session")

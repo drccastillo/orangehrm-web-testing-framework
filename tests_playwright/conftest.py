@@ -10,6 +10,8 @@ import pytest
 from playwright.sync_api import BrowserContext, Page
 
 from src.config.config import Config
+from src.config.environment_config import EnvironmentConfigService
+from src.config.protocols import ConfigService
 from src.pages_playwright.login_page_pw import LoginPagePW
 from utils.logger import TestLogger
 
@@ -29,6 +31,20 @@ def pytest_configure(config):
 
     for directory in [reports_dir, screenshots_dir, videos_dir, traces_dir]:
         directory.mkdir(parents=True, exist_ok=True)
+
+
+@pytest.fixture(scope="session")
+def config_service() -> ConfigService:
+    """
+    Provide configuration service via dependency injection.
+
+    This replaces direct Config class access, enabling testability.
+    Tests should inject config_service instead of using Config.X directly.
+
+    Returns:
+        ConfigService implementation (EnvironmentConfigService)
+    """
+    return EnvironmentConfigService()
 
 
 @pytest.fixture(scope="session")
