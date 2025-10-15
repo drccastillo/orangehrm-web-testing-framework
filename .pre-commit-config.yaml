@@ -82,6 +82,19 @@ repos:
           - --warn-unused-ignores
         exclude: ^(tests_|unittests/)
 
+  # Type checking with Pyright
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.406
+    hooks:
+      - id: pyright
+        name: Type check with Pyright
+        additional_dependencies:
+          - pytest
+          - selenium
+          - playwright
+          - python-dotenv
+        exclude: ^(tests_|unittests/)
+
   # Code quality checks with Pylint
   - repo: https://github.com/pycqa/pylint
     rev: v4.0.0
