@@ -1,19 +1,21 @@
 """
-Unified BasePage for all page objects.
+Simplified BasePage using Playwright Page directly.
 
-This BasePage works with ANY automation framework (Selenium, Playwright, etc.)
-through the BrowserProtocol interface, eliminating code duplication.
+This BasePage works exclusively with Playwright, eliminating unnecessary
+adapter layers and providing direct access to Playwright's powerful API.
 
 Design Pattern:
     - Single Responsibility: Interaction methods only
-    - Adapter Pattern: Works with any browser via BrowserProtocol
     - Composition: Uses ElementHighlighter for visual debugging
+    - YAGNI Principle: No adapters, only what we need
 """
 
 from typing import Any
 
-from src.core.browser_protocol import BrowserProtocol, LocatorProtocol
-from src.core.element_protocol import WebElementProtocol
+from playwright.sync_api import Locator, Page
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+
+from src.core.playwright_locator import PlaywrightLocator
 from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,
@@ -25,32 +27,29 @@ from utils.logger import TestLogger
 
 class BasePage:
     """
-    Unified base class for all page objects.
+    Simplified base class for all page objects using Playwright directly.
 
-    This BasePage works with ANY automation framework through BrowserProtocol.
-    Eliminates 90% duplication between Selenium and Playwright implementations.
+    This BasePage uses Playwright Page directly, eliminating adapter overhead
+    and providing access to the full Playwright API.
 
     Attributes:
-        browser: Browser adapter implementing BrowserProtocol
+        page: Playwright Page instance
         timeout: Default timeout for operations in seconds
-        highlighter: ElementHighlighter for visual debugging
+        highlighter: ElementHighlighter for visual debugging (lazy loaded)
         logger: Logger instance
 
     Example:
-        >>> # Works with Selenium
-        >>> selenium_browser = SeleniumBrowserAdapter(driver)
-        >>> page = LoginPage(selenium_browser)
-        >>> page.login("admin", "pass")
-
-        >>> # Works with Playwright
-        >>> playwright_browser = PlaywrightBrowserAdapter(page)
-        >>> page = LoginPage(playwright_browser)
-        >>> page.login("admin", "pass")
+        >>> from playwright.sync_api import sync_playwright
+        >>> with sync_playwright() as p:
+        ...     browser = p.chromium.launch()
+        ...     page = browser.new_page()
+        ...     login_page = LoginPage(page, timeout=10)
+        ...     login_page.login("admin", "pass")
     """
 
     def __init__(
         self,
-        browser: BrowserProtocol,
+        page: Page,
         timeout: int = 10,
         highlighter: ElementHighlighter | None = None,
     ):
@@ -58,12 +57,14 @@ class BasePage:
         Initialize the base page.
 
         Args:
-            browser: Browser adapter implementing BrowserProtocol
+            page: Playwright Page instance
             timeout: Default timeout for operations in seconds
             highlighter: Optional ElementHighlighter for visual debugging
         """
-        self.browser = browser
+        self.page = page
         self.timeout = timeout
+        self.timeout_ms = timeout * 1000  # Playwright uses milliseconds
+        self.page.set_default_timeout(self.timeout_ms)
         self.logger = TestLogger.get_logger(self.__class__.__name__)
         # Highlighter will be initialized when needed (lazy loading)
         self._highlighter = highlighter
@@ -72,8 +73,8 @@ class BasePage:
     def highlighter(self) -> ElementHighlighter:
         """Get or create ElementHighlighter (lazy loading)."""
         if self._highlighter is None:
-            # Create highlighter with BrowserProtocol
-            self._highlighter = ElementHighlighter(self.browser)
+            # Create highlighter with Playwright Page
+            self._highlighter = ElementHighlighter(self.page)
         return self._highlighter
 
     @highlighter.setter
@@ -81,56 +82,70 @@ class BasePage:
         """Set the highlighter."""
         self._highlighter = value
 
-    def find_element(self, locator: LocatorProtocol) -> WebElementProtocol:
+    def find_element(self, locator: PlaywrightLocator) -> Locator:
         """
-        Find a single element.
+        Find a single element using Playwright locator.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
 
         Returns:
-            WebElementProtocol: Element that implements the protocol
+            Playwright Locator instance
 
         Raises:
             ElementNotFoundException: If element is not found within timeout
 
         Example:
             >>> element = page.find_element(username_locator)
-            >>> element.send_keys("admin")
+            >>> element.fill("admin")
         """
         try:
-            element = self.browser.find_element(locator)
+            pw_locator = self.page.locator(locator.selector)
+            # Wait for element to be attached to DOM
+            pw_locator.wait_for(state="attached", timeout=self.timeout_ms)
             self.logger.debug(f"Found element: {locator.description}")
-            return element
-        except ElementNotFoundException:
+            return pw_locator
+        except PlaywrightTimeoutError as e:
             self.logger.error(f"Element not found: {locator.description}")
-            raise
+            raise ElementNotFoundException(
+                locator.selector,
+                f"Timeout waiting for element: {locator.description}",
+            ) from e
 
-    def find_elements(self, locator: LocatorProtocol) -> list[WebElementProtocol]:
+    def find_elements(self, locator: PlaywrightLocator) -> list[Locator]:
         """
         Find all elements matching the locator.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
 
         Returns:
-            List of WebElementProtocol objects (empty list if none found)
+            List of Playwright Locator instances (empty list if none found)
 
         Example:
             >>> buttons = page.find_elements(button_locator)
             >>> for button in buttons:
-            ...     print(button.get_text())
+            ...     print(button.inner_text())
         """
-        elements = self.browser.find_elements(locator)
-        self.logger.debug(f"Found {len(elements)} elements: {locator.description}")
-        return elements
+        try:
+            pw_locator = self.page.locator(locator.selector)
+            count = pw_locator.count()
+            self.logger.debug(f"Found {count} elements: {locator.description}")
 
-    def click(self, locator: LocatorProtocol) -> None:
+            if count == 0:
+                return []
+
+            return [pw_locator.nth(i) for i in range(count)]
+        except Exception as e:
+            self.logger.debug(f"No elements found: {locator.description} - {e}")
+            return []
+
+    def click(self, locator: PlaywrightLocator) -> None:
         """
         Click on an element.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
 
         Raises:
             ElementNotFoundException: If element is not found
@@ -140,19 +155,18 @@ class BasePage:
             >>> page.click(LoginLocators.SUBMIT_BUTTON)
         """
         try:
-            element = self.find_element(locator)
-            element.click()
+            self.page.locator(locator.selector).click()
             self.logger.debug(f"Clicked element: {locator.description}")
-        except Exception as e:
+        except PlaywrightTimeoutError as e:
             self.logger.error(f"Failed to click element: {locator.description}")
-            raise ElementNotClickableException(locator.to_native()) from e
+            raise ElementNotClickableException(locator.selector) from e
 
-    def send_keys(self, locator: LocatorProtocol, text: str, clear_first: bool = True) -> None:
+    def send_keys(self, locator: PlaywrightLocator, text: str, clear_first: bool = True) -> None:
         """
         Type text into an input field.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
             text: Text to type
             clear_first: Whether to clear the field before typing
 
@@ -166,18 +180,18 @@ class BasePage:
         if text is None or (isinstance(text, str) and not text.strip()):
             raise InvalidParameterException("text", text, "Text cannot be None or empty")
 
-        element = self.find_element(locator)
+        pw_locator = self.page.locator(locator.selector)
         if clear_first:
-            element.clear()
-        element.send_keys(text)
+            pw_locator.clear()
+        pw_locator.fill(text)
         self.logger.debug(f"Sent keys to element: {locator.description}")
 
-    def get_text(self, locator: LocatorProtocol) -> str:
+    def get_text(self, locator: PlaywrightLocator) -> str:
         """
         Get the text content of an element.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
 
         Returns:
             Text content of the element
@@ -185,17 +199,16 @@ class BasePage:
         Example:
             >>> error_text = page.get_text(LoginLocators.ERROR_MESSAGE)
         """
-        element = self.find_element(locator)
-        text = element.get_text()
+        text = self.page.locator(locator.selector).inner_text()
         self.logger.debug(f"Got text from element: {locator.description} -> '{text}'")
         return text
 
-    def get_attribute(self, locator: LocatorProtocol, attribute: str) -> str | None:
+    def get_attribute(self, locator: PlaywrightLocator, attribute: str) -> str | None:
         """
         Get an attribute value from an element.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
             attribute: Name of the attribute
 
         Returns:
@@ -209,17 +222,17 @@ class BasePage:
                 "attribute", attribute, "Attribute name must be a non-empty string"
             )
 
-        element = self.find_element(locator)
-        value = element.get_attribute(attribute)
+        value = self.page.locator(locator.selector).get_attribute(attribute)
         self.logger.debug(f"Got attribute '{attribute}' from {locator.description} -> '{value}'")
         return value
 
-    def is_element_visible(self, locator: LocatorProtocol) -> bool:
+    def is_element_visible(self, locator: PlaywrightLocator, timeout: int | None = None) -> bool:
         """
         Check if an element is visible on the page.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
+            timeout: Optional timeout in seconds (uses default if not specified)
 
         Returns:
             True if element is visible, False otherwise
@@ -228,20 +241,21 @@ class BasePage:
             >>> if page.is_element_visible(LoginLocators.ERROR_MESSAGE):
             ...     print("Error displayed")
         """
+        timeout_ms = (timeout * 1000) if timeout else self.timeout_ms
         try:
-            element = self.find_element(locator)
-            is_visible = element.is_visible()
-            self.logger.debug(f"Element visible check: {locator.description} -> {is_visible}")
-            return is_visible
-        except ElementNotFoundException:
+            self.page.locator(locator.selector).wait_for(state="visible", timeout=timeout_ms)
+            self.logger.debug(f"Element visible: {locator.description}")
+            return True
+        except PlaywrightTimeoutError:
+            self.logger.debug(f"Element not visible: {locator.description}")
             return False
 
-    def is_element_present(self, locator: LocatorProtocol) -> bool:
+    def is_element_present(self, locator: PlaywrightLocator) -> bool:
         """
         Check if an element is present in the DOM.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
 
         Returns:
             True if element is present, False otherwise
@@ -261,7 +275,7 @@ class BasePage:
         Returns:
             Current URL as string
         """
-        return self.browser.get_current_url()
+        return self.page.url
 
     def get_page_title(self) -> str:
         """
@@ -270,12 +284,12 @@ class BasePage:
         Returns:
             Page title as string
         """
-        return self.browser.get_title()
+        return self.page.title()
 
     def refresh_page(self) -> None:
         """Refresh the current page."""
         self.logger.debug("Refreshing page")
-        self.browser.refresh()
+        self.page.reload()
 
     def navigate_to(self, url: str) -> None:
         """
@@ -294,7 +308,7 @@ class BasePage:
             raise InvalidParameterException("url", url, "URL must be a non-empty string")
 
         self.logger.info(f"Navigating to: {url}")
-        self.browser.navigate(url)
+        self.page.goto(url)
 
     def execute_script(self, script: str, *args: Any) -> Any:
         """
@@ -315,17 +329,25 @@ class BasePage:
                 "script", script, "JavaScript code must be a non-empty string"
             )
 
-        return self.browser.execute_script(script, *args)
+        # Playwright's evaluate expects function format
+        # Convert simple script to function if needed
+        if not script.strip().startswith("(") and not script.strip().startswith("function"):
+            # Wrap in function if it's a simple expression
+            if "return" not in script:
+                script = f"() => {{ return {script} }}"
+            else:
+                script = f"() => {{ {script} }}"
 
-    def scroll_to_element(self, locator: LocatorProtocol) -> None:
+        return self.page.evaluate(script, *args)
+
+    def scroll_to_element(self, locator: PlaywrightLocator) -> None:
         """
         Scroll to an element on the page.
 
         Args:
-            locator: LocatorProtocol value object
+            locator: PlaywrightLocator with selector string
         """
-        element = self.find_element(locator)
-        self.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.page.locator(locator.selector).scroll_into_view_if_needed(timeout=self.timeout_ms)
         self.logger.debug(f"Scrolled to element: {locator.description}")
 
     def take_screenshot(self, path: str) -> bytes:
@@ -339,22 +361,32 @@ class BasePage:
             Screenshot as bytes
         """
         self.logger.info(f"Taking screenshot: {path}")
-        return self.browser.take_screenshot(path)
+        screenshot_bytes = self.page.screenshot(path=path)
+        return screenshot_bytes
 
-    def switch_to_frame(self, locator: LocatorProtocol) -> None:
+    def switch_to_frame(self, locator: PlaywrightLocator) -> None:
         """
-        Switch context to an iframe.
+        Switch context to an iframe (note: Playwright uses frame_locator).
 
         Args:
-            locator: LocatorProtocol for the iframe element
+            locator: PlaywrightLocator for the iframe element
+
+        Note:
+            In Playwright, frame switching is done using frame_locator().
+            This method provides compatibility. For actual iframe interaction,
+            use page.frame_locator(selector) directly in your test code.
         """
-        self.logger.debug(f"Switching to frame: {locator.description}")
-        self.browser.switch_to_frame(locator)
+        self.logger.debug(f"Frame context available for: {locator.description}")
+        # Playwright uses frame_locator() - frame switching is implicit
 
     def switch_to_default_content(self) -> None:
-        """Switch back to the main content from an iframe."""
-        self.logger.debug("Switching to default content")
-        self.browser.switch_to_default_content()
+        """
+        Switch back to the main content from an iframe.
+
+        Note:
+            In Playwright, switching back is implicit when using page.locator().
+        """
+        self.logger.debug("Switched to default content (implicit in Playwright)")
 
     def get_page_source(self) -> str:
         """
@@ -363,4 +395,4 @@ class BasePage:
         Returns:
             HTML source as string
         """
-        return self.browser.get_page_source()
+        return self.page.content()

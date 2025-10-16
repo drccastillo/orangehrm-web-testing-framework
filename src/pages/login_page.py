@@ -1,51 +1,43 @@
 """
-Unified Login Page Object Model for OrangeHRM application.
+Simplified Login Page Object Model for OrangeHRM application.
 
-This LoginPage works with ANY automation framework (Selenium, Playwright, etc.)
-through the BrowserProtocol interface.
+This LoginPage uses Playwright Page directly, eliminating adapter overhead.
 """
 
-from src.core.browser_protocol import BrowserProtocol
+from playwright.sync_api import Page
+
 from src.pages.base_page import BasePage
 from src.pages.locators.login_locators import LoginLocators
 
 
 class LoginPage(BasePage):
     """
-    Unified Page Object Model for the OrangeHRM Login Page.
-
-    This single LoginPage implementation replaces both:
-        - pages_selenium/login_page.py (Selenium-specific)
-        - pages_playwright/login_page_pw.py (Playwright-specific)
+    Page Object Model for the OrangeHRM Login Page using Playwright.
 
     Benefits:
-        - 90% reduction in code duplication
-        - Single source of truth for login page behavior
-        - Works with any automation framework
-        - Easy to maintain and extend
+        - Direct access to Playwright API
+        - No adapter overhead
+        - Simpler, more maintainable code
+        - Full power of Playwright features
 
-    Example (Selenium):
-        >>> from src.adapters.selenium_browser import SeleniumBrowserAdapter
-        >>> selenium_browser = SeleniumBrowserAdapter(driver, timeout=10)
-        >>> login_page = LoginPage(selenium_browser)
-        >>> login_page.login("Admin", "admin123")
-
-    Example (Playwright):
-        >>> from src.adapters.playwright_browser import PlaywrightBrowserAdapter
-        >>> playwright_browser = PlaywrightBrowserAdapter(page, timeout=10)
-        >>> login_page = LoginPage(playwright_browser)
-        >>> login_page.login("Admin", "admin123")
+    Example:
+        >>> from playwright.sync_api import sync_playwright
+        >>> with sync_playwright() as p:
+        ...     browser = p.chromium.launch()
+        ...     page = browser.new_page()
+        ...     login_page = LoginPage(page, timeout=10)
+        ...     login_page.login("Admin", "admin123")
     """
 
-    def __init__(self, browser: BrowserProtocol, timeout: int = 10):
+    def __init__(self, page: Page, timeout: int = 10):
         """
         Initialize the Login Page.
 
         Args:
-            browser: Browser adapter implementing BrowserProtocol
+            page: Playwright Page instance
             timeout: Default timeout for operations in seconds
         """
-        super().__init__(browser, timeout)
+        super().__init__(page, timeout)
         self.locators = LoginLocators
 
     def enter_username(self, username: str) -> "LoginPage":

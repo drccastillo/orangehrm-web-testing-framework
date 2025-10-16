@@ -13,7 +13,14 @@ class FrameworkException(Exception):  # noqa: N818
 class ElementNotFoundException(FrameworkException):
     """Raised when an element cannot be found on the page."""
 
-    def __init__(self, locator: tuple, message: str = None):
+    def __init__(self, locator: str | tuple, message: str | None = None):
+        """
+        Initialize ElementNotFoundException.
+
+        Args:
+            locator: Selector string (Playwright) or tuple (legacy Selenium)
+            message: Custom error message (optional)
+        """
         self.locator = locator
         self.message = message or f"Element not found with locator: {locator}"
         super().__init__(self.message)
@@ -22,7 +29,14 @@ class ElementNotFoundException(FrameworkException):
 class ElementNotClickableException(FrameworkException):
     """Raised when an element is not clickable."""
 
-    def __init__(self, locator: tuple, message: str = None):
+    def __init__(self, locator: str | tuple, message: str | None = None):
+        """
+        Initialize ElementNotClickableException.
+
+        Args:
+            locator: Selector string (Playwright) or tuple (legacy Selenium)
+            message: Custom error message (optional)
+        """
         self.locator = locator
         self.message = message or f"Element not clickable with locator: {locator}"
         super().__init__(self.message)
@@ -31,7 +45,14 @@ class ElementNotClickableException(FrameworkException):
 class ElementNotVisibleException(FrameworkException):
     """Raised when an element is not visible on the page."""
 
-    def __init__(self, locator: tuple, message: str = None):
+    def __init__(self, locator: str | tuple, message: str | None = None):
+        """
+        Initialize ElementNotVisibleException.
+
+        Args:
+            locator: Selector string (Playwright) or tuple (legacy Selenium)
+            message: Custom error message (optional)
+        """
         self.locator = locator
         self.message = message or f"Element not visible with locator: {locator}"
         super().__init__(self.message)

@@ -1,50 +1,43 @@
 """
-Unified Leave Page Object Model for OrangeHRM application.
+Simplified Leave Page Object Model for OrangeHRM application.
 
-This LeavePage works with ANY automation framework (Selenium, Playwright, etc.)
-through the BrowserProtocol interface.
+This LeavePage uses Playwright Page directly, eliminating adapter overhead.
 """
 
-from src.core.browser_protocol import BrowserProtocol
+from playwright.sync_api import Page
+
 from src.pages.base_page import BasePage
 from src.pages.locators.leave_locators import LeaveLocators
 
 
 class LeavePage(BasePage):
     """
-    Unified Page Object Model for the OrangeHRM Leave Page.
-
-    This single LeavePage implementation works with both Selenium and Playwright
-    through the BrowserProtocol abstraction.
+    Page Object Model for the OrangeHRM Leave Page using Playwright.
 
     Benefits:
-        - Single source of truth for leave page behavior
-        - Works with any automation framework
-        - Easy to maintain and extend
-        - Type-safe through LeavePageProtocol
+        - Direct access to Playwright API
+        - No adapter overhead
+        - Simpler, more maintainable code
+        - Full power of Playwright features
 
-    Example (Selenium):
-        >>> from src.adapters.selenium_browser import SeleniumBrowserAdapter
-        >>> selenium_browser = SeleniumBrowserAdapter(driver, timeout=10)
-        >>> leave_page = LeavePage(selenium_browser)
-        >>> leave_page.navigate_to_leave_list()
-
-    Example (Playwright):
-        >>> from src.adapters.playwright_browser import PlaywrightBrowserAdapter
-        >>> playwright_browser = PlaywrightBrowserAdapter(page, timeout=10)
-        >>> leave_page = LeavePage(playwright_browser)
-        >>> leave_page.navigate_to_leave_list()
+    Example:
+        >>> from playwright.sync_api import sync_playwright
+        >>> with sync_playwright() as p:
+        ...     browser = p.chromium.launch()
+        ...     page = browser.new_page()
+        ...     leave_page = LeavePage(page, timeout=10)
+        ...     leave_page.navigate_to_leave_list()
     """
 
-    def __init__(self, browser: BrowserProtocol, timeout: int = 10):
+    def __init__(self, page: Page, timeout: int = 10):
         """
         Initialize the Leave Page.
 
         Args:
-            browser: Browser adapter implementing BrowserProtocol
+            page: Playwright Page instance
             timeout: Default timeout for operations in seconds
         """
-        super().__init__(browser, timeout)
+        super().__init__(page, timeout)
         self.locators = LeaveLocators
 
     def navigate_to_leave_menu(self) -> "LeavePage":
