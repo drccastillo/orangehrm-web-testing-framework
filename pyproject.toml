@@ -49,6 +49,7 @@ dev = [
     "bandit>=1.7.0",
     "pydocstyle>=6.3.0",
     "pylint>=3.3.0",
+    "pylint-pytest>=1.1.7",
 ]
 
 # Black configuration
@@ -100,6 +101,7 @@ select = [
     "C4",   # flake8-comprehensions
     "SIM",  # flake8-simplify
     "TCH",  # flake8-type-checking
+    "PT",   # flake8-pytest-style
 ]
 ignore = [
     "E501",  # line too long (handled by black)
@@ -151,7 +153,10 @@ match_dir = "^(?!(tests_|unittests|reports_|logs|\\.)).*"
 [tool.pylint.main]
 py-version = "3.10"
 ignore = [".venv", "build", "dist", "__pycache__"]
-ignore-patterns = ["test_.*\\.py", "conftest\\.py"]
+# Removed ignore-patterns to allow linting tests/
+# Only ignore unittests/ for now (framework unit tests)
+ignore-patterns = ["^unittests/.*"]
+load-plugins = ["pylint_pytest"]
 
 [tool.pylint.messages_control]
 max-line-length = 100

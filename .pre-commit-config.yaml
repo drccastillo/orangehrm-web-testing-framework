@@ -108,7 +108,8 @@ repos:
           - selenium
           - playwright
           - python-dotenv
-        exclude: ^(tests_|unittests/)
+          - pylint-pytest  # Plugin for pytest-specific linting
+        exclude: ^unittests/  # Only exclude unittests/, include tests/
 
   # Security checks
   - repo: https://github.com/PyCQA/bandit

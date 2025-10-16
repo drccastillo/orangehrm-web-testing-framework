@@ -5,6 +5,9 @@ This conftest provides fixtures for Playwright browser automation
 using native Playwright Page objects.
 """
 
+# pylint: disable=import-error  # src and utils modules are in project root
+# pylint: disable=redefined-outer-name  # pytest fixtures pattern
+
 from datetime import datetime
 
 import pytest
@@ -77,7 +80,7 @@ def headless(request):
     return not headed  # Invert: headed=False means headless=True
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def browser(browser_name, headless, config_service):
     """
     Create Playwright Page instance using BrowserFactory.
@@ -150,7 +153,7 @@ def browser(browser_name, headless, config_service):
         logger.error(f"Error stopping Playwright: {e}")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def login_page(browser, config_service):
     """
     Create LoginPage instance and navigate to login page.
@@ -159,7 +162,7 @@ def login_page(browser, config_service):
         browser: Playwright Page instance (from browser fixture)
         config_service: Configuration service
 
-    Yields:
+    Returns:
         LoginPage: Login page instance
 
     Example:
@@ -169,10 +172,10 @@ def login_page(browser, config_service):
     """
     page = LoginPage(browser, timeout=config_service.default_timeout)
     page.navigate_to(config_service.base_url)
-    yield page
+    return page
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def leave_page(browser, config_service, login_page):
     """
     Create LeavePage instance after login.
@@ -182,7 +185,7 @@ def leave_page(browser, config_service, login_page):
         config_service: Configuration service
         login_page: Login page fixture (to perform login first)
 
-    Yields:
+    Returns:
         LeavePage: Leave page instance
 
     Example:
@@ -202,7 +205,7 @@ def leave_page(browser, config_service, login_page):
     # Wait for page to load - verify page title is visible
     expect(page.locators.PAGE_TITLE(page.page)).to_be_visible(timeout=10000)
 
-    yield page
+    return page
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
