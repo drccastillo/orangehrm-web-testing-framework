@@ -42,7 +42,7 @@ htmlcov/
 *.log
 
 # Reports
-reports_playwright/
+reports/
 *.html
 *.xml
 
@@ -57,8 +57,8 @@ playwright-report/
 *.mp4
 
 # Allure
-reports_playwright/allure-results/
-reports_playwright/allure-report/
+reports/allure-results/
+reports/allure-report/
 .allure/
 
 # Environment variables
