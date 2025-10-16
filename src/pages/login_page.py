@@ -53,7 +53,8 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_username("Admin").enter_password("pass").click_login_button()
         """
-        self.send_keys(self.locators.USERNAME_INPUT, username)
+        # Use functional locator (callable)
+        self.send_keys(self.locators.USERNAME_INPUT(self.page), username)
         return self
 
     def enter_password(self, password: str) -> "LoginPage":
@@ -66,12 +67,12 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.locators.PASSWORD_INPUT, password)
+        self.send_keys(self.locators.PASSWORD_INPUT(self.page), password)
         return self
 
     def click_login_button(self) -> None:
         """Click the login button to submit credentials."""
-        self.click(self.locators.LOGIN_BUTTON)
+        self.click(self.locators.LOGIN_BUTTON(self.page))
 
     def login(self, username: str, password: str) -> None:
         """
@@ -105,7 +106,7 @@ class LoginPage(BasePage):
             >>> error = login_page.get_error_message()
             >>> assert "Invalid credentials" in error
         """
-        return self.get_text(self.locators.ERROR_MESSAGE)
+        return self.get_text(self.locators.ERROR_MESSAGE(self.page))
 
     def is_error_message_displayed(self) -> bool:
         """
@@ -118,7 +119,7 @@ class LoginPage(BasePage):
             >>> login_page.login("invalid", "invalid")
             >>> assert login_page.is_error_message_displayed()
         """
-        return self.is_element_visible(self.locators.ERROR_MESSAGE)
+        return self.is_element_visible(self.locators.ERROR_MESSAGE(self.page))
 
     def is_page_loaded(self) -> bool:
         """
@@ -137,9 +138,9 @@ class LoginPage(BasePage):
             >>> assert login_page.is_page_loaded()
         """
         return (
-            self.is_element_visible(self.locators.USERNAME_INPUT)
-            and self.is_element_visible(self.locators.PASSWORD_INPUT)
-            and self.is_element_visible(self.locators.LOGIN_BUTTON)
+            self.is_element_visible(self.locators.USERNAME_INPUT(self.page))
+            and self.is_element_visible(self.locators.PASSWORD_INPUT(self.page))
+            and self.is_element_visible(self.locators.LOGIN_BUTTON(self.page))
         )
 
     def get_login_title(self) -> str:
@@ -153,7 +154,7 @@ class LoginPage(BasePage):
             >>> title = login_page.get_login_title()
             >>> assert "Login" in title
         """
-        return self.get_text(self.locators.LOGIN_TITLE)
+        return self.get_text(self.locators.LOGIN_TITLE(self.page))
 
     def is_login_logo_visible(self) -> bool:
         """
@@ -165,7 +166,7 @@ class LoginPage(BasePage):
         Example:
             >>> assert login_page.is_login_logo_visible()
         """
-        return self.is_element_visible(self.locators.LOGIN_LOGO)
+        return self.is_element_visible(self.locators.LOGIN_LOGO(self.page))
 
     def clear_username(self) -> "LoginPage":
         """
@@ -177,7 +178,7 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_username("wrong").clear_username().enter_username("correct")
         """
-        username_field = self.find_element(self.locators.USERNAME_INPUT)
+        username_field = self.find_element(self.locators.USERNAME_INPUT(self.page))
         username_field.clear()
         return self
 
@@ -191,6 +192,6 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_password("wrong").clear_password().enter_password("correct")
         """
-        password_field = self.find_element(self.locators.PASSWORD_INPUT)
+        password_field = self.find_element(self.locators.PASSWORD_INPUT(self.page))
         password_field.clear()
         return self

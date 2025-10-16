@@ -8,14 +8,15 @@ Design Pattern:
     - Single Responsibility: Interaction methods only
     - Composition: Uses ElementHighlighter for visual debugging
     - YAGNI Principle: No adapters, only what we need
+    - Supports Playwright functional locators (get_by_role, get_by_label, etc.)
 """
 
+from collections.abc import Callable
 from typing import Any
 
 from playwright.sync_api import Locator, Page
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from src.core.locator import PlaywrightLocator
 from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,
@@ -23,6 +24,10 @@ from utils.exceptions import (
     InvalidParameterException,
 )
 from utils.logger import TestLogger
+
+# Type alias for locator flexibility
+# Supports: Playwright Locator, string selector, or callable that returns Locator
+LocatorType = Locator | str | Callable[[Page], Locator]
 
 
 class BasePage:
@@ -82,12 +87,58 @@ class BasePage:
         """Set the highlighter."""
         self._highlighter = value
 
-    def find_element(self, locator: PlaywrightLocator) -> Locator:
+    def _resolve_locator(self, locator: LocatorType) -> Locator:
+        """
+        Resolve various locator types to a Playwright Locator.
+
+        Supports:
+            - Playwright Locator (returned as-is)
+            - String selector (converted via page.locator())
+            - Callable (executed with page to get Locator)
+
+        Args:
+            locator: Locator in any supported format
+
+        Returns:
+            Playwright Locator instance
+
+        Example:
+            >>> # String selector
+            >>> loc = self._resolve_locator("button.submit")
+
+            >>> # Callable (functional locator)
+            >>> loc = self._resolve_locator(lambda page: page.get_by_role("button", name="Submit"))
+
+            >>> # Already a Locator
+            >>> existing_loc = page.locator("input")
+            >>> loc = self._resolve_locator(existing_loc)
+        """
+        if isinstance(locator, Locator):
+            # Already a Playwright Locator
+            return locator
+        if callable(locator):
+            # Functional locator (e.g., lambda page: page.get_by_role(...))
+            return locator(self.page)
+        if isinstance(locator, str):
+            # String selector (CSS, XPath, etc.)
+            return self.page.locator(locator)
+        raise InvalidParameterException(
+            "locator",
+            locator,
+            "Locator must be a Playwright Locator, string selector, or callable",
+        )
+
+    def find_element(self, locator: LocatorType) -> Locator:
         """
         Find a single element using Playwright locator.
 
+        Supports multiple locator types:
+            - Playwright Locator (get_by_role, get_by_label, etc.)
+            - String selector (CSS, XPath)
+            - Callable that returns Locator
+
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format
 
         Returns:
             Playwright Locator instance
@@ -96,77 +147,87 @@ class BasePage:
             ElementNotFoundException: If element is not found within timeout
 
         Example:
-            >>> element = page.find_element(username_locator)
-            >>> element.fill("admin")
+            >>> # Functional locator (recommended)
+            >>> element = page.find_element(lambda p: p.get_by_role("button", name="Login"))
+            >>> element.click()
+
+            >>> # String selector
+            >>> element = page.find_element("button.submit")
+            >>> element.click()
         """
         try:
-            pw_locator = self.page.locator(locator.selector)
+            pw_locator = self._resolve_locator(locator)
             # Wait for element to be attached to DOM
             pw_locator.wait_for(state="attached", timeout=self.timeout_ms)
-            self.logger.debug(f"Found element: {locator.description}")
+            self.logger.debug(f"Found element: {pw_locator}")
             return pw_locator
         except PlaywrightTimeoutError as e:
-            self.logger.error(f"Element not found: {locator.description}")
+            self.logger.error(f"Element not found: {locator}")
             raise ElementNotFoundException(
-                locator.selector,
-                f"Timeout waiting for element: {locator.description}",
+                str(locator),
+                f"Timeout waiting for element: {locator}",
             ) from e
 
-    def find_elements(self, locator: PlaywrightLocator) -> list[Locator]:
+    def find_elements(self, locator: LocatorType) -> list[Locator]:
         """
         Find all elements matching the locator.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format
 
         Returns:
             List of Playwright Locator instances (empty list if none found)
 
         Example:
-            >>> buttons = page.find_elements(button_locator)
+            >>> buttons = page.find_elements(lambda p: p.get_by_role("button"))
             >>> for button in buttons:
             ...     print(button.inner_text())
         """
         try:
-            pw_locator = self.page.locator(locator.selector)
+            pw_locator = self._resolve_locator(locator)
             count = pw_locator.count()
-            self.logger.debug(f"Found {count} elements: {locator.description}")
+            self.logger.debug(f"Found {count} elements: {locator}")
 
             if count == 0:
                 return []
 
             return [pw_locator.nth(i) for i in range(count)]
         except Exception as e:
-            self.logger.debug(f"No elements found: {locator.description} - {e}")
+            self.logger.debug(f"No elements found: {locator} - {e}")
             return []
 
-    def click(self, locator: PlaywrightLocator) -> None:
+    def click(self, locator: LocatorType) -> None:
         """
         Click on an element.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format
 
         Raises:
             ElementNotFoundException: If element is not found
             ElementNotClickableException: If element is not clickable
 
         Example:
-            >>> page.click(LoginLocators.SUBMIT_BUTTON)
+            >>> # Functional locator (recommended)
+            >>> page.click(lambda p: p.get_by_role("button", name="Submit"))
+
+            >>> # String selector
+            >>> page.click("button[type='submit']")
         """
         try:
-            self.page.locator(locator.selector).click()
-            self.logger.debug(f"Clicked element: {locator.description}")
+            pw_locator = self._resolve_locator(locator)
+            pw_locator.click()
+            self.logger.debug(f"Clicked element: {locator}")
         except PlaywrightTimeoutError as e:
-            self.logger.error(f"Failed to click element: {locator.description}")
-            raise ElementNotClickableException(locator.selector) from e
+            self.logger.error(f"Failed to click element: {locator}")
+            raise ElementNotClickableException(str(locator)) from e
 
-    def send_keys(self, locator: PlaywrightLocator, text: str, clear_first: bool = True) -> None:
+    def send_keys(self, locator: LocatorType, text: str, clear_first: bool = True) -> None:
         """
         Type text into an input field.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format
             text: Text to type
             clear_first: Whether to clear the field before typing
 
@@ -175,18 +236,22 @@ class BasePage:
             ElementNotFoundException: If element is not found
 
         Example:
-            >>> page.send_keys(page.USERNAME_INPUT, "admin")
+            >>> # Functional locator (recommended)
+            >>> page.send_keys(lambda p: p.get_by_placeholder("Username"), "admin")
+
+            >>> # String selector
+            >>> page.send_keys("input[name='username']", "admin")
         """
         if text is None or (isinstance(text, str) and not text.strip()):
             raise InvalidParameterException("text", text, "Text cannot be None or empty")
 
-        pw_locator = self.page.locator(locator.selector)
+        pw_locator = self._resolve_locator(locator)
         if clear_first:
             pw_locator.clear()
         pw_locator.fill(text)
-        self.logger.debug(f"Sent keys to element: {locator.description}")
+        self.logger.debug(f"Sent keys to element: {locator}")
 
-    def get_text(self, locator: PlaywrightLocator) -> str:
+    def get_text(self, locator: LocatorType) -> str:
         """
         Get the text content of an element.
 
@@ -199,11 +264,12 @@ class BasePage:
         Example:
             >>> error_text = page.get_text(LoginLocators.ERROR_MESSAGE)
         """
-        text = self.page.locator(locator.selector).inner_text()
-        self.logger.debug(f"Got text from element: {locator.description} -> '{text}'")
+        pw_locator = self._resolve_locator(locator)
+        text = pw_locator.inner_text()
+        self.logger.debug(f"Got text from element: {locator} -> '{text}'")
         return text
 
-    def get_attribute(self, locator: PlaywrightLocator, attribute: str) -> str | None:
+    def get_attribute(self, locator: LocatorType, attribute: str) -> str | None:
         """
         Get an attribute value from an element.
 
@@ -222,11 +288,12 @@ class BasePage:
                 "attribute", attribute, "Attribute name must be a non-empty string"
             )
 
-        value = self.page.locator(locator.selector).get_attribute(attribute)
-        self.logger.debug(f"Got attribute '{attribute}' from {locator.description} -> '{value}'")
+        pw_locator = self._resolve_locator(locator)
+        value = pw_locator.get_attribute(attribute)
+        self.logger.debug(f"Got attribute '{attribute}' from {locator} -> '{value}'")
         return value
 
-    def is_element_visible(self, locator: PlaywrightLocator, timeout: int | None = None) -> bool:
+    def is_element_visible(self, locator: LocatorType, timeout: int | None = None) -> bool:
         """
         Check if an element is visible on the page.
 
@@ -243,14 +310,15 @@ class BasePage:
         """
         timeout_ms = (timeout * 1000) if timeout else self.timeout_ms
         try:
-            self.page.locator(locator.selector).wait_for(state="visible", timeout=timeout_ms)
-            self.logger.debug(f"Element visible: {locator.description}")
+            pw_locator = self._resolve_locator(locator)
+            pw_locator.wait_for(state="visible", timeout=timeout_ms)
+            self.logger.debug(f"Element visible: {locator}")
             return True
         except PlaywrightTimeoutError:
-            self.logger.debug(f"Element not visible: {locator.description}")
+            self.logger.debug(f"Element not visible: {locator}")
             return False
 
-    def is_element_present(self, locator: PlaywrightLocator) -> bool:
+    def is_element_present(self, locator: LocatorType) -> bool:
         """
         Check if an element is present in the DOM.
 
@@ -262,10 +330,10 @@ class BasePage:
         """
         try:
             self.find_element(locator)
-            self.logger.debug(f"Element present: {locator.description}")
+            self.logger.debug(f"Element present: {locator}")
             return True
         except ElementNotFoundException:
-            self.logger.debug(f"Element not present: {locator.description}")
+            self.logger.debug(f"Element not present: {locator}")
             return False
 
     def get_current_url(self) -> str:
@@ -340,15 +408,16 @@ class BasePage:
 
         return self.page.evaluate(script, *args)
 
-    def scroll_to_element(self, locator: PlaywrightLocator) -> None:
+    def scroll_to_element(self, locator: LocatorType) -> None:
         """
         Scroll to an element on the page.
 
         Args:
             locator: PlaywrightLocator with selector string
         """
-        self.page.locator(locator.selector).scroll_into_view_if_needed(timeout=self.timeout_ms)
-        self.logger.debug(f"Scrolled to element: {locator.description}")
+        pw_locator = self._resolve_locator(locator)
+        pw_locator.scroll_into_view_if_needed(timeout=self.timeout_ms)
+        self.logger.debug(f"Scrolled to element: {locator}")
 
     def take_screenshot(self, path: str) -> bytes:
         """
@@ -364,7 +433,7 @@ class BasePage:
         screenshot_bytes = self.page.screenshot(path=path)
         return screenshot_bytes
 
-    def switch_to_frame(self, locator: PlaywrightLocator) -> None:
+    def switch_to_frame(self, locator: LocatorType) -> None:
         """
         Switch context to an iframe (note: Playwright uses frame_locator).
 
@@ -376,7 +445,7 @@ class BasePage:
             This method provides compatibility. For actual iframe interaction,
             use page.frame_locator(selector) directly in your test code.
         """
-        self.logger.debug(f"Frame context available for: {locator.description}")
+        self.logger.debug(f"Frame context available for: {locator}")
         # Playwright uses frame_locator() - frame switching is implicit
 
     def switch_to_default_content(self) -> None:
