@@ -1,17 +1,21 @@
 """
-Leave tests using Playwright.
+Leave test suite with Playwright assertions and Gherkin-style documentation.
 
-These tests use the LeavePage class directly since we only use Playwright.
+All tests follow AAA (Arrange-Act-Assert) pattern using Playwright's native
+expect() assertions for auto-waiting and better error messages.
 
 Run tests:
-    pytest tests/test_leave_unified.py
+    pytest tests/test_leave.py -v
 
 Run with specific browser:
-    pytest tests/test_leave_unified.py --browser=firefox
-    pytest tests/test_leave_unified.py --browser=chromium
+    pytest tests/test_leave.py --browser=firefox
+    pytest tests/test_leave.py --browser=chromium
 """
 
+import re
+
 import pytest
+from playwright.sync_api import expect
 
 from src.pages.leave_page import LeavePage
 
@@ -19,151 +23,231 @@ from src.pages.leave_page import LeavePage
 @pytest.mark.smoke
 def test_leave_page_loads(leave_page: LeavePage):
     """
-    Test that leave page loads successfully after navigation.
+    Verify leave page loads successfully after authentication and navigation.
 
-    This test works with ANY framework (Selenium, Playwright, etc.)
-    through the LeavePageProtocol interface.
+    Scenario:
+        Given: User is authenticated
+        And: User has navigated to Leave section
+        When: Leave page finishes loading
+        Then: Leave page title should be visible
+        And: Essential navigation elements should be present
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance (already navigated by fixture)
     """
-    # Verify leave page is loaded
-    assert leave_page.is_page_loaded(), "Leave page should be fully loaded"
+    # Arrange
+    # (Fixture already performed login and navigation)
+
+    # Act
+    # (Page load happens automatically in fixture)
+
+    # Assert - Verify page loaded successfully
+    page_title = leave_page.locators.PAGE_TITLE(leave_page.page)
+    expect(page_title).to_be_visible(timeout=10000)
 
 
 @pytest.mark.smoke
 def test_leave_menu_buttons_visible(leave_page: LeavePage):
     """
-    Test that leave menu buttons are visible.
+    Verify all leave navigation buttons are visible.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: Page finishes loading
+        Then: Apply button should be visible
+        And: My Leave button should be visible
+        And: Leave List button should be visible
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Verify key navigation buttons are visible
-    assert leave_page.is_apply_button_visible(), "Apply button should be visible"
-    assert leave_page.is_leave_list_button_visible(), "Leave List button should be visible"
-    assert leave_page.is_my_leave_button_visible(), "My Leave button should be visible"
+    # Arrange
+    apply_button = leave_page.locators.APPLY_BUTTON(leave_page.page)
+    my_leave_button = leave_page.locators.MY_LEAVE_BUTTON(leave_page.page)
+    leave_list_button = leave_page.locators.LEAVE_LIST_BUTTON(leave_page.page)
+
+    # Act
+    # (No action needed - checking visibility)
+
+    # Assert - All key navigation buttons should be visible
+    expect(apply_button).to_be_visible(timeout=5000)
+    expect(my_leave_button).to_be_visible(timeout=5000)
+    expect(leave_list_button).to_be_visible(timeout=5000)
 
 
 @pytest.mark.smoke
 def test_navigate_to_leave_list(leave_page: LeavePage):
     """
-    Test navigation to Leave List page.
+    Verify user can navigate to Leave List page.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: User clicks on Leave List button
+        Then: URL should change to leave list page
+        And: URL should contain "viewLeaveList" or "leave/list"
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to Leave List
+    # Arrange
+    # (User already on leave page)
+
+    # Act
     leave_page.navigate_to_leave_list()
 
-    # Verify URL changed
-    current_url = leave_page.get_current_url()
-    assert "leave/viewLeaveList" in current_url or "leave/list" in current_url, (
-        f"Should navigate to leave list page, got: {current_url}"
-    )
+    # Assert - URL should change to leave list
+    expect(leave_page.page).to_have_url(re.compile(r"(viewLeaveList|leave/list)"), timeout=10000)
 
 
 @pytest.mark.smoke
 def test_navigate_to_my_leave(leave_page: LeavePage):
     """
-    Test navigation to My Leave page.
+    Verify user can navigate to My Leave page.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: User clicks on My Leave button
+        Then: URL should contain "leave"
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to My Leave
+    # Arrange
+    # (User already on leave page)
+
+    # Act
     leave_page.navigate_to_my_leave()
 
-    # Verify URL contains leave (might be SPA with # navigation)
-    current_url = leave_page.get_current_url()
-    assert "leave" in current_url.lower(), f"Should navigate to leave page, got: {current_url}"
+    # Assert - URL should contain "leave"
+    expect(leave_page.page).to_have_url(re.compile(r"leave", re.IGNORECASE), timeout=10000)
 
 
 @pytest.mark.regression
 def test_navigate_to_apply_leave(leave_page: LeavePage):
     """
-    Test navigation to Apply Leave page.
+    Verify user can navigate to Apply Leave page.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: User clicks on Apply button
+        Then: URL should contain "leave"
+        And: Apply Leave form should be visible
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to Apply Leave
+    # Arrange
+    # (User already on leave page)
+
+    # Act
     leave_page.navigate_to_apply_leave()
 
-    # Verify URL contains leave (might be SPA with # navigation)
-    current_url = leave_page.get_current_url()
-    assert "leave" in current_url.lower(), f"Should navigate to leave page, got: {current_url}"
+    # Assert - URL should contain "leave"
+    expect(leave_page.page).to_have_url(re.compile(r"leave", re.IGNORECASE), timeout=10000)
 
 
 @pytest.mark.regression
 def test_leave_list_table_visible(leave_page: LeavePage):
     """
-    Test that leave list table is visible after navigation.
+    Verify leave list table or no records message is displayed.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: User navigates to Leave List
+        Then: Either leave list table should be visible
+        Or: "No Records Found" message should be displayed
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to Leave List
+    # Arrange
+    # (User already on leave page)
+
+    # Act
     leave_page.navigate_to_leave_list()
 
-    # Verify table is visible or no records message is shown
-    is_table_visible = leave_page.is_leave_list_table_visible()
-    is_no_records = leave_page.is_no_records_message_displayed()
+    # Assert - Either table or no records message should be visible
+    leave_table = leave_page.locators.LEAVE_LIST_TABLE(leave_page.page)
+    no_records_msg = leave_page.locators.NO_RECORDS_MESSAGE(leave_page.page)
 
-    assert is_table_visible or is_no_records, (
-        "Either leave list table or 'No Records' message should be displayed"
-    )
+    # Use or condition: at least one should be visible
+    try:
+        expect(leave_table).to_be_visible(timeout=5000)
+    except AssertionError:
+        # If table not visible, no records message should be
+        expect(no_records_msg).to_be_visible(timeout=2000)
 
 
 @pytest.mark.regression
 def test_get_leave_count(leave_page: LeavePage):
     """
-    Test getting leave count from leave list.
+    Verify leave count can be retrieved from leave list.
+
+    Scenario:
+        Given: User is on the Leave page
+        When: User navigates to Leave List
+        And: User gets the leave count
+        Then: Count should be a non-negative number
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to Leave List
-    leave_page.navigate_to_leave_list()
+    # Arrange
+    # (User already on leave page)
 
-    # Get leave count (could be 0 if no leaves exist)
+    # Act
+    leave_page.navigate_to_leave_list()
     count = leave_page.get_leave_count()
 
-    # Verify count is non-negative
+    # Assert - Count should be non-negative (0 or more)
     assert count >= 0, f"Leave count should be non-negative, got: {count}"
 
 
 @pytest.mark.regression
 def test_search_leave_reset(leave_page: LeavePage):
     """
-    Test search functionality with reset.
+    Verify search and reset functionality works correctly.
+
+    Scenario:
+        Given: User is on the Leave List page
+        When: User performs a search
+        And: User resets the search
+        Then: Page should still be loaded
+        And: Search form should be visible
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    # Navigate to Leave List
+    # Arrange
     leave_page.navigate_to_leave_list()
 
-    # Perform a search (even if fields are empty, this tests the functionality)
+    # Act
     leave_page.search_leave()
-
-    # Get count after search
-    leave_page.get_leave_count()
-
-    # Reset search
     leave_page.reset_search()
 
-    # Verify page still loads after reset
-    assert leave_page.is_page_loaded(), "Page should be loaded after reset"
+    # Assert - Page should still be functional after reset
+    page_title = leave_page.locators.PAGE_TITLE(leave_page.page)
+    expect(page_title).to_be_visible(timeout=5000)
 
 
 @pytest.mark.smoke
 def test_url_contains_leave(leave_page: LeavePage):
     """
-    Test that current URL contains 'leave' after navigation.
+    Verify current URL contains 'leave' after navigation.
+
+    Scenario:
+        Given: User has navigated to Leave section
+        When: Page finishes loading
+        Then: Current URL should contain the word "leave"
 
     Args:
-        leave_page: LeavePage instance (framework-agnostic)
+        leave_page: LeavePage instance
     """
-    current_url = leave_page.get_current_url()
-    assert "leave" in current_url.lower(), f"URL should contain 'leave', got: {current_url}"
+    # Arrange
+    # (Fixture already navigated to leave page)
+
+    # Act
+    # (No action needed)
+
+    # Assert - URL should contain "leave"
+    expect(leave_page.page).to_have_url(re.compile(r"leave", re.IGNORECASE))

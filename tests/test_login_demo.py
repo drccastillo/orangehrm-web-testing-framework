@@ -1,13 +1,13 @@
 """
-Demo tests showing Playwright's native highlight() functionality.
+Demo tests showing Playwright's native highlight() and expect() functionality.
 
-These tests demonstrate how to use Playwright's built-in highlight() method
-for visual debugging during test development, while maintaining the Page Object
-Model pattern.
+These tests demonstrate how to use Playwright's built-in methods for visual
+debugging during test development, while maintaining the Page Object Model
+pattern and using Playwright assertions.
 
 IMPORTANT:
 - highlight() is for debugging only
-- Remove or skip these tests before committing to production
+- These tests are for development/learning purposes
 - Use --headed flag to see the highlights visually
 
 Run demo:
@@ -15,9 +15,11 @@ Run demo:
     pytest tests/test_login_demo.py::test_login_with_highlight_demo --headed -s
 """
 
+import re
 import time
 
 import pytest
+from playwright.sync_api import expect
 
 from src.pages.login_page import LoginPage
 from utils.logger import TestLogger
@@ -35,14 +37,10 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     This test shows how to use Playwright's native highlight() during development
     to visually identify which elements are being interacted with.
 
-    Steps:
-    1. Highlight username field, then enter username
-    2. Highlight password field, then enter password
-    3. Highlight login button, then click it
-    4. Verify successful login
-
-    Usage:
-        pytest tests/test_login_demo.py::test_login_with_highlight_demo --headed -s
+    Scenario:
+        Given: User is on the login page
+        When: User enters valid credentials with visual highlights
+        Then: User should be redirected to dashboard
 
     Args:
         login_page: LoginPage instance
@@ -50,23 +48,27 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     """
     logger.info("Starting login demo with visual highlights")
 
-    # Step 1: Highlight and enter username
+    # Arrange
+    username = config_service.username
+    password = config_service.password
+
+    # Act - Step 1: Highlight and enter username
     username_field = login_page.locators.USERNAME_INPUT(login_page.page)
     username_field.highlight()
     time.sleep(1)  # Pause to see highlight
 
-    login_page.enter_username(config_service.username)
-    logger.debug(f"Entered username: {config_service.username}")
+    login_page.enter_username(username)
+    logger.debug(f"Entered username: {username}")
 
-    # Step 2: Highlight and enter password
+    # Act - Step 2: Highlight and enter password
     password_field = login_page.locators.PASSWORD_INPUT(login_page.page)
     password_field.highlight()
     time.sleep(1)
 
-    login_page.enter_password(config_service.password)
+    login_page.enter_password(password)
     logger.debug("Entered password")
 
-    # Step 3: Highlight and click login button
+    # Act - Step 3: Highlight and click login button
     login_button = login_page.locators.LOGIN_BUTTON(login_page.page)
     login_button.highlight()
     time.sleep(1)
@@ -74,9 +76,8 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     login_page.click_login_button()
     logger.debug("Clicked login button")
 
-    # Step 4: Verify successful login
-    current_url = login_page.get_current_url()
-    assert "dashboard" in current_url, f"Expected dashboard URL, got: {current_url}"
+    # Assert - Playwright expect with auto-waiting
+    expect(login_page.page).to_have_url(re.compile(r"dashboard"), timeout=10000)
     logger.info("Login demo completed successfully - redirected to dashboard")
 
 
@@ -88,39 +89,46 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
 
     Shows how to use highlight() when debugging error scenarios.
 
-    Usage:
-        pytest tests/test_login_demo.py::test_invalid_login_with_highlight --headed -s
+    Scenario:
+        Given: User is on the login page
+        When: User enters invalid credentials with highlights
+        Then: Error message should be visible and highlighted
 
     Args:
         login_page: LoginPage instance
     """
     logger.info("Starting invalid login demo with visual highlights")
 
-    # Highlight and enter invalid username
+    # Arrange
+    invalid_username = "invalid_user"
+    invalid_password = "invalid_password"
+
+    # Act - Highlight and enter invalid username
     login_page.locators.USERNAME_INPUT(login_page.page).highlight()
     time.sleep(0.5)
-    login_page.enter_username("invalid_user")
+    login_page.enter_username(invalid_username)
 
-    # Highlight and enter invalid password
+    # Act - Highlight and enter invalid password
     login_page.locators.PASSWORD_INPUT(login_page.page).highlight()
     time.sleep(0.5)
-    login_page.enter_password("invalid_password")
+    login_page.enter_password(invalid_password)
 
-    # Highlight and click login button
+    # Act - Highlight and click login button
     login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
     time.sleep(0.5)
     login_page.click_login_button()
 
-    # Highlight error message
+    # Assert - Highlight and verify error message
     time.sleep(1)  # Wait for error to appear
     error_locator = login_page.locators.ERROR_MESSAGE(login_page.page)
     error_locator.highlight()
     time.sleep(1)
 
-    # Verify error is displayed
-    assert login_page.is_error_message_displayed(), "Error message should be visible"
-    error_text = login_page.get_error_message()
-    logger.info(f"Invalid login handled correctly - error message: '{error_text}'")
+    # Use Playwright expect for assertions
+    expect(error_locator).to_be_visible(timeout=5000)
+    expect(error_locator).to_contain_text("Invalid credentials")
+
+    logger.info("Invalid login handled correctly - error message displayed")
 
 
 # @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
@@ -131,8 +139,11 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
 
     Shows how to combine fluent API with strategic highlights for debugging.
 
-    Usage:
-        pytest tests/test_login_demo.py::test_method_chaining_with_highlight --headed -s
+    Scenario:
+        Given: User is on the login page
+        When: User previews elements with highlights
+        And: User executes login with method chaining
+        Then: Login should succeed
 
     Args:
         login_page: LoginPage instance
@@ -140,7 +151,11 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     """
     logger.info("Starting method chaining demo with selective highlights")
 
-    # Highlight the elements we're about to interact with
+    # Arrange
+    username = config_service.username
+    password = config_service.password
+
+    # Act - Highlight the elements we're about to interact with
     login_page.locators.USERNAME_INPUT(login_page.page).highlight()
     time.sleep(0.5)
 
@@ -150,13 +165,10 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
     time.sleep(0.5)
 
-    # Execute with method chaining
+    # Act - Execute with method chaining
     logger.debug("Executing login with method chaining")
-    login_page.enter_username(config_service.username).enter_password(
-        config_service.password
-    ).click_login_button()
+    login_page.enter_username(username).enter_password(password).click_login_button()
 
-    # Verify
-    current_url = login_page.get_current_url()
-    assert "dashboard" in current_url, "Login with method chaining should succeed"
+    # Assert - Playwright expect
+    expect(login_page.page).to_have_url(re.compile(r"dashboard"), timeout=10000)
     logger.info("Method chaining demo completed successfully")
