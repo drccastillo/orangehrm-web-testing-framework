@@ -10,7 +10,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.config.config_defaults import defaults
 from src.enums.browser_types import BrowserType
 from utils.exceptions import ConfigurationException
 
@@ -50,60 +49,77 @@ class EnvironmentConfigService:
 
     def _load_configuration(self) -> None:
         """Load and validate all configuration values from environment variables."""
-        # Application URLs and Credentials
-        self._base_url = os.getenv("URL", defaults.BASE_URL)
-        self._username = os.getenv("ORANGEHRM_USERNAME", defaults.USERNAME)
-        self._password = os.getenv("ORANGEHRM_PASSWORD", defaults.PASSWORD)
+        # Application URLs and Credentials - all required
+        self._base_url = self._get_required_env("URL")
+        self._username = self._get_required_env("ORANGEHRM_USERNAME")
+        self._password = self._get_required_env("ORANGEHRM_PASSWORD")
 
         # Browser Configuration - validate using BrowserType enum
-        browser_str = os.getenv("BROWSER", defaults.BROWSER)
+        browser_str = self._get_required_env("BROWSER")
         try:
             browser_enum = BrowserType.from_string(browser_str)
             self._default_browser = browser_enum.value
         except ValueError as e:
             raise ConfigurationException(f"Invalid BROWSER configuration: {e}") from e
 
-        self._headless = os.getenv("HEADLESS", defaults.HEADLESS).lower() == "true"
+        headless_str = self._get_required_env("HEADLESS")
+        self._headless = headless_str.lower() == "true"
 
         # Timeouts (in seconds) - validate positive values
-        self._default_timeout = self._parse_positive_int(
-            "DEFAULT_TIMEOUT", defaults.DEFAULT_TIMEOUT
-        )
-        self._page_load_timeout = self._parse_positive_int(
-            "PAGE_LOAD_TIMEOUT", defaults.PAGE_LOAD_TIMEOUT
-        )
+        self._default_timeout = self._parse_positive_int("DEFAULT_TIMEOUT")
+        self._page_load_timeout = self._parse_positive_int("PAGE_LOAD_TIMEOUT")
 
         # Window Configuration - validate positive dimensions
-        self._window_width = self._parse_positive_int("WINDOW_WIDTH", defaults.WINDOW_WIDTH)
-        self._window_height = self._parse_positive_int("WINDOW_HEIGHT", defaults.WINDOW_HEIGHT)
-        self._maximize_window = (
-            os.getenv("MAXIMIZE_WINDOW", defaults.MAXIMIZE_WINDOW).lower() == "true"
-        )
+        self._window_width = self._parse_positive_int("WINDOW_WIDTH")
+        self._window_height = self._parse_positive_int("WINDOW_HEIGHT")
+
+        maximize_str = self._get_required_env("MAXIMIZE_WINDOW")
+        self._maximize_window = maximize_str.lower() == "true"
 
         # Screenshots Configuration
-        self._screenshot_on_failure = (
-            os.getenv("SCREENSHOT_ON_FAILURE", defaults.SCREENSHOT_ON_FAILURE).lower() == "true"
-        )
+        screenshot_str = self._get_required_env("SCREENSHOT_ON_FAILURE")
+        self._screenshot_on_failure = screenshot_str.lower() == "true"
+
         self._screenshots_dir = Path(__file__).parent.parent.parent / "reports" / "screenshots"
 
         # Reports Configuration
         self._reports_dir = Path(__file__).parent.parent.parent / "reports"
 
-    def _parse_positive_int(self, env_key: str, default: str) -> int:
+    def _get_required_env(self, key: str) -> str:
         """
-        Parse environment variable as positive integer with validation.
+        Get required environment variable or raise ConfigurationException.
+
+        Args:
+            key: Environment variable name
+
+        Returns:
+            Environment variable value
+
+        Raises:
+            ConfigurationException: If environment variable is not set
+        """
+        value = os.getenv(key)
+        if value is None:
+            raise ConfigurationException(
+                f"Required environment variable '{key}' is not set. "
+                f"Please define it in your .env file or environment."
+            )
+        return value
+
+    def _parse_positive_int(self, env_key: str) -> int:
+        """
+        Parse required environment variable as positive integer with validation.
 
         Args:
             env_key: Environment variable name
-            default: Default value as string
 
         Returns:
             Parsed positive integer value
 
         Raises:
-            ConfigurationException: If value is not a valid positive integer
+            ConfigurationException: If value is not set, not an integer, or not positive
         """
-        value_str = os.getenv(env_key, default)
+        value_str = self._get_required_env(env_key)
         try:
             value = int(value_str)
         except ValueError as e:

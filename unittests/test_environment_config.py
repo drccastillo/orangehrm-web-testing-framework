@@ -101,12 +101,18 @@ class TestEnvironmentConfigServiceBehavior:
 
     def test_loads_from_environment_variables(self, monkeypatch):
         """Config loads values from environment variables."""
-        # Set custom environment
+        # Set custom environment with ALL required env vars
         monkeypatch.setenv("URL", "http://test-url.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "TestUser")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "TestPass")
         monkeypatch.setenv("BROWSER", "firefox")
         monkeypatch.setenv("HEADLESS", "true")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
 
         # Create new config (will read new env vars)
         config = EnvironmentConfigService()
@@ -118,24 +124,53 @@ class TestEnvironmentConfigServiceBehavior:
         assert config.default_browser == "firefox"
         assert config.headless is True
 
-    def test_provides_defaults_when_env_not_set(self, monkeypatch):
-        """Config provides sensible defaults when env vars not set."""
-        # Clear environment
-        monkeypatch.delenv("URL", raising=False)
-        monkeypatch.delenv("BROWSER", raising=False)
-        monkeypatch.delenv("DEFAULT_TIMEOUT", raising=False)
+    def test_raises_exception_when_required_env_not_set(self, tmp_path, monkeypatch):
+        """Config raises ConfigurationException when required env vars not set."""
+        from utils.exceptions import ConfigurationException
 
-        config = EnvironmentConfigService()
+        # Clear all relevant env vars from the environment
+        for key in [
+            "URL",
+            "ORANGEHRM_USERNAME",
+            "ORANGEHRM_PASSWORD",
+            "BROWSER",
+            "HEADLESS",
+            "DEFAULT_TIMEOUT",
+            "PAGE_LOAD_TIMEOUT",
+            "WINDOW_WIDTH",
+            "WINDOW_HEIGHT",
+            "MAXIMIZE_WINDOW",
+            "SCREENSHOT_ON_FAILURE",
+        ]:
+            monkeypatch.delenv(key, raising=False)
 
-        # Should have defaults
-        assert "http" in config.base_url
-        assert config.default_browser in ["chrome", "firefox", "edge"]
-        assert config.default_timeout == 10
+        # Create empty .env file
+        empty_env = tmp_path / "empty.env"
+        empty_env.write_text("")
+
+        # Should raise ConfigurationException when loading from empty env
+        with pytest.raises(ConfigurationException) as exc_info:
+            EnvironmentConfigService(env_path=empty_env)
+
+        # Verify error message mentions missing env var
+        assert "Required environment variable" in str(exc_info.value)
 
     def test_parses_boolean_strings_correctly(self, monkeypatch):
         """Config correctly parses boolean string values."""
+        # Set all required env vars
+        monkeypatch.setenv("URL", "http://test.com")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
+
         # Test "true"
         monkeypatch.setenv("HEADLESS", "true")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
         config = EnvironmentConfigService()
         assert config.headless is True
 
@@ -151,8 +186,18 @@ class TestEnvironmentConfigServiceBehavior:
 
     def test_parses_integer_strings_correctly(self, monkeypatch):
         """Config correctly parses integer string values."""
+        # Set all required env vars
+        monkeypatch.setenv("URL", "http://test.com")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "20")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
         monkeypatch.setenv("WINDOW_WIDTH", "1280")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
 
         config = EnvironmentConfigService()
 
@@ -161,8 +206,20 @@ class TestEnvironmentConfigServiceBehavior:
 
     def test_ensure_directories_creates_paths(self, tmp_path, monkeypatch):
         """ensure_directories creates screenshots and reports directories."""
-        # Create config with temporary paths
+        # Set all required env vars
         monkeypatch.setenv("URL", "http://localhost")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("HEADLESS", "false")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
+
+        # Create config with temporary paths
         config = EnvironmentConfigService()
 
         # Override paths to use tmp_path
@@ -208,12 +265,20 @@ class TestEnvironmentConfigServiceCustomEnvFile:
 
     def test_can_load_from_custom_env_file(self, tmp_path):
         """Config can load from custom .env file path."""
-        # Create custom .env file
+        # Create custom .env file with ALL required env vars
         custom_env = tmp_path / "custom.env"
         custom_env.write_text(
             "URL=http://custom-environment.com\n"
             "ORANGEHRM_USERNAME=CustomUser\n"
             "ORANGEHRM_PASSWORD=CustomPass\n"
+            "BROWSER=chrome\n"
+            "HEADLESS=false\n"
+            "DEFAULT_TIMEOUT=10\n"
+            "PAGE_LOAD_TIMEOUT=30\n"
+            "WINDOW_WIDTH=1920\n"
+            "WINDOW_HEIGHT=1080\n"
+            "MAXIMIZE_WINDOW=true\n"
+            "SCREENSHOT_ON_FAILURE=true\n"
         )
 
         # Create config with custom path
@@ -251,3 +316,100 @@ class TestEnvironmentConfigServiceValidation:
         """Directory paths are absolute."""
         assert config.screenshots_dir.is_absolute()
         assert config.reports_dir.is_absolute()
+
+    def test_invalid_browser_raises_exception(self, monkeypatch):
+        """Invalid browser value raises ConfigurationException."""
+        from utils.exceptions import ConfigurationException
+
+        # Set all required env vars but with invalid browser
+        monkeypatch.setenv("URL", "http://test.com")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "invalid_browser")
+        monkeypatch.setenv("HEADLESS", "false")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            EnvironmentConfigService()
+
+        assert "Invalid BROWSER configuration" in str(exc_info.value)
+
+    def test_negative_timeout_raises_exception(self, monkeypatch):
+        """Negative timeout value raises ConfigurationException."""
+        from utils.exceptions import ConfigurationException
+
+        # Set all required env vars but with negative timeout
+        monkeypatch.setenv("URL", "http://test.com")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("HEADLESS", "false")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "-5")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            EnvironmentConfigService()
+
+        assert "DEFAULT_TIMEOUT must be positive" in str(exc_info.value)
+
+    def test_non_integer_timeout_raises_exception(self, monkeypatch):
+        """Non-integer timeout value raises ConfigurationException."""
+        from utils.exceptions import ConfigurationException
+
+        # Set all required env vars but with non-integer timeout
+        monkeypatch.setenv("URL", "http://test.com")
+        monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
+        monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
+        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("HEADLESS", "false")
+        monkeypatch.setenv("DEFAULT_TIMEOUT", "not_a_number")
+        monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
+        monkeypatch.setenv("WINDOW_WIDTH", "1920")
+        monkeypatch.setenv("WINDOW_HEIGHT", "1080")
+        monkeypatch.setenv("MAXIMIZE_WINDOW", "true")
+        monkeypatch.setenv("SCREENSHOT_ON_FAILURE", "true")
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            EnvironmentConfigService()
+
+        assert "DEFAULT_TIMEOUT must be an integer" in str(exc_info.value)
+
+    def test_missing_required_env_var_raises_exception(self, tmp_path, monkeypatch):
+        """Missing required env var raises ConfigurationException with clear message."""
+        from utils.exceptions import ConfigurationException
+
+        # Clear PASSWORD specifically to ensure it's not in the environment
+        monkeypatch.delenv("ORANGEHRM_PASSWORD", raising=False)
+
+        # Create .env file missing one required variable
+        incomplete_env = tmp_path / "incomplete.env"
+        incomplete_env.write_text(
+            "URL=http://test.com\n"
+            "ORANGEHRM_USERNAME=user\n"
+            # Missing ORANGEHRM_PASSWORD - should cause error
+            "BROWSER=chrome\n"
+            "HEADLESS=false\n"
+            "DEFAULT_TIMEOUT=10\n"
+            "PAGE_LOAD_TIMEOUT=30\n"
+            "WINDOW_WIDTH=1920\n"
+            "WINDOW_HEIGHT=1080\n"
+            "MAXIMIZE_WINDOW=true\n"
+            "SCREENSHOT_ON_FAILURE=true\n"
+        )
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            EnvironmentConfigService(env_path=incomplete_env)
+
+        error_message = str(exc_info.value)
+        assert "Required environment variable" in error_message
+        assert "ORANGEHRM_PASSWORD" in error_message or "is not set" in error_message
+        assert "Please define it in your .env file" in error_message
