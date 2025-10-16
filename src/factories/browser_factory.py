@@ -89,8 +89,7 @@ class BrowserFactory:
         browser_lower = browser.lower()
 
         cls._logger.info(
-            f"Creating Playwright browser: {browser_lower} "
-            f"(headless={headless}, timeout={timeout})"
+            f"Creating Playwright browser: {browser_lower} (headless={headless}, timeout={timeout})"
         )
 
         return cls._create_playwright_browser(

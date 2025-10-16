@@ -39,8 +39,6 @@ def config_service() -> ConfigService:
     return _config
 
 
-
-
 @pytest.fixture(scope="session")
 def browser_name(request):
     """

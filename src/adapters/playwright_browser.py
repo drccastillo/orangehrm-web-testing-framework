@@ -11,8 +11,8 @@ from playwright.sync_api import Page, Playwright
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from src.adapters.playwright_element import PlaywrightWebElement
-from src.core.element_protocol import WebElementProtocol
 from src.core.browser_protocol import LocatorProtocol
+from src.core.element_protocol import WebElementProtocol
 from utils.exceptions import ElementNotFoundException, InvalidParameterException
 from utils.logger import TestLogger
 

@@ -41,7 +41,6 @@ class TestEnvironmentConfigServiceContract:
         assert hasattr(config, "password")
         assert isinstance(config.password, str)
 
-
     def test_has_browser_configuration(self, config):
         """Provides browser configuration properties."""
         assert hasattr(config, "default_browser")
@@ -82,7 +81,6 @@ class TestEnvironmentConfigServiceContract:
         """Provides reports directory property."""
         assert hasattr(config, "reports_dir")
         assert isinstance(config.reports_dir, Path)
-
 
     def test_has_ensure_directories_method(self, config):
         """Provides ensure_directories method."""
@@ -160,7 +158,6 @@ class TestEnvironmentConfigServiceBehavior:
 
         assert config.default_timeout == 20
         assert config.window_width == 1280
-
 
     def test_ensure_directories_creates_paths(self, tmp_path, monkeypatch):
         """ensure_directories creates screenshots and reports directories."""

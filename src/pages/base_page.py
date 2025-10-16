@@ -12,9 +12,8 @@ Design Pattern:
 
 from typing import Any
 
-from src.core.browser_protocol import BrowserProtocol
+from src.core.browser_protocol import BrowserProtocol, LocatorProtocol
 from src.core.element_protocol import WebElementProtocol
-from src.core.browser_protocol import LocatorProtocol
 from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,

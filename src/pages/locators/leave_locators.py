@@ -103,17 +103,13 @@ class LeaveLocators:
     # Leave List - Results table
     LEAVE_LIST_TABLE = PlaywrightLocator(".oxd-table", "Leave list table")
 
-    LEAVE_LIST_ROWS = PlaywrightLocator(
-        ".oxd-table-body .oxd-table-card", "Leave list table rows"
-    )
+    LEAVE_LIST_ROWS = PlaywrightLocator(".oxd-table-body .oxd-table-card", "Leave list table rows")
 
     # Status badge
     STATUS_BADGE = PlaywrightLocator(".oxd-chip", "Status badge in leave list")
 
     # Messages
-    SUCCESS_MESSAGE = PlaywrightLocator(
-        ".oxd-toast-content--success", "Success toast message"
-    )
+    SUCCESS_MESSAGE = PlaywrightLocator(".oxd-toast-content--success", "Success toast message")
 
     ERROR_MESSAGE = PlaywrightLocator(".oxd-toast-content--error", "Error toast message")
 

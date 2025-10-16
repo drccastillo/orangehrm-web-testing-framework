@@ -66,9 +66,7 @@ class EnvironmentConfigService:
 
         # Screenshots Configuration
         self._screenshot_on_failure = os.getenv("SCREENSHOT_ON_FAILURE", "True").lower() == "true"
-        self._screenshots_dir = (
-            Path(__file__).parent.parent.parent / "reports" / "screenshots"
-        )
+        self._screenshots_dir = Path(__file__).parent.parent.parent / "reports" / "screenshots"
 
         # Reports Configuration
         self._reports_dir = Path(__file__).parent.parent.parent / "reports"
