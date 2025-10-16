@@ -8,6 +8,7 @@ using native Playwright Page objects.
 from datetime import datetime
 
 import pytest
+from playwright.sync_api import expect
 
 from src.config.environment_config import EnvironmentConfigService
 from src.config.protocols import ConfigService
@@ -199,33 +200,9 @@ def leave_page(browser, config_service, login_page):
     page.navigate_to_leave_menu()
 
     # Wait for page to load - verify page title is visible
-    from playwright.sync_api import expect
-
     expect(page.locators.PAGE_TITLE(page.page)).to_be_visible(timeout=10000)
 
     yield page
-
-
-@pytest.fixture(scope="session")
-def test_username(config_service):
-    """
-    Provide test username for login tests.
-
-    Returns:
-        Username string
-    """
-    return config_service.username
-
-
-@pytest.fixture(scope="session")
-def test_password(config_service):
-    """
-    Provide test password for login tests.
-
-    Returns:
-        Password string
-    """
-    return config_service.password
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
