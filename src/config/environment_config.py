@@ -10,6 +10,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from src.enums.browser_types import BrowserType
+from utils.exceptions import ConfigurationException
+
 
 class EnvironmentConfigService:
     """
@@ -45,23 +48,29 @@ class EnvironmentConfigService:
         self._load_configuration()
 
     def _load_configuration(self) -> None:
-        """Load all configuration values from environment variables."""
+        """Load and validate all configuration values from environment variables."""
         # Application URLs and Credentials
         self._base_url = os.getenv("URL", "http://localhost:8080/web/index.php")
         self._username = os.getenv("ORANGEHRM_USERNAME", "Admin")
         self._password = os.getenv("ORANGEHRM_PASSWORD", "admin123")
 
-        # Browser Configuration
-        self._default_browser = os.getenv("BROWSER", "chrome")
+        # Browser Configuration - validate using BrowserType enum
+        browser_str = os.getenv("BROWSER", "chrome")
+        try:
+            browser_enum = BrowserType.from_string(browser_str)
+            self._default_browser = browser_enum.value
+        except ValueError as e:
+            raise ConfigurationException(f"Invalid BROWSER configuration: {e}") from e
+
         self._headless = os.getenv("HEADLESS", "False").lower() == "true"
 
-        # Timeouts (in seconds)
-        self._default_timeout = int(os.getenv("DEFAULT_TIMEOUT", "10"))
-        self._page_load_timeout = int(os.getenv("PAGE_LOAD_TIMEOUT", "30"))
+        # Timeouts (in seconds) - validate positive values
+        self._default_timeout = self._parse_positive_int("DEFAULT_TIMEOUT", "10")
+        self._page_load_timeout = self._parse_positive_int("PAGE_LOAD_TIMEOUT", "30")
 
-        # Window Configuration
-        self._window_width = int(os.getenv("WINDOW_WIDTH", "1920"))
-        self._window_height = int(os.getenv("WINDOW_HEIGHT", "1080"))
+        # Window Configuration - validate positive dimensions
+        self._window_width = self._parse_positive_int("WINDOW_WIDTH", "1920")
+        self._window_height = self._parse_positive_int("WINDOW_HEIGHT", "1080")
         self._maximize_window = os.getenv("MAXIMIZE_WINDOW", "True").lower() == "true"
 
         # Screenshots Configuration
@@ -70,6 +79,31 @@ class EnvironmentConfigService:
 
         # Reports Configuration
         self._reports_dir = Path(__file__).parent.parent.parent / "reports"
+
+    def _parse_positive_int(self, env_key: str, default: str) -> int:
+        """
+        Parse environment variable as positive integer with validation.
+
+        Args:
+            env_key: Environment variable name
+            default: Default value as string
+
+        Returns:
+            Parsed positive integer value
+
+        Raises:
+            ConfigurationException: If value is not a valid positive integer
+        """
+        value_str = os.getenv(env_key, default)
+        try:
+            value = int(value_str)
+        except ValueError as e:
+            raise ConfigurationException(f"{env_key} must be an integer, got: {value_str}") from e
+
+        if value <= 0:
+            raise ConfigurationException(f"{env_key} must be positive, got: {value}")
+
+        return value
 
     # Application Configuration Properties
     @property
