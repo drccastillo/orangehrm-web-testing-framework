@@ -20,6 +20,10 @@ import time
 import pytest
 
 from src.pages.login_page import LoginPage
+from utils.logger import TestLogger
+
+# Initialize logger for this module
+logger = TestLogger.get_logger(__name__)
 
 
 @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
@@ -44,39 +48,36 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
         login_page: LoginPage instance
         config_service: Configuration service with credentials
     """
-    print("\n🔍 Starting login demo with highlights...")
+    logger.info("Starting login demo with visual highlights")
 
     # Step 1: Highlight and enter username
-    print("  → Highlighting username field...")
     username_field = login_page.locators.USERNAME_INPUT(login_page.page)
     username_field.highlight()
     time.sleep(1)  # Pause to see highlight
 
     login_page.enter_username(config_service.username)
-    print(f"  ✓ Entered username: {config_service.username}")
+    logger.debug(f"Entered username: {config_service.username}")
 
     # Step 2: Highlight and enter password
-    print("  → Highlighting password field...")
     password_field = login_page.locators.PASSWORD_INPUT(login_page.page)
     password_field.highlight()
     time.sleep(1)
 
     login_page.enter_password(config_service.password)
-    print("  ✓ Entered password")
+    logger.debug("Entered password")
 
     # Step 3: Highlight and click login button
-    print("  → Highlighting login button...")
     login_button = login_page.locators.LOGIN_BUTTON(login_page.page)
     login_button.highlight()
     time.sleep(1)
 
     login_page.click_login_button()
-    print("  ✓ Clicked login button")
+    logger.debug("Clicked login button")
 
     # Step 4: Verify successful login
     current_url = login_page.get_current_url()
     assert "dashboard" in current_url, f"Expected dashboard URL, got: {current_url}"
-    print("✅ Login successful - redirected to dashboard\n")
+    logger.info("Login demo completed successfully - redirected to dashboard")
 
 
 @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
@@ -93,28 +94,24 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
     Args:
         login_page: LoginPage instance
     """
-    print("\n🔍 Starting invalid login demo with highlights...")
+    logger.info("Starting invalid login demo with visual highlights")
 
-    # Highlight username field
-    print("  → Highlighting username field...")
+    # Highlight and enter invalid username
     login_page.locators.USERNAME_INPUT(login_page.page).highlight()
     time.sleep(0.5)
     login_page.enter_username("invalid_user")
 
-    # Highlight password field
-    print("  → Highlighting password field...")
+    # Highlight and enter invalid password
     login_page.locators.PASSWORD_INPUT(login_page.page).highlight()
     time.sleep(0.5)
     login_page.enter_password("invalid_password")
 
-    # Highlight login button
-    print("  → Highlighting login button...")
+    # Highlight and click login button
     login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
     time.sleep(0.5)
     login_page.click_login_button()
 
     # Highlight error message
-    print("  → Highlighting error message...")
     time.sleep(1)  # Wait for error to appear
     error_locator = login_page.locators.ERROR_MESSAGE(login_page.page)
     error_locator.highlight()
@@ -123,8 +120,7 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
     # Verify error is displayed
     assert login_page.is_error_message_displayed(), "Error message should be visible"
     error_text = login_page.get_error_message()
-    print(f"  ✓ Error message displayed: '{error_text}'")
-    print("✅ Invalid login handled correctly\n")
+    logger.info(f"Invalid login handled correctly - error message: '{error_text}'")
 
 
 @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
@@ -142,23 +138,20 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
         login_page: LoginPage instance
         config_service: Configuration service
     """
-    print("\n🔍 Starting method chaining demo with selective highlights...")
+    logger.info("Starting method chaining demo with selective highlights")
 
-    # Highlight the flow we're about to execute
-    print("  → Highlighting username field...")
+    # Highlight the elements we're about to interact with
     login_page.locators.USERNAME_INPUT(login_page.page).highlight()
     time.sleep(0.5)
 
-    print("  → Highlighting password field...")
     login_page.locators.PASSWORD_INPUT(login_page.page).highlight()
     time.sleep(0.5)
 
-    print("  → Highlighting login button...")
     login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
     time.sleep(0.5)
 
-    # Now execute with method chaining
-    print("  → Executing method chaining...")
+    # Execute with method chaining
+    logger.debug("Executing login with method chaining")
     login_page.enter_username(config_service.username).enter_password(
         config_service.password
     ).click_login_button()
@@ -166,7 +159,7 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     # Verify
     current_url = login_page.get_current_url()
     assert "dashboard" in current_url, "Login with method chaining should succeed"
-    print("✅ Method chaining with highlights successful\n")
+    logger.info("Method chaining demo completed successfully")
 
 
 # Regular test without highlight for comparison
@@ -182,8 +175,12 @@ def test_login_without_highlight(login_page: LoginPage, config_service):
         login_page: LoginPage instance
         config_service: Configuration service
     """
+    logger.debug("Executing standard login test without highlights")
+
     # Standard test - no highlights, no delays, production-ready
     login_page.login(config_service.username, config_service.password)
 
     current_url = login_page.get_current_url()
     assert "dashboard" in current_url, f"Expected dashboard URL, got: {current_url}"
+
+    logger.debug("Standard login test completed successfully")
