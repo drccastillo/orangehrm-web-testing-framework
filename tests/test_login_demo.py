@@ -26,7 +26,7 @@ from utils.logger import TestLogger
 logger = TestLogger.get_logger(__name__)
 
 
-@pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
+# @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
 @pytest.mark.smoke
 def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     """
@@ -80,7 +80,7 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     logger.info("Login demo completed successfully - redirected to dashboard")
 
 
-@pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
+# @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
 @pytest.mark.smoke
 def test_invalid_login_with_highlight(login_page: LoginPage):
     """
@@ -123,7 +123,7 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
     logger.info(f"Invalid login handled correctly - error message: '{error_text}'")
 
 
-@pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
+# @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
 @pytest.mark.regression
 def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     """
@@ -160,27 +160,3 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     current_url = login_page.get_current_url()
     assert "dashboard" in current_url, "Login with method chaining should succeed"
     logger.info("Method chaining demo completed successfully")
-
-
-# Regular test without highlight for comparison
-@pytest.mark.smoke
-def test_login_without_highlight(login_page: LoginPage, config_service):
-    """
-    Regular production test WITHOUT highlight() - for comparison.
-
-    This is how tests should look in production (clean, fast, no debugging code).
-    Compare this with the demo tests above to see the difference.
-
-    Args:
-        login_page: LoginPage instance
-        config_service: Configuration service
-    """
-    logger.debug("Executing standard login test without highlights")
-
-    # Standard test - no highlights, no delays, production-ready
-    login_page.login(config_service.username, config_service.password)
-
-    current_url = login_page.get_current_url()
-    assert "dashboard" in current_url, f"Expected dashboard URL, got: {current_url}"
-
-    logger.debug("Standard login test completed successfully")
