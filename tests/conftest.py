@@ -198,8 +198,10 @@ def leave_page(browser, config_service, login_page):
     # Navigate to Leave section
     page.navigate_to_leave_menu()
 
-    # Wait for page to load
-    assert page.is_page_loaded(), "Leave page should be loaded after navigation"
+    # Wait for page to load - verify page title is visible
+    from playwright.sync_api import expect
+
+    expect(page.locators.PAGE_TITLE(page.page)).to_be_visible(timeout=10000)
 
     yield page
 

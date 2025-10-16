@@ -4,6 +4,8 @@ Simplified Login Page Object Model for OrangeHRM application.
 This LoginPage uses Playwright Page directly, eliminating adapter overhead.
 """
 
+# pylint: disable=import-error  # src module is in project root
+
 from playwright.sync_api import Page
 
 from src.pages.base_page import BasePage
@@ -94,80 +96,6 @@ class LoginPage(BasePage):
         self.enter_password(password)
         self.click_login_button()
 
-    def get_error_message(self) -> str:
-        """
-        Get the error message displayed on failed login.
-
-        Returns:
-            Error message text
-
-        Example:
-            >>> login_page.login("invalid", "invalid")
-            >>> error = login_page.get_error_message()
-            >>> assert "Invalid credentials" in error
-        """
-        return self.get_text(self.locators.ERROR_MESSAGE(self.page))
-
-    def is_error_message_displayed(self) -> bool:
-        """
-        Check if error message is displayed.
-
-        Returns:
-            True if error message is visible, False otherwise
-
-        Example:
-            >>> login_page.login("invalid", "invalid")
-            >>> assert login_page.is_error_message_displayed()
-        """
-        return self.is_element_visible(self.locators.ERROR_MESSAGE(self.page))
-
-    def is_page_loaded(self) -> bool:
-        """
-        Verify if the login page is fully loaded.
-
-        Checks that all critical elements are visible:
-            - Username input field
-            - Password input field
-            - Login button
-
-        Returns:
-            True if login page elements are visible, False otherwise
-
-        Example:
-            >>> login_page.navigate_to("https://example.com/login")
-            >>> assert login_page.is_page_loaded()
-        """
-        return (
-            self.is_element_visible(self.locators.USERNAME_INPUT(self.page))
-            and self.is_element_visible(self.locators.PASSWORD_INPUT(self.page))
-            and self.is_element_visible(self.locators.LOGIN_BUTTON(self.page))
-        )
-
-    def get_login_title(self) -> str:
-        """
-        Get the login page title text.
-
-        Returns:
-            Login title text
-
-        Example:
-            >>> title = login_page.get_login_title()
-            >>> assert "Login" in title
-        """
-        return self.get_text(self.locators.LOGIN_TITLE(self.page))
-
-    def is_login_logo_visible(self) -> bool:
-        """
-        Check if the OrangeHRM login logo is visible.
-
-        Returns:
-            True if logo is visible, False otherwise
-
-        Example:
-            >>> assert login_page.is_login_logo_visible()
-        """
-        return self.is_element_visible(self.locators.LOGIN_LOGO(self.page))
-
     def clear_username(self) -> "LoginPage":
         """
         Clear the username field.
@@ -178,7 +106,7 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_username("wrong").clear_username().enter_username("correct")
         """
-        username_field = self.find_element(self.locators.USERNAME_INPUT(self.page))
+        username_field = self.locators.USERNAME_INPUT(self.page)
         username_field.clear()
         return self
 
@@ -192,6 +120,6 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_password("wrong").clear_password().enter_password("correct")
         """
-        password_field = self.find_element(self.locators.PASSWORD_INPUT(self.page))
+        password_field = self.locators.PASSWORD_INPUT(self.page)
         password_field.clear()
         return self

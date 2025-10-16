@@ -4,6 +4,8 @@ Simplified Leave Page Object Model for OrangeHRM application.
 This LeavePage uses Playwright Page directly, eliminating adapter overhead.
 """
 
+# pylint: disable=import-error  # src module is in project root
+
 from playwright.sync_api import Page
 
 from src.pages.base_page import BasePage
@@ -82,33 +84,6 @@ class LeavePage(BasePage):
         """Navigate to Assign Leave page."""
         self.logger.info("Navigating to Assign Leave")
         self.click(self.locators.ASSIGN_LEAVE_BUTTON(self.page))
-
-    def is_apply_button_visible(self) -> bool:
-        """
-        Check if the Apply button is visible.
-
-        Returns:
-            True if Apply button is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.APPLY_BUTTON(self.page))
-
-    def is_leave_list_button_visible(self) -> bool:
-        """
-        Check if the Leave List button is visible.
-
-        Returns:
-            True if Leave List button is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.LEAVE_LIST_BUTTON(self.page))
-
-    def is_my_leave_button_visible(self) -> bool:
-        """
-        Check if the My Leave button is visible.
-
-        Returns:
-            True if My Leave button is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.MY_LEAVE_BUTTON(self.page))
 
     def apply_leave(
         self, leave_type: str, from_date: str, to_date: str, comments: str = ""
@@ -190,71 +165,3 @@ class LeavePage(BasePage):
         count = len(elements)
         self.logger.debug(f"Found {count} leave records")
         return count
-
-    def is_leave_list_table_visible(self) -> bool:
-        """
-        Check if the leave list table is visible.
-
-        Returns:
-            True if table is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.LEAVE_LIST_TABLE(self.page))
-
-    def is_success_message_displayed(self) -> bool:
-        """
-        Check if success message is displayed.
-
-        Returns:
-            True if success message is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.SUCCESS_MESSAGE(self.page))
-
-    def get_success_message(self) -> str:
-        """
-        Get the text of the success message.
-
-        Returns:
-            Success message text
-        """
-        return self.get_text(self.locators.SUCCESS_MESSAGE(self.page))
-
-    def is_error_message_displayed(self) -> bool:
-        """
-        Check if error message is displayed.
-
-        Returns:
-            True if error message is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.ERROR_MESSAGE(self.page))
-
-    def get_error_message(self) -> str:
-        """
-        Get the text of the error message.
-
-        Returns:
-            Error message text
-        """
-        return self.get_text(self.locators.ERROR_MESSAGE(self.page))
-
-    def is_no_records_message_displayed(self) -> bool:
-        """
-        Check if 'No Records Found' message is displayed.
-
-        Returns:
-            True if no records message is visible, False otherwise
-        """
-        return self.is_element_visible(self.locators.NO_RECORDS_MESSAGE(self.page))
-
-    def is_page_loaded(self) -> bool:
-        """
-        Verify if the leave page is fully loaded.
-
-        Checks that critical elements are visible:
-            - Leave menu item or page title
-
-        Returns:
-            True if leave page is loaded, False otherwise
-        """
-        return self.is_element_visible(
-            self.locators.LEAVE_MENU_ITEM(self.page)
-        ) or self.is_element_visible(self.locators.PAGE_TITLE(self.page))

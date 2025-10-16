@@ -21,7 +21,6 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from utils.exceptions import (
     ElementNotClickableException,
-    ElementNotFoundException,
     InvalidParameterException,
 )
 from utils.logger import TestLogger
@@ -107,46 +106,6 @@ class BasePage:
             "Locator must be a Playwright Locator, string selector, or callable",
         )
 
-    def find_element(self, locator: LocatorType) -> Locator:
-        """
-        Find a single element using Playwright locator.
-
-        Supports multiple locator types:
-            - Playwright Locator (get_by_role, get_by_label, etc.)
-            - String selector (CSS, XPath)
-            - Callable that returns Locator
-
-        Args:
-            locator: Locator in any supported format
-
-        Returns:
-            Playwright Locator instance
-
-        Raises:
-            ElementNotFoundException: If element is not found within timeout
-
-        Example:
-            >>> # Functional locator (recommended)
-            >>> element = page.find_element(lambda p: p.get_by_role("button", name="Login"))
-            >>> element.click()
-
-            >>> # String selector
-            >>> element = page.find_element("button.submit")
-            >>> element.click()
-        """
-        try:
-            pw_locator = self._resolve_locator(locator)
-            # Wait for element to be attached to DOM
-            pw_locator.wait_for(state="attached", timeout=self.timeout_ms)
-            self.logger.debug(f"Found element: {pw_locator}")
-            return pw_locator
-        except PlaywrightTimeoutError as e:
-            self.logger.error(f"Element not found: {locator}")
-            raise ElementNotFoundException(
-                str(locator),
-                f"Timeout waiting for element: {locator}",
-            ) from e
-
     def find_elements(self, locator: LocatorType) -> list[Locator]:
         """
         Find all elements matching the locator.
@@ -229,91 +188,6 @@ class BasePage:
             pw_locator.clear()
         pw_locator.fill(text)
         self.logger.debug(f"Sent keys to element: {locator}")
-
-    def get_text(self, locator: LocatorType) -> str:
-        """
-        Get the text content of an element.
-
-        Args:
-            locator: Locator in any supported format (Locator, str, or callable)
-
-        Returns:
-            Text content of the element
-
-        Example:
-            >>> error_text = page.get_text(LoginLocators.ERROR_MESSAGE)
-        """
-        pw_locator = self._resolve_locator(locator)
-        text = pw_locator.inner_text()
-        self.logger.debug(f"Got text from element: {locator} -> '{text}'")
-        return text
-
-    def get_attribute(self, locator: LocatorType, attribute: str) -> str | None:
-        """
-        Get an attribute value from an element.
-
-        Args:
-            locator: Locator in any supported format (Locator, str, or callable)
-            attribute: Name of the attribute
-
-        Returns:
-            Value of the attribute or None
-
-        Raises:
-            InvalidParameterException: If attribute is None or empty
-        """
-        if not attribute or not isinstance(attribute, str):
-            raise InvalidParameterException(
-                "attribute", attribute, "Attribute name must be a non-empty string"
-            )
-
-        pw_locator = self._resolve_locator(locator)
-        value = pw_locator.get_attribute(attribute)
-        self.logger.debug(f"Got attribute '{attribute}' from {locator} -> '{value}'")
-        return value
-
-    def is_element_visible(self, locator: LocatorType, timeout: int | None = None) -> bool:
-        """
-        Check if an element is visible on the page.
-
-        Args:
-            locator: Locator in any supported format (Locator, str, or callable)
-            timeout: Optional timeout in seconds (uses default if not specified)
-
-        Returns:
-            True if element is visible, False otherwise
-
-        Example:
-            >>> if page.is_element_visible(LoginLocators.ERROR_MESSAGE):
-            ...     print("Error displayed")
-        """
-        timeout_ms = (timeout * 1000) if timeout else self.timeout_ms
-        try:
-            pw_locator = self._resolve_locator(locator)
-            pw_locator.wait_for(state="visible", timeout=timeout_ms)
-            self.logger.debug(f"Element visible: {locator}")
-            return True
-        except PlaywrightTimeoutError:
-            self.logger.debug(f"Element not visible: {locator}")
-            return False
-
-    def is_element_present(self, locator: LocatorType) -> bool:
-        """
-        Check if an element is present in the DOM.
-
-        Args:
-            locator: Locator in any supported format (Locator, str, or callable)
-
-        Returns:
-            True if element is present, False otherwise
-        """
-        try:
-            self.find_element(locator)
-            self.logger.debug(f"Element present: {locator}")
-            return True
-        except ElementNotFoundException:
-            self.logger.debug(f"Element not present: {locator}")
-            return False
 
     def get_current_url(self) -> str:
         """
