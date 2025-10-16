@@ -10,6 +10,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from src.config.config_defaults import defaults
 from src.enums.browser_types import BrowserType
 from utils.exceptions import ConfigurationException
 
@@ -50,31 +51,39 @@ class EnvironmentConfigService:
     def _load_configuration(self) -> None:
         """Load and validate all configuration values from environment variables."""
         # Application URLs and Credentials
-        self._base_url = os.getenv("URL", "http://localhost:8080/web/index.php")
-        self._username = os.getenv("ORANGEHRM_USERNAME", "Admin")
-        self._password = os.getenv("ORANGEHRM_PASSWORD", "admin123")
+        self._base_url = os.getenv("URL", defaults.BASE_URL)
+        self._username = os.getenv("ORANGEHRM_USERNAME", defaults.USERNAME)
+        self._password = os.getenv("ORANGEHRM_PASSWORD", defaults.PASSWORD)
 
         # Browser Configuration - validate using BrowserType enum
-        browser_str = os.getenv("BROWSER", "chrome")
+        browser_str = os.getenv("BROWSER", defaults.BROWSER)
         try:
             browser_enum = BrowserType.from_string(browser_str)
             self._default_browser = browser_enum.value
         except ValueError as e:
             raise ConfigurationException(f"Invalid BROWSER configuration: {e}") from e
 
-        self._headless = os.getenv("HEADLESS", "False").lower() == "true"
+        self._headless = os.getenv("HEADLESS", defaults.HEADLESS).lower() == "true"
 
         # Timeouts (in seconds) - validate positive values
-        self._default_timeout = self._parse_positive_int("DEFAULT_TIMEOUT", "10")
-        self._page_load_timeout = self._parse_positive_int("PAGE_LOAD_TIMEOUT", "30")
+        self._default_timeout = self._parse_positive_int(
+            "DEFAULT_TIMEOUT", defaults.DEFAULT_TIMEOUT
+        )
+        self._page_load_timeout = self._parse_positive_int(
+            "PAGE_LOAD_TIMEOUT", defaults.PAGE_LOAD_TIMEOUT
+        )
 
         # Window Configuration - validate positive dimensions
-        self._window_width = self._parse_positive_int("WINDOW_WIDTH", "1920")
-        self._window_height = self._parse_positive_int("WINDOW_HEIGHT", "1080")
-        self._maximize_window = os.getenv("MAXIMIZE_WINDOW", "True").lower() == "true"
+        self._window_width = self._parse_positive_int("WINDOW_WIDTH", defaults.WINDOW_WIDTH)
+        self._window_height = self._parse_positive_int("WINDOW_HEIGHT", defaults.WINDOW_HEIGHT)
+        self._maximize_window = (
+            os.getenv("MAXIMIZE_WINDOW", defaults.MAXIMIZE_WINDOW).lower() == "true"
+        )
 
         # Screenshots Configuration
-        self._screenshot_on_failure = os.getenv("SCREENSHOT_ON_FAILURE", "True").lower() == "true"
+        self._screenshot_on_failure = (
+            os.getenv("SCREENSHOT_ON_FAILURE", defaults.SCREENSHOT_ON_FAILURE).lower() == "true"
+        )
         self._screenshots_dir = Path(__file__).parent.parent.parent / "reports" / "screenshots"
 
         # Reports Configuration
