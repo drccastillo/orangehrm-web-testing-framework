@@ -1,5 +1,0 @@
-23:04:03 - tests_playwright.test_login_demo_pw - INFO - Screenshot 1: Login page loaded
-23:04:04 - tests_playwright.test_login_demo_pw - INFO - Screenshot 2: Credentials entered
-23:04:05 - tests_playwright.test_login_demo_pw - INFO - Screenshot 3: Ready to login
-23:04:08 - tests_playwright.test_login_demo_pw - INFO - Screenshot 4: Dashboard loaded
-23:04:08 - tests_playwright.test_login_demo_pw - INFO - Demo with screenshots completed successfully!

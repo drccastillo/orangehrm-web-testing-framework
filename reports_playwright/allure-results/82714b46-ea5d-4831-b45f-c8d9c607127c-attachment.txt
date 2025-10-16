@@ -1,2 +1,0 @@
-22:13:23 - tests_playwright.test_login_pw - INFO - TEST STEP: Test login with method chaining
-22:13:25 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test login with method chaining

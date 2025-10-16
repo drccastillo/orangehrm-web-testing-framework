@@ -1,2 +1,0 @@
-22:13:05 - tests_playwright.test_login_pw - INFO - TEST STEP: Test successful login with valid credentials
-22:13:06 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test successful login with valid credentials

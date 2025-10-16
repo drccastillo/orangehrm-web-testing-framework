@@ -1,5 +1,0 @@
-[32mINFO    [0m tests_playwright.test_login_demo_pw:test_login_demo_pw.py:86 Screenshot 1: Login page loaded
-[32mINFO    [0m tests_playwright.test_login_demo_pw:test_login_demo_pw.py:93 Screenshot 2: Credentials entered
-[32mINFO    [0m tests_playwright.test_login_demo_pw:test_login_demo_pw.py:98 Screenshot 3: Ready to login
-[32mINFO    [0m tests_playwright.test_login_demo_pw:test_login_demo_pw.py:106 Screenshot 4: Dashboard loaded
-[32mINFO    [0m tests_playwright.test_login_demo_pw:test_login_demo_pw.py:110 Demo with screenshots completed successfully!

@@ -1,2 +1,0 @@
-23:04:33 - tests_playwright.test_login_pw - INFO - TEST STEP: Test login submission with Enter key
-23:04:34 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test login submission with Enter key

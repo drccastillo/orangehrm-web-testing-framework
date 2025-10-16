@@ -1,2 +1,0 @@
-22:13:20 - tests_playwright.test_login_pw - INFO - TEST STEP: Test login page elements visibility
-22:13:21 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test login page elements visibility

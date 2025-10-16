@@ -42,11 +42,9 @@ htmlcov/
 *.log
 
 # Reports
-reports/
-reports/
+reports_playwright/
 *.html
 *.xml
-screenshots/
 
 # Logs
 logs/
@@ -58,11 +56,9 @@ playwright-report/
 *.webm
 *.mp4
 
-# Allure (dentro de carpetas de reportes)
-reports/allure-results/
-reports/allure-report/
-reports/allure-results/
-reports/allure-report/
+# Allure
+reports_playwright/allure-results/
+reports_playwright/allure-report/
 .allure/
 
 # Environment variables
@@ -81,4 +77,3 @@ uv.lock
 
 # Misc
 .claude/
-CLAUDE.md
