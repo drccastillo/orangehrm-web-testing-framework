@@ -15,7 +15,7 @@ from typing import Any
 from playwright.sync_api import Locator, Page
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from src.core.playwright_locator import PlaywrightLocator
+from src.core.locator import PlaywrightLocator
 from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,

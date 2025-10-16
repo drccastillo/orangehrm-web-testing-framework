@@ -4,7 +4,7 @@ Playwright locators for the Login Page.
 These locators use Playwright selector syntax for modern web automation.
 """
 
-from src.core.playwright_locator import PlaywrightLocator
+from src.core.locator import PlaywrightLocator
 
 
 class LoginLocators:

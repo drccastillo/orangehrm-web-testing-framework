@@ -1,27 +1,23 @@
 """
-Unified login tests that work with ANY automation framework.
+Login tests using Playwright.
 
-These tests use the unified page objects and work with both Selenium and Playwright
-through the BrowserProtocol interface.
+These tests use the LoginPage class directly since we only use Playwright.
 
-Run with Selenium (default):
+Run tests:
     pytest tests/test_login_unified.py
-
-Run with Playwright:
-    pytest tests/test_login_unified.py --framework=playwright
 
 Run with specific browser:
     pytest tests/test_login_unified.py --browser=firefox
-    pytest tests/test_login_unified.py --framework=playwright --browser=chromium
+    pytest tests/test_login_unified.py --browser=chromium
 """
 
 import pytest
 
-from src.pages.protocols import LoginPageProtocol
+from src.pages.login_page import LoginPage
 
 
 @pytest.mark.smoke
-def test_valid_login(login_page: LoginPageProtocol, config_service):
+def test_valid_login(login_page: LoginPage, config_service):
     """
     Test successful login with valid credentials.
 
@@ -41,7 +37,7 @@ def test_valid_login(login_page: LoginPageProtocol, config_service):
 
 
 @pytest.mark.smoke
-def test_invalid_login(login_page: LoginPageProtocol):
+def test_invalid_login(login_page: LoginPage):
     """
     Test login failure with invalid credentials.
 
@@ -60,7 +56,7 @@ def test_invalid_login(login_page: LoginPageProtocol):
 
 
 @pytest.mark.smoke
-def test_login_page_elements_visible(login_page: LoginPageProtocol):
+def test_login_page_elements_visible(login_page: LoginPage):
     """
     Test that all login page elements are visible.
 
@@ -75,7 +71,7 @@ def test_login_page_elements_visible(login_page: LoginPageProtocol):
 
 
 @pytest.mark.regression
-def test_empty_credentials(login_page: LoginPageProtocol):
+def test_empty_credentials(login_page: LoginPage):
     """
     Test login attempt with empty credentials.
 
@@ -91,7 +87,7 @@ def test_empty_credentials(login_page: LoginPageProtocol):
 
 
 @pytest.mark.regression
-def test_empty_username(login_page: LoginPageProtocol):
+def test_empty_username(login_page: LoginPage):
     """
     Test login with empty username.
 
@@ -108,7 +104,7 @@ def test_empty_username(login_page: LoginPageProtocol):
 
 
 @pytest.mark.regression
-def test_empty_password(login_page: LoginPageProtocol):
+def test_empty_password(login_page: LoginPage):
     """
     Test login with empty password.
 
@@ -125,7 +121,7 @@ def test_empty_password(login_page: LoginPageProtocol):
 
 
 @pytest.mark.regression
-def test_method_chaining(login_page: LoginPageProtocol, config_service):
+def test_method_chaining(login_page: LoginPage, config_service):
     """
     Test that method chaining works correctly.
 

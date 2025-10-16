@@ -7,7 +7,7 @@ Uses BrowserType Enum for type safety.
 
 from playwright.sync_api import Page, Playwright, sync_playwright
 
-from src.constants.browser_types import BrowserType
+from src.enums.browser_types import BrowserType
 from utils.logger import TestLogger
 
 

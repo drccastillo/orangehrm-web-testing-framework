@@ -10,7 +10,7 @@ import time
 from playwright.sync_api import Page
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from src.constants.visual_debugging import (
+from src.enums.visual_debugging import (
     BLINK_DELAY_SECONDS,
     DEFAULT_BLINK_COLOR,
     DEFAULT_BLINK_TIMES,

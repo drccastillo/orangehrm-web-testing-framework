@@ -1,27 +1,23 @@
 """
-Unified leave tests that work with ANY automation framework.
+Leave tests using Playwright.
 
-These tests use the unified page objects and work with both Selenium and Playwright
-through the BrowserProtocol interface.
+These tests use the LeavePage class directly since we only use Playwright.
 
-Run with Selenium (default):
-    URL="http://orangehrm_app/web/index.php" pytest tests/test_leave_unified.py --framework=selenium -p no:playwright
-
-Run with Playwright:
-    pytest tests/test_leave_unified.py --framework=playwright -p no:playwright
+Run tests:
+    pytest tests/test_leave_unified.py
 
 Run with specific browser:
     pytest tests/test_leave_unified.py --browser=firefox
-    pytest tests/test_leave_unified.py --framework=playwright --browser=chromium
+    pytest tests/test_leave_unified.py --browser=chromium
 """
 
 import pytest
 
-from src.pages.protocols import LeavePageProtocol
+from src.pages.leave_page import LeavePage
 
 
 @pytest.mark.smoke
-def test_leave_page_loads(leave_page: LeavePageProtocol):
+def test_leave_page_loads(leave_page: LeavePage):
     """
     Test that leave page loads successfully after navigation.
 
@@ -36,7 +32,7 @@ def test_leave_page_loads(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.smoke
-def test_leave_menu_buttons_visible(leave_page: LeavePageProtocol):
+def test_leave_menu_buttons_visible(leave_page: LeavePage):
     """
     Test that leave menu buttons are visible.
 
@@ -50,7 +46,7 @@ def test_leave_menu_buttons_visible(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.smoke
-def test_navigate_to_leave_list(leave_page: LeavePageProtocol):
+def test_navigate_to_leave_list(leave_page: LeavePage):
     """
     Test navigation to Leave List page.
 
@@ -68,7 +64,7 @@ def test_navigate_to_leave_list(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.smoke
-def test_navigate_to_my_leave(leave_page: LeavePageProtocol):
+def test_navigate_to_my_leave(leave_page: LeavePage):
     """
     Test navigation to My Leave page.
 
@@ -84,7 +80,7 @@ def test_navigate_to_my_leave(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.regression
-def test_navigate_to_apply_leave(leave_page: LeavePageProtocol):
+def test_navigate_to_apply_leave(leave_page: LeavePage):
     """
     Test navigation to Apply Leave page.
 
@@ -100,7 +96,7 @@ def test_navigate_to_apply_leave(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.regression
-def test_leave_list_table_visible(leave_page: LeavePageProtocol):
+def test_leave_list_table_visible(leave_page: LeavePage):
     """
     Test that leave list table is visible after navigation.
 
@@ -120,7 +116,7 @@ def test_leave_list_table_visible(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.regression
-def test_get_leave_count(leave_page: LeavePageProtocol):
+def test_get_leave_count(leave_page: LeavePage):
     """
     Test getting leave count from leave list.
 
@@ -138,7 +134,7 @@ def test_get_leave_count(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.regression
-def test_search_leave_reset(leave_page: LeavePageProtocol):
+def test_search_leave_reset(leave_page: LeavePage):
     """
     Test search functionality with reset.
 
@@ -162,7 +158,7 @@ def test_search_leave_reset(leave_page: LeavePageProtocol):
 
 
 @pytest.mark.smoke
-def test_url_contains_leave(leave_page: LeavePageProtocol):
+def test_url_contains_leave(leave_page: LeavePage):
     """
     Test that current URL contains 'leave' after navigation.
 
