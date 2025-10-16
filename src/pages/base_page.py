@@ -256,7 +256,7 @@ class BasePage:
         Get the text content of an element.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format (Locator, str, or callable)
 
         Returns:
             Text content of the element
@@ -274,7 +274,7 @@ class BasePage:
         Get an attribute value from an element.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format (Locator, str, or callable)
             attribute: Name of the attribute
 
         Returns:
@@ -298,7 +298,7 @@ class BasePage:
         Check if an element is visible on the page.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format (Locator, str, or callable)
             timeout: Optional timeout in seconds (uses default if not specified)
 
         Returns:
@@ -323,7 +323,7 @@ class BasePage:
         Check if an element is present in the DOM.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format (Locator, str, or callable)
 
         Returns:
             True if element is present, False otherwise
@@ -413,7 +413,7 @@ class BasePage:
         Scroll to an element on the page.
 
         Args:
-            locator: PlaywrightLocator with selector string
+            locator: Locator in any supported format (Locator, str, or callable)
         """
         pw_locator = self._resolve_locator(locator)
         pw_locator.scroll_into_view_if_needed(timeout=self.timeout_ms)
@@ -438,7 +438,7 @@ class BasePage:
         Switch context to an iframe (note: Playwright uses frame_locator).
 
         Args:
-            locator: PlaywrightLocator for the iframe element
+            locator: Locator for the iframe element
 
         Note:
             In Playwright, frame switching is done using frame_locator().

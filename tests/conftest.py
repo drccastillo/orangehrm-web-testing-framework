@@ -2,7 +2,7 @@
 Pytest configuration for Playwright-based tests.
 
 This conftest provides fixtures for Playwright browser automation
-through the BrowserProtocol abstraction layer.
+using native Playwright Page objects.
 """
 
 from datetime import datetime
