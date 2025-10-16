@@ -1,118 +1,161 @@
 """
-Playwright locators for the Leave Page.
+Playwright functional locators for the Leave Page.
 
-These locators use Playwright selector syntax for modern web automation.
+Following Playwright best practices, these use user-facing locators where possible:
+- get_by_role() for buttons and links
+- get_by_text() for navigation items
+- get_by_label() for form fields
+- CSS selectors only when necessary
+
+Reference: https://playwright.dev/python/docs/locators
 """
 
-from src.core.locator import PlaywrightLocator
+# ruff: noqa: N802
+# Locator functions use UPPERCASE naming convention for consistency with constants
 
 
 class LeaveLocators:
     """
-    Playwright locator value objects for the Leave Page.
+    Playwright functional locators for the Leave Page.
 
-    These locators use PlaywrightLocator with native Playwright selector syntax
-    for optimal performance and reliability.
+    These use Playwright's recommended locator methods for better resilience
+    and maintainability.
 
     Example:
-        >>> playwright_browser = PlaywrightBrowserAdapter(page)
-        >>> page = LeavePage(playwright_browser)
-        >>> page.click(LeaveLocators.APPLY_BUTTON)
+        >>> leave_page = LeavePage(page)
+        >>> leave_page.click(LeaveLocators.APPLY_BUTTON(page))
     """
 
     # Navigation elements
-    LEAVE_MENU_ITEM = PlaywrightLocator("//span[text()='Leave']", "Leave menu item in sidebar")
+    @staticmethod
+    def LEAVE_MENU_ITEM(page):
+        """Leave menu item in sidebar (role + name for precision)."""
+        return page.get_by_role("link", name="Leave", exact=True)
 
     # Page header
-    PAGE_TITLE = PlaywrightLocator(".oxd-topbar-header-breadcrumb h6", "Leave page title")
+    @staticmethod
+    def PAGE_TITLE(page):
+        """Leave page title (heading role)."""
+        return page.get_by_role("heading", name="Leave", exact=True)
 
-    # Action buttons in header
-    APPLY_BUTTON = PlaywrightLocator(
-        "//a[@class='oxd-topbar-body-nav-tab-item' and text()='Apply']",
-        "Apply leave button",
-    )
+    # Action buttons in header - using get_by_role for better accessibility
+    @staticmethod
+    def APPLY_BUTTON(page):
+        """Apply leave button (link role, text-based)."""
+        return page.get_by_role("link", name="Apply")
 
-    MY_LEAVE_BUTTON = PlaywrightLocator(
-        "//a[@class='oxd-topbar-body-nav-tab-item' and text()='My Leave']",
-        "My Leave button",
-    )
+    @staticmethod
+    def MY_LEAVE_BUTTON(page):
+        """My Leave button (link role, text-based)."""
+        return page.get_by_role("link", name="My Leave")
 
-    ENTITLEMENTS_BUTTON = PlaywrightLocator(
-        "//span[@class='oxd-topbar-body-nav-tab-item' and contains(text(), 'Entitlements')]",
-        "Entitlements button",
-    )
+    @staticmethod
+    def ENTITLEMENTS_BUTTON(page):
+        """Entitlements button (text-based)."""
+        return page.get_by_text("Entitlements")
 
-    REPORTS_BUTTON = PlaywrightLocator(
-        "//span[@class='oxd-topbar-body-nav-tab-item' and contains(text(), 'Reports')]",
-        "Reports button",
-    )
+    @staticmethod
+    def REPORTS_BUTTON(page):
+        """Reports button (text-based)."""
+        return page.get_by_text("Reports")
 
-    CONFIGURE_BUTTON = PlaywrightLocator(
-        "//span[@class='oxd-topbar-body-nav-tab-item' and contains(text(), 'Configure')]",
-        "Configure button",
-    )
+    @staticmethod
+    def CONFIGURE_BUTTON(page):
+        """Configure button (text-based)."""
+        return page.get_by_text("Configure")
 
-    LEAVE_LIST_BUTTON = PlaywrightLocator(
-        "//a[@class='oxd-topbar-body-nav-tab-item' and text()='Leave List']",
-        "Leave List button",
-    )
+    @staticmethod
+    def LEAVE_LIST_BUTTON(page):
+        """Leave List button (link role, text-based)."""
+        return page.get_by_role("link", name="Leave List")
 
-    ASSIGN_LEAVE_BUTTON = PlaywrightLocator(
-        "//a[@class='oxd-topbar-body-nav-tab-item' and text()='Assign Leave']",
-        "Assign Leave button",
-    )
+    @staticmethod
+    def ASSIGN_LEAVE_BUTTON(page):
+        """Assign Leave button (link role, text-based)."""
+        return page.get_by_role("link", name="Assign Leave")
 
     # Apply Leave Form fields
-    LEAVE_TYPE_DROPDOWN = PlaywrightLocator(
-        ".oxd-select-text--active",
-        "Leave type dropdown in Apply form",
-    )
+    @staticmethod
+    def LEAVE_TYPE_DROPDOWN(page):
+        """Leave type dropdown (CSS fallback - complex widget)."""
+        return page.locator(".oxd-select-text--active")
 
-    FROM_DATE_INPUT = PlaywrightLocator(
-        "//label[text()='From Date']/parent::div/following-sibling::div//input",
-        "From date input field",
-    )
+    @staticmethod
+    def FROM_DATE_INPUT(page):
+        """From date input field (label-based)."""
+        return page.get_by_label("From Date")
 
-    TO_DATE_INPUT = PlaywrightLocator(
-        "//label[text()='To Date']/parent::div/following-sibling::div//input",
-        "To date input field",
-    )
+    @staticmethod
+    def TO_DATE_INPUT(page):
+        """To date input field (label-based)."""
+        return page.get_by_label("To Date")
 
-    COMMENTS_TEXTAREA = PlaywrightLocator(".oxd-textarea", "Comments textarea in Apply form")
+    @staticmethod
+    def COMMENTS_TEXTAREA(page):
+        """Comments textarea (CSS fallback)."""
+        return page.locator(".oxd-textarea")
 
-    SUBMIT_BUTTON = PlaywrightLocator("button[type='submit']", "Submit button in Apply form")
+    @staticmethod
+    def SUBMIT_BUTTON(page):
+        """Submit button in Apply form (role-based)."""
+        return page.get_by_role("button", name="Submit")
 
-    CANCEL_BUTTON = PlaywrightLocator("//button[contains(text(), 'Cancel')]", "Cancel button")
+    @staticmethod
+    def CANCEL_BUTTON(page):
+        """Cancel button (role-based)."""
+        return page.get_by_role("button", name="Cancel")
 
     # Leave List - Search/Filter section
-    EMPLOYEE_NAME_INPUT = PlaywrightLocator(
-        "//label[text()='Employee Name']/parent::div/following-sibling::div//input",
-        "Employee name autocomplete input",
-    )
+    @staticmethod
+    def EMPLOYEE_NAME_INPUT(page):
+        """Employee name autocomplete input (label-based)."""
+        return page.get_by_label("Employee Name")
 
-    LEAVE_STATUS_DROPDOWN = PlaywrightLocator(
-        "//label[text()='Leave Status']/parent::div/"
-        "following-sibling::div//div[@class='oxd-select-text-input']",
-        "Leave status dropdown filter",
-    )
+    @staticmethod
+    def LEAVE_STATUS_DROPDOWN(page):
+        """Leave status dropdown filter (label-based with locator)."""
+        # Note: This is a custom dropdown widget, might need CSS fallback
+        return page.get_by_label("Leave Status")
 
-    SEARCH_BUTTON = PlaywrightLocator("button[type='submit']", "Search button in filter form")
+    @staticmethod
+    def SEARCH_BUTTON(page):
+        """Search button in filter form (role-based)."""
+        return page.get_by_role("button", name="Search")
 
-    RESET_BUTTON = PlaywrightLocator("//button[@type='reset']", "Reset filter button")
+    @staticmethod
+    def RESET_BUTTON(page):
+        """Reset filter button (role-based)."""
+        return page.get_by_role("button", name="Reset")
 
     # Leave List - Results table
-    LEAVE_LIST_TABLE = PlaywrightLocator(".oxd-table", "Leave list table")
+    @staticmethod
+    def LEAVE_LIST_TABLE(page):
+        """Leave list table (CSS fallback)."""
+        return page.locator(".oxd-table")
 
-    LEAVE_LIST_ROWS = PlaywrightLocator(".oxd-table-body .oxd-table-card", "Leave list table rows")
+    @staticmethod
+    def LEAVE_LIST_ROWS(page):
+        """Leave list table rows (CSS fallback)."""
+        return page.locator(".oxd-table-body .oxd-table-card")
 
     # Status badge
-    STATUS_BADGE = PlaywrightLocator(".oxd-chip", "Status badge in leave list")
+    @staticmethod
+    def STATUS_BADGE(page):
+        """Status badge in leave list (CSS fallback)."""
+        return page.locator(".oxd-chip")
 
     # Messages
-    SUCCESS_MESSAGE = PlaywrightLocator(".oxd-toast-content--success", "Success toast message")
+    @staticmethod
+    def SUCCESS_MESSAGE(page):
+        """Success toast message (CSS fallback)."""
+        return page.locator(".oxd-toast-content--success")
 
-    ERROR_MESSAGE = PlaywrightLocator(".oxd-toast-content--error", "Error toast message")
+    @staticmethod
+    def ERROR_MESSAGE(page):
+        """Error toast message (CSS fallback)."""
+        return page.locator(".oxd-toast-content--error")
 
-    NO_RECORDS_MESSAGE = PlaywrightLocator(
-        "//span[contains(text(), 'No Records Found')]", "No records message"
-    )
+    @staticmethod
+    def NO_RECORDS_MESSAGE(page):
+        """No records message (text-based)."""
+        return page.get_by_text("No Records Found")

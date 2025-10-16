@@ -48,7 +48,7 @@ class LeavePage(BasePage):
             Self for method chaining
         """
         self.logger.info("Navigating to Leave section")
-        self.click(self.locators.LEAVE_MENU_ITEM)
+        self.click(self.locators.LEAVE_MENU_ITEM(self.page))
         return self
 
     def navigate_to_apply_leave(self) -> None:
@@ -58,7 +58,7 @@ class LeavePage(BasePage):
         Clicks the Apply button in the Leave section header.
         """
         self.logger.info("Navigating to Apply Leave")
-        self.click(self.locators.APPLY_BUTTON)
+        self.click(self.locators.APPLY_BUTTON(self.page))
 
     def navigate_to_leave_list(self) -> None:
         """
@@ -67,7 +67,7 @@ class LeavePage(BasePage):
         Clicks the Leave List button in the Leave section header.
         """
         self.logger.info("Navigating to Leave List")
-        self.click(self.locators.LEAVE_LIST_BUTTON)
+        self.click(self.locators.LEAVE_LIST_BUTTON(self.page))
 
     def navigate_to_my_leave(self) -> None:
         """
@@ -76,12 +76,12 @@ class LeavePage(BasePage):
         Clicks the My Leave button in the Leave section header.
         """
         self.logger.info("Navigating to My Leave")
-        self.click(self.locators.MY_LEAVE_BUTTON)
+        self.click(self.locators.MY_LEAVE_BUTTON(self.page))
 
     def navigate_to_assign_leave(self) -> None:
         """Navigate to Assign Leave page."""
         self.logger.info("Navigating to Assign Leave")
-        self.click(self.locators.ASSIGN_LEAVE_BUTTON)
+        self.click(self.locators.ASSIGN_LEAVE_BUTTON(self.page))
 
     def is_apply_button_visible(self) -> bool:
         """
@@ -90,7 +90,7 @@ class LeavePage(BasePage):
         Returns:
             True if Apply button is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.APPLY_BUTTON)
+        return self.is_element_visible(self.locators.APPLY_BUTTON(self.page))
 
     def is_leave_list_button_visible(self) -> bool:
         """
@@ -99,7 +99,7 @@ class LeavePage(BasePage):
         Returns:
             True if Leave List button is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.LEAVE_LIST_BUTTON)
+        return self.is_element_visible(self.locators.LEAVE_LIST_BUTTON(self.page))
 
     def is_my_leave_button_visible(self) -> bool:
         """
@@ -108,7 +108,7 @@ class LeavePage(BasePage):
         Returns:
             True if My Leave button is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.MY_LEAVE_BUTTON)
+        return self.is_element_visible(self.locators.MY_LEAVE_BUTTON(self.page))
 
     def apply_leave(
         self, leave_type: str, from_date: str, to_date: str, comments: str = ""
@@ -130,20 +130,20 @@ class LeavePage(BasePage):
         self.logger.info(f"Applying for leave: {leave_type} from {from_date} to {to_date}")
 
         # Select leave type
-        self.click(self.locators.LEAVE_TYPE_DROPDOWN)
+        self.click(self.locators.LEAVE_TYPE_DROPDOWN(self.page))
         # Note: Actual dropdown selection would need more complex logic
         # This is simplified for demonstration
 
         # Enter dates
-        self.send_keys(self.locators.FROM_DATE_INPUT, from_date)
-        self.send_keys(self.locators.TO_DATE_INPUT, to_date)
+        self.send_keys(self.locators.FROM_DATE_INPUT(self.page), from_date)
+        self.send_keys(self.locators.TO_DATE_INPUT(self.page), to_date)
 
         # Enter comments if provided
         if comments:
-            self.send_keys(self.locators.COMMENTS_TEXTAREA, comments)
+            self.send_keys(self.locators.COMMENTS_TEXTAREA(self.page), comments)
 
         # Submit the form
-        self.click(self.locators.SUBMIT_BUTTON)
+        self.click(self.locators.SUBMIT_BUTTON(self.page))
 
     def search_leave(self, employee_name: str = "", status: str = "") -> None:
         """
@@ -160,20 +160,20 @@ class LeavePage(BasePage):
 
         # Enter employee name if provided
         if employee_name:
-            self.send_keys(self.locators.EMPLOYEE_NAME_INPUT, employee_name)
+            self.send_keys(self.locators.EMPLOYEE_NAME_INPUT(self.page), employee_name)
 
         # Select status if provided
         if status:
-            self.click(self.locators.LEAVE_STATUS_DROPDOWN)
+            self.click(self.locators.LEAVE_STATUS_DROPDOWN(self.page))
             # Note: Actual dropdown selection would need more complex logic
 
         # Click search button
-        self.click(self.locators.SEARCH_BUTTON)
+        self.click(self.locators.SEARCH_BUTTON(self.page))
 
     def reset_search(self) -> None:
         """Reset all search filters."""
         self.logger.info("Resetting search filters")
-        self.click(self.locators.RESET_BUTTON)
+        self.click(self.locators.RESET_BUTTON(self.page))
 
     def get_leave_count(self) -> int:
         """
@@ -186,7 +186,7 @@ class LeavePage(BasePage):
             >>> count = leave_page.get_leave_count()
             >>> assert count > 0, "Should have at least one leave record"
         """
-        elements = self.find_elements(self.locators.LEAVE_LIST_ROWS)
+        elements = self.find_elements(self.locators.LEAVE_LIST_ROWS(self.page))
         count = len(elements)
         self.logger.debug(f"Found {count} leave records")
         return count
@@ -198,7 +198,7 @@ class LeavePage(BasePage):
         Returns:
             True if table is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.LEAVE_LIST_TABLE)
+        return self.is_element_visible(self.locators.LEAVE_LIST_TABLE(self.page))
 
     def is_success_message_displayed(self) -> bool:
         """
@@ -207,7 +207,7 @@ class LeavePage(BasePage):
         Returns:
             True if success message is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.SUCCESS_MESSAGE)
+        return self.is_element_visible(self.locators.SUCCESS_MESSAGE(self.page))
 
     def get_success_message(self) -> str:
         """
@@ -216,7 +216,7 @@ class LeavePage(BasePage):
         Returns:
             Success message text
         """
-        return self.get_text(self.locators.SUCCESS_MESSAGE)
+        return self.get_text(self.locators.SUCCESS_MESSAGE(self.page))
 
     def is_error_message_displayed(self) -> bool:
         """
@@ -225,7 +225,7 @@ class LeavePage(BasePage):
         Returns:
             True if error message is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.ERROR_MESSAGE)
+        return self.is_element_visible(self.locators.ERROR_MESSAGE(self.page))
 
     def get_error_message(self) -> str:
         """
@@ -234,7 +234,7 @@ class LeavePage(BasePage):
         Returns:
             Error message text
         """
-        return self.get_text(self.locators.ERROR_MESSAGE)
+        return self.get_text(self.locators.ERROR_MESSAGE(self.page))
 
     def is_no_records_message_displayed(self) -> bool:
         """
@@ -243,7 +243,7 @@ class LeavePage(BasePage):
         Returns:
             True if no records message is visible, False otherwise
         """
-        return self.is_element_visible(self.locators.NO_RECORDS_MESSAGE)
+        return self.is_element_visible(self.locators.NO_RECORDS_MESSAGE(self.page))
 
     def is_page_loaded(self) -> bool:
         """
@@ -255,6 +255,6 @@ class LeavePage(BasePage):
         Returns:
             True if leave page is loaded, False otherwise
         """
-        return self.is_element_visible(self.locators.LEAVE_MENU_ITEM) or self.is_element_visible(
-            self.locators.PAGE_TITLE
-        )
+        return self.is_element_visible(
+            self.locators.LEAVE_MENU_ITEM(self.page)
+        ) or self.is_element_visible(self.locators.PAGE_TITLE(self.page))
