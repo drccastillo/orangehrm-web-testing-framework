@@ -6,10 +6,12 @@ adapter layers and providing direct access to Playwright's powerful API.
 
 Design Pattern:
     - Single Responsibility: Interaction methods only
-    - Composition: Uses ElementHighlighter for visual debugging
     - YAGNI Principle: No adapters, only what we need
     - Supports Playwright functional locators (get_by_role, get_by_label, etc.)
+    - Direct Playwright API: Use locator.highlight() for debugging
 """
+
+# pylint: disable=import-error  # utils module is in project root
 
 from collections.abc import Callable
 from typing import Any
@@ -17,7 +19,6 @@ from typing import Any
 from playwright.sync_api import Locator, Page
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
-from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,
     ElementNotFoundException,
@@ -40,7 +41,6 @@ class BasePage:
     Attributes:
         page: Playwright Page instance
         timeout: Default timeout for operations in seconds
-        highlighter: ElementHighlighter for visual debugging (lazy loaded)
         logger: Logger instance
 
     Example:
@@ -52,40 +52,19 @@ class BasePage:
         ...     login_page.login("admin", "pass")
     """
 
-    def __init__(
-        self,
-        page: Page,
-        timeout: int = 10,
-        highlighter: ElementHighlighter | None = None,
-    ):
+    def __init__(self, page: Page, timeout: int = 10):
         """
         Initialize the base page.
 
         Args:
             page: Playwright Page instance
             timeout: Default timeout for operations in seconds
-            highlighter: Optional ElementHighlighter for visual debugging
         """
         self.page = page
         self.timeout = timeout
         self.timeout_ms = timeout * 1000  # Playwright uses milliseconds
         self.page.set_default_timeout(self.timeout_ms)
         self.logger = TestLogger.get_logger(self.__class__.__name__)
-        # Highlighter will be initialized when needed (lazy loading)
-        self._highlighter = highlighter
-
-    @property
-    def highlighter(self) -> ElementHighlighter:
-        """Get or create ElementHighlighter (lazy loading)."""
-        if self._highlighter is None:
-            # Create highlighter with Playwright Page
-            self._highlighter = ElementHighlighter(self.page)
-        return self._highlighter
-
-    @highlighter.setter
-    def highlighter(self, value: ElementHighlighter | None) -> None:
-        """Set the highlighter."""
-        self._highlighter = value
 
     def _resolve_locator(self, locator: LocatorType) -> Locator:
         """
