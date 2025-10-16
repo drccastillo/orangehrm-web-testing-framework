@@ -77,19 +77,19 @@ def headless(request):
 
 
 @pytest.fixture(scope="function")
-def browser(browser_name, headless):
+def browser(browser_name, headless, config_service):
     """
-    Create Playwright browser instance using BrowserFactory.
+    Create Playwright Page instance using BrowserFactory.
 
-    This fixture creates a Playwright browser adapter that implements
-    BrowserProtocol for framework-agnostic test code.
+    This fixture creates a Playwright Page directly, eliminating adapter overhead.
 
     Args:
         browser_name: Browser to use (chrome, chromium, firefox, edge)
         headless: Whether to run in headless mode
+        config_service: Configuration service
 
     Yields:
-        BrowserProtocol: Playwright browser adapter
+        Page: Playwright Page instance
 
     Example:
         # Run with default browser (chromium/chrome)
@@ -103,21 +103,50 @@ def browser(browser_name, headless):
     """
     logger.info(f"Creating Playwright browser: {browser_name} (headless={headless})")
 
-    # Create browser using BrowserFactory
-    browser_instance = BrowserFactory.create(
+    # Create browser using BrowserFactory - returns (Page, Playwright)
+    page, playwright = BrowserFactory.create(
         browser=browser_name,
         headless=headless,
-        timeout=_config.default_timeout,
-        maximize_window=_config.maximize_window,
-        window_width=_config.window_width,
-        window_height=_config.window_height,
+        timeout=config_service.default_timeout,
+        maximize_window=config_service.maximize_window,
+        window_width=config_service.window_width,
+        window_height=config_service.window_height,
     )
 
-    yield browser_instance
+    yield page
 
-    # Teardown
+    # Teardown with robust error handling
     logger.info("Closing browser")
-    browser_instance.quit()
+
+    # Close page
+    try:
+        page.close()
+        logger.debug("Page closed successfully")
+    except Exception as e:
+        logger.error(f"Error closing page: {e}")
+
+    # Close context
+    try:
+        if page.context:
+            page.context.close()
+            logger.debug("Context closed successfully")
+    except Exception as e:
+        logger.error(f"Error closing context: {e}")
+
+    # Close browser
+    try:
+        if page.context and page.context.browser:
+            page.context.browser.close()
+            logger.debug("Browser closed successfully")
+    except Exception as e:
+        logger.error(f"Error closing browser: {e}")
+
+    # Stop Playwright
+    try:
+        playwright.stop()
+        logger.debug("Playwright stopped successfully")
+    except Exception as e:
+        logger.error(f"Error stopping Playwright: {e}")
 
 
 @pytest.fixture(scope="function")
@@ -125,10 +154,8 @@ def login_page(browser, config_service):
     """
     Create LoginPage instance and navigate to login page.
 
-    The LoginPage uses BrowserProtocol for framework-agnostic operations.
-
     Args:
-        browser: Playwright browser adapter (from browser fixture)
+        browser: Playwright Page instance (from browser fixture)
         config_service: Configuration service
 
     Yields:
@@ -149,10 +176,8 @@ def leave_page(browser, config_service, login_page):
     """
     Create LeavePage instance after login.
 
-    The LeavePage uses BrowserProtocol for framework-agnostic operations.
-
     Args:
-        browser: Playwright browser adapter (from browser fixture)
+        browser: Playwright Page instance (from browser fixture)
         config_service: Configuration service
         login_page: Login page fixture (to perform login first)
 
@@ -206,6 +231,8 @@ def pytest_runtest_makereport(item, call):
     """
     Hook to capture test results and take screenshots on failure.
 
+    Single Responsibility: Reporting only. Screenshot capture delegated.
+
     Args:
         item: Test item
         call: Test call information
@@ -217,17 +244,17 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call" and report.failed:
         logger.error(f"Test failed: {item.name}")
         if _config.screenshot_on_failure:
-            browser = item.funcargs.get("browser")
-            if browser:
-                _take_screenshot(browser, item.name)
+            page = item.funcargs.get("browser")  # Now a Page instance
+            if page:
+                _take_screenshot(page, item.name)
 
 
-def _take_screenshot(browser, test_name: str):
+def _take_screenshot(page, test_name: str):
     """
     Take a screenshot and save it to the screenshots directory.
 
     Args:
-        browser: BrowserProtocol instance (Playwright adapter)
+        page: Playwright Page instance
         test_name: Name of the test
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -235,7 +262,7 @@ def _take_screenshot(browser, test_name: str):
     screenshot_path = _config.screenshots_dir / screenshot_name
 
     try:
-        browser.take_screenshot(str(screenshot_path))
+        page.screenshot(path=str(screenshot_path))
         logger.info(f"Screenshot saved: {screenshot_path}")
     except Exception as e:
         logger.error(f"Failed to save screenshot: {e}")
