@@ -1,9 +1,10 @@
 """
-Unified locators package for all page objects.
+Locators package for all page objects.
 
-This package contains framework-agnostic locators using Locator value objects.
+This package contains Playwright functional locators for all pages.
 """
 
+from src.pages.locators.leave_locators import LeaveLocators
 from src.pages.locators.login_locators import LoginLocators
 
-__all__ = ["LoginLocators"]
+__all__ = ["LoginLocators", "LeaveLocators"]
