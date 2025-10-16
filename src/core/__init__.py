@@ -1,15 +1,12 @@
 """
 Core components for the Playwright testing framework.
-Contains protocols and value objects for framework abstraction.
+
+Phase 4 refactor: Removed BrowserProtocol and WebElementProtocol.
+Now using Playwright Page and Locator directly.
 """
 
-from src.core.browser_protocol import BrowserProtocol, LocatorProtocol
-from src.core.element_protocol import WebElementProtocol
 from src.core.playwright_locator import PlaywrightLocator
 
 __all__ = [
-    "BrowserProtocol",
-    "LocatorProtocol",
     "PlaywrightLocator",
-    "WebElementProtocol",
 ]
