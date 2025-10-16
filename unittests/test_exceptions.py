@@ -3,8 +3,6 @@ Unit tests for custom exception classes.
 Tests exception hierarchy and error messages.
 """
 
-import unittest
-
 import pytest
 from selenium.webdriver.common.by import By
 
@@ -18,7 +16,7 @@ from utils.exceptions import (
 )
 
 
-class TestFrameworkException(unittest.TestCase):
+class TestFrameworkException:
     """Test suite for FrameworkException base class."""
 
     def test_framework_exception_is_exception(self):
@@ -36,7 +34,7 @@ class TestFrameworkException(unittest.TestCase):
         assert str(error) == "Test error message"
 
 
-class TestElementNotFoundException(unittest.TestCase):
+class TestElementNotFoundException:
     """Test suite for ElementNotFoundException."""
 
     def test_element_not_found_exception_is_framework_exception(self):
@@ -66,7 +64,7 @@ class TestElementNotFoundException(unittest.TestCase):
         assert "username" in str(error)
 
 
-class TestElementNotClickableException(unittest.TestCase):
+class TestElementNotClickableException:
     """Test suite for ElementNotClickableException."""
 
     def test_element_not_clickable_exception_is_framework_exception(self):
@@ -87,7 +85,7 @@ class TestElementNotClickableException(unittest.TestCase):
         assert "not clickable" in str(error)
 
 
-class TestInvalidParameterException(unittest.TestCase):
+class TestInvalidParameterException:
     """Test suite for InvalidParameterException."""
 
     def test_invalid_parameter_exception_is_framework_exception(self):
@@ -108,7 +106,7 @@ class TestInvalidParameterException(unittest.TestCase):
         assert "text" in str(error)
 
 
-class TestPageNotLoadedException(unittest.TestCase):
+class TestPageNotLoadedException:
     """Test suite for PageNotLoadedException."""
 
     def test_page_not_loaded_exception_is_framework_exception(self):
@@ -129,7 +127,7 @@ class TestPageNotLoadedException(unittest.TestCase):
         assert "not load" in str(error).lower()
 
 
-class TestConfigurationException(unittest.TestCase):
+class TestConfigurationException:
     """Test suite for ConfigurationException."""
 
     def test_configuration_exception_is_framework_exception(self):
@@ -145,7 +143,3 @@ class TestConfigurationException(unittest.TestCase):
         """Test that ConfigurationException has a message."""
         error = ConfigurationException("BROWSER")
         assert "BROWSER" in str(error)
-
-
-if __name__ == "__main__":
-    unittest.main()

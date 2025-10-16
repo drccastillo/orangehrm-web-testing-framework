@@ -4,13 +4,12 @@ Tests logging functionality and logger creation.
 """
 
 import logging
-import unittest
 from pathlib import Path
 
 from utils.logger import LoggerMixin, TestLogger
 
 
-class TestTestLogger(unittest.TestCase):
+class TestTestLogger:
     """Test suite for TestLogger class."""
 
     def test_get_logger_returns_logger_instance(self):
@@ -72,7 +71,7 @@ class TestTestLogger(unittest.TestCase):
         assert logger.level == logging.ERROR
 
 
-class TestLoggerMixin(unittest.TestCase):
+class TestLoggerMixin:
     """Test suite for LoggerMixin class."""
 
     def test_logger_mixin_provides_logger_property(self):
@@ -112,7 +111,3 @@ class TestLoggerMixin(unittest.TestCase):
         logger1 = obj.logger
         logger2 = obj.logger
         assert logger1 is logger2
-
-
-if __name__ == "__main__":
-    unittest.main()
