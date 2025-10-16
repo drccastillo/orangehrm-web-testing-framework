@@ -42,12 +42,6 @@ class ConfigService(Protocol):
         """Get the default password for authentication."""
         ...
 
-    # Selenium Grid Configuration
-    @property
-    def selenium_grid_url(self) -> str:
-        """Get the Selenium Grid URL."""
-        ...
-
     # Browser Configuration
     @property
     def default_browser(self) -> str:
@@ -68,11 +62,6 @@ class ConfigService(Protocol):
     @property
     def page_load_timeout(self) -> int:
         """Get the page load timeout in seconds."""
-        ...
-
-    @property
-    def implicit_wait(self) -> int:
-        """Get the implicit wait time in seconds (note: explicit waits preferred)."""
         ...
 
     # Window Configuration
@@ -109,18 +98,6 @@ class ConfigService(Protocol):
         ...
 
     # Methods
-    def get_selenium_grid_url(self, browser: str | None = None) -> str:
-        """
-        Get the Selenium Grid URL for remote WebDriver.
-
-        Args:
-            browser: Optional browser name (for future browser-specific endpoints)
-
-        Returns:
-            Selenium Grid URL with /wd/hub endpoint
-        """
-        ...
-
     def ensure_directories(self) -> None:
         """
         Create necessary directories if they don't exist.

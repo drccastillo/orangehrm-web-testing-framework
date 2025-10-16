@@ -1,12 +1,11 @@
 """
 Element Highlighter for visual debugging.
 Extracted from BasePage following Single Responsibility Principle.
+
+This version works with BrowserProtocol for framework-agnostic highlighting.
 """
 
 import time
-
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webelement import WebElement
 
 from src.constants.visual_debugging import (
     BLINK_DELAY_SECONDS,
@@ -22,6 +21,9 @@ class ElementHighlighter:
     """
     Handles visual debugging operations for web elements.
 
+    This class works with BrowserProtocol, making it framework-agnostic.
+    It uses JavaScript execution to highlight elements.
+
     Responsibilities:
     - Highlight elements with borders and colors
     - Blink elements for attention
@@ -29,20 +31,24 @@ class ElementHighlighter:
 
     This class follows SRP by focusing solely on visual debugging,
     extracted from the God Class BasePage.
+
+    Design Pattern:
+        - Dependency on abstraction (BrowserProtocol) not concrete implementation
+        - Single Responsibility: Visual debugging only
     """
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, browser):
         """
         Initialize the element highlighter.
 
         Args:
-            driver: Selenium WebDriver instance for JavaScript execution
+            browser: Browser adapter implementing BrowserProtocol
         """
-        self.driver = driver
+        self.browser = browser
 
     def highlight_element(
         self,
-        element: WebElement,
+        selector: str,
         duration: int | None = None,
         color: str | None = None,
         border: str | None = None,
@@ -51,70 +57,101 @@ class ElementHighlighter:
         Highlight an element on the page for visual debugging.
 
         Args:
-            element: WebElement to highlight
+            selector: Element selector string (CSS or XPath)
             duration: Duration to highlight in seconds (default: 2)
             color: Border color for highlighting (default: "red")
             border: Border style (default: "3px solid")
 
         Example:
-            >>> highlighter.highlight_element(element, duration=3, color="blue")
+            >>> highlighter.highlight_element("input[name='username']", duration=3, color="blue")
         """
         duration = duration or DEFAULT_HIGHLIGHT_DURATION
         color = color or DEFAULT_HIGHLIGHT_COLOR
         border = border or f"{DEFAULT_BORDER_WIDTH} solid"
 
-        original_style = element.get_attribute("style")
+        # JavaScript to highlight element
+        highlight_script = """
+        (function(selector, border, color) {
+            const element = document.querySelector(selector);
+            if (!element) return null;
 
-        # Apply highlight style
-        highlight_style = f"{original_style}; border: {border} {color} !important;"
-        self._set_element_style(element, highlight_style)
+            const originalStyle = element.getAttribute('style') || '';
+            element.setAttribute('style', originalStyle + '; border: ' + border + ' ' + color + ' !important;');
 
-        time.sleep(duration)
+            return originalStyle;
+        })(arguments[0], arguments[1], arguments[2]);
+        """
 
-        # Restore original style
-        self._set_element_style(element, original_style or "")
+        try:
+            original_style = self.browser.execute_script(highlight_script, selector, border, color)
+            time.sleep(duration)
+
+            # Restore original style
+            restore_script = """
+            (function(selector, originalStyle) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.setAttribute('style', originalStyle);
+                }
+            })(arguments[0], arguments[1]);
+            """
+            self.browser.execute_script(restore_script, selector, original_style or "")
+        except Exception:
+            # Silently fail if highlighting doesn't work (e.g., element not found)
+            pass
 
     def blink_element(
-        self, element: WebElement, times: int | None = None, color: str | None = None
+        self, selector: str, times: int | None = None, color: str | None = None
     ) -> None:
         """
         Blink an element multiple times for visual debugging.
 
         Args:
-            element: WebElement to blink
+            selector: Element selector string (CSS or XPath)
             times: Number of times to blink (default: 3)
             color: Border color for blinking (default: "red")
 
         Example:
-            >>> highlighter.blink_element(element, times=5, color="green")
+            >>> highlighter.blink_element("button[type='submit']", times=5, color="green")
         """
         times = times or DEFAULT_BLINK_TIMES
         color = color or DEFAULT_BLINK_COLOR
 
-        original_style = element.get_attribute("style")
-
-        for _ in range(times):
-            # Highlight on
-            highlight_style = (
-                f"{original_style}; "
-                f"border: {DEFAULT_BORDER_WIDTH} solid {color} !important; "
-                f"background-color: yellow !important;"
-            )
-            self._set_element_style(element, highlight_style)
-            time.sleep(BLINK_DELAY_SECONDS)
-
-            # Highlight off
-            self._set_element_style(element, original_style or "")
-            time.sleep(BLINK_DELAY_SECONDS)
-
-    def _set_element_style(self, element: WebElement, style: str) -> None:
+        blink_script = """
+        (function(selector) {
+            const element = document.querySelector(selector);
+            if (!element) return null;
+            return element.getAttribute('style') || '';
+        })(arguments[0]);
         """
-        Private helper method to set element style.
 
-        Args:
-            element: WebElement to modify
-            style: CSS style string to apply
-        """
-        self.driver.execute_script(
-            "arguments[0].setAttribute('style', arguments[1]);", element, style
-        )
+        try:
+            original_style = self.browser.execute_script(blink_script, selector)
+
+            for _ in range(times):
+                # Highlight on
+                highlight_on = f"""
+                (function(selector, color) {{
+                    const element = document.querySelector(selector);
+                    if (element) {{
+                        element.setAttribute('style', '{original_style}; border: {DEFAULT_BORDER_WIDTH} solid ' + color + ' !important; background-color: yellow !important;');
+                    }}
+                }})(arguments[0], arguments[1]);
+                """
+                self.browser.execute_script(highlight_on, selector, color)
+                time.sleep(BLINK_DELAY_SECONDS)
+
+                # Highlight off
+                highlight_off = f"""
+                (function(selector) {{
+                    const element = document.querySelector(selector);
+                    if (element) {{
+                        element.setAttribute('style', '{original_style}');
+                    }}
+                }})(arguments[0]);
+                """
+                self.browser.execute_script(highlight_off, selector)
+                time.sleep(BLINK_DELAY_SECONDS)
+        except Exception:
+            # Silently fail if blinking doesn't work
+            pass

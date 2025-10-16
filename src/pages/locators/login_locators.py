@@ -1,59 +1,44 @@
 """
-Unified locators for the Login Page.
+Playwright locators for the Login Page.
 
-These locators work with ANY automation framework (Selenium, Playwright, etc.)
-through the Locator value object abstraction.
+These locators use Playwright selector syntax for modern web automation.
 """
 
-from src.core.locator import LocatorStrategy
-from src.core.selenium_locator import SeleniumLocator
+from src.core.playwright_locator import PlaywrightLocator
 
 
 class LoginLocators:
     """
-    Unified locator value objects for the Login Page.
+    Playwright locator value objects for the Login Page.
 
-    These locators use SeleniumLocator which implements the Locator protocol.
-    The browser adapters convert them to framework-specific format via to_native().
+    These locators use PlaywrightLocator which implements the Locator protocol.
+    They use native Playwright selector syntax for optimal performance.
 
     Benefits:
         - Type safety at creation time
         - Self-documenting with descriptions
-        - Framework-agnostic representation
+        - Native Playwright selectors (no conversion needed)
         - Validation on construction
-        - Works with Selenium AND Playwright
 
-    Example (Selenium):
-        >>> selenium_browser = SeleniumBrowserAdapter(driver)
-        >>> page = LoginPage(selenium_browser)
-        >>> page.send_keys(LoginLocators.USERNAME_INPUT, "admin")
-        >>> # SeleniumBrowserAdapter calls USERNAME_INPUT.to_native() -> (By.NAME, "username")
-
-    Example (Playwright):
+    Example:
         >>> playwright_browser = PlaywrightBrowserAdapter(page)
         >>> page = LoginPage(playwright_browser)
         >>> page.send_keys(LoginLocators.USERNAME_INPUT, "admin")
-        >>> # PlaywrightBrowserAdapter calls USERNAME_INPUT.to_native() -> "input[name='username']"
+        >>> # PlaywrightBrowserAdapter uses the selector directly
     """
 
     # Input fields
-    USERNAME_INPUT = SeleniumLocator(LocatorStrategy.NAME, "username", "Username input field")
+    USERNAME_INPUT = PlaywrightLocator("input[name='username']", "Username input field")
 
-    PASSWORD_INPUT = SeleniumLocator(LocatorStrategy.NAME, "password", "Password input field")
+    PASSWORD_INPUT = PlaywrightLocator("input[name='password']", "Password input field")
 
     # Buttons
-    LOGIN_BUTTON = SeleniumLocator(
-        LocatorStrategy.CSS, "button[type='submit']", "Login submit button"
-    )
+    LOGIN_BUTTON = PlaywrightLocator("button[type='submit']", "Login submit button")
 
     # Messages and alerts
-    ERROR_MESSAGE = SeleniumLocator(
-        LocatorStrategy.CSS, ".oxd-alert-content-text", "Login error message"
-    )
+    ERROR_MESSAGE = PlaywrightLocator(".oxd-alert-content-text", "Login error message")
 
     # Branding elements
-    LOGIN_LOGO = SeleniumLocator(
-        LocatorStrategy.CSS, ".orangehrm-login-branding img", "OrangeHRM logo"
-    )
+    LOGIN_LOGO = PlaywrightLocator(".orangehrm-login-branding img", "OrangeHRM logo")
 
-    LOGIN_TITLE = SeleniumLocator(LocatorStrategy.CSS, ".orangehrm-login-title", "Login page title")
+    LOGIN_TITLE = PlaywrightLocator(".orangehrm-login-title", "Login page title")

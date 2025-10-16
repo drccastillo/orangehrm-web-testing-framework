@@ -51,9 +51,6 @@ class EnvironmentConfigService:
         self._username = os.getenv("ORANGEHRM_USERNAME", "Admin")
         self._password = os.getenv("ORANGEHRM_PASSWORD", "admin123")
 
-        # Selenium Grid Configuration
-        self._selenium_grid_url = os.getenv("SELENIUM_GRID_URL", "http://localhost:4444")
-
         # Browser Configuration
         self._default_browser = os.getenv("BROWSER", "chrome")
         self._headless = os.getenv("HEADLESS", "False").lower() == "true"
@@ -61,7 +58,6 @@ class EnvironmentConfigService:
         # Timeouts (in seconds)
         self._default_timeout = int(os.getenv("DEFAULT_TIMEOUT", "10"))
         self._page_load_timeout = int(os.getenv("PAGE_LOAD_TIMEOUT", "30"))
-        self._implicit_wait = int(os.getenv("IMPLICIT_WAIT", "5"))
 
         # Window Configuration
         self._window_width = int(os.getenv("WINDOW_WIDTH", "1920"))
@@ -71,11 +67,11 @@ class EnvironmentConfigService:
         # Screenshots Configuration
         self._screenshot_on_failure = os.getenv("SCREENSHOT_ON_FAILURE", "True").lower() == "true"
         self._screenshots_dir = (
-            Path(__file__).parent.parent.parent / "reports_selenium" / "screenshots"
+            Path(__file__).parent.parent.parent / "reports" / "screenshots"
         )
 
         # Reports Configuration
-        self._reports_dir = Path(__file__).parent.parent.parent / "reports_selenium"
+        self._reports_dir = Path(__file__).parent.parent.parent / "reports"
 
     # Application Configuration Properties
     @property
@@ -92,12 +88,6 @@ class EnvironmentConfigService:
     def password(self) -> str:
         """Get the default password for authentication."""
         return self._password
-
-    # Selenium Grid Configuration
-    @property
-    def selenium_grid_url(self) -> str:
-        """Get the Selenium Grid URL."""
-        return self._selenium_grid_url
 
     # Browser Configuration
     @property
@@ -120,11 +110,6 @@ class EnvironmentConfigService:
     def page_load_timeout(self) -> int:
         """Get the page load timeout in seconds."""
         return self._page_load_timeout
-
-    @property
-    def implicit_wait(self) -> int:
-        """Get the implicit wait time in seconds."""
-        return self._implicit_wait
 
     # Window Configuration
     @property
@@ -160,18 +145,6 @@ class EnvironmentConfigService:
         return self._reports_dir
 
     # Methods
-    def get_selenium_grid_url(self, browser: str | None = None) -> str:
-        """
-        Get the Selenium Grid URL for remote WebDriver.
-
-        Args:
-            browser: Optional browser name (for future browser-specific endpoints)
-
-        Returns:
-            Selenium Grid URL with /wd/hub endpoint
-        """
-        return f"{self._selenium_grid_url}/wd/hub"
-
     def ensure_directories(self) -> None:
         """Create necessary directories if they don't exist."""
         self._screenshots_dir.mkdir(parents=True, exist_ok=True)

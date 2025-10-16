@@ -1,0 +1,2 @@
+23:04:36 - tests_playwright.test_login_pw - INFO - TEST STEP: Test clearing login form
+23:04:36 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test clearing login form

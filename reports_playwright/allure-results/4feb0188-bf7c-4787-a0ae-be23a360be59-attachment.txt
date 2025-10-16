@@ -1,0 +1,2 @@
+23:04:21 - tests_playwright.test_login_pw - INFO - TEST STEP: Test login with empty username
+23:04:22 - tests_playwright.test_login_pw - INFO - TEST STEP PASSED: Test login with empty username

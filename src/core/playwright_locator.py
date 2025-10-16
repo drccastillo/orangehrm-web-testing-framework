@@ -1,77 +1,63 @@
 """
 Playwright-specific locator implementation.
-Converts Locator value objects to Playwright selector strings.
+Uses native Playwright selector strings for optimal performance.
 """
 
-# pylint: disable=too-many-return-statements,no-else-return
 
-from src.core.locator import Locator, LocatorStrategy
-
-
-class PlaywrightLocator(Locator):
+class PlaywrightLocator:
     """
-    Playwright-specific locator implementation.
+    Playwright locator using native selector strings.
 
-    Converts framework-agnostic Locator to Playwright's string selector format.
+    This simplified locator directly stores Playwright selector strings,
+    eliminating the need for conversion and improving performance.
+
+    Attributes:
+        selector: Playwright selector string (CSS, XPath, text, etc.)
+        description: Human-readable description of the locator
 
     Example:
-        >>> locator = PlaywrightLocator(LocatorStrategy.ID, "username")
-        >>> locator.to_native()  # Returns: "#username"
+        >>> locator = PlaywrightLocator("input[name='username']", "Username input")
+        >>> locator.to_native()  # Returns: "input[name='username']"
 
-        >>> css_locator = PlaywrightLocator(LocatorStrategy.CSS, ".btn-primary")
-        >>> css_locator.to_native()  # Returns: ".btn-primary"
-
-        >>> xpath_locator = PlaywrightLocator(LocatorStrategy.XPATH, "//button")
-        >>> xpath_locator.to_native()  # Returns: "xpath=//button"
+        >>> xpath_locator = PlaywrightLocator("//button[@id='submit']", "Submit button")
+        >>> xpath_locator.to_native()  # Returns: "//button[@id='submit']"
     """
+
+    def __init__(self, selector: str, description: str = ""):
+        """
+        Initialize Playwright locator with native selector string.
+
+        Args:
+            selector: Playwright selector string (CSS, XPath, text=, etc.)
+            description: Human-readable description of what this locates
+
+        Raises:
+            ValueError: If selector is empty
+        """
+        if not selector or not isinstance(selector, str):
+            raise ValueError("Selector must be a non-empty string")
+
+        self.selector = selector
+        self.description = description or f"Playwright selector: {selector}"
 
     def to_native(self) -> str:
         """
-        Convert to Playwright native format.
+        Return the native Playwright selector string.
 
         Returns:
             String selector compatible with Playwright's page.locator()
 
-        Raises:
-            ValueError: If strategy is not supported by Playwright
-
         Example:
-            >>> locator = PlaywrightLocator(LocatorStrategy.CSS, ".login-btn")
+            >>> locator = PlaywrightLocator("button.submit")
             >>> locator.to_native()
-            ".login-btn"
+            "button.submit"
         """
-        strategy = self.strategy
-        value = self.value
+        return self.selector
 
-        # Map strategy to Playwright selector format
-        if strategy == LocatorStrategy.ID:
-            return f"#{value}"
+    def __repr__(self) -> str:
+        """String representation for debugging."""
+        return f"PlaywrightLocator(selector='{self.selector}', description='{self.description}')"
 
-        elif strategy == LocatorStrategy.NAME:
-            return f'[name="{value}"]'
-
-        elif strategy == LocatorStrategy.CSS:
-            return value
-
-        elif strategy == LocatorStrategy.XPATH:
-            return f"xpath={value}"
-
-        elif strategy == LocatorStrategy.CLASS_NAME:
-            return f".{value}"
-
-        elif strategy == LocatorStrategy.TAG_NAME:
-            return value
-
-        elif strategy == LocatorStrategy.LINK_TEXT:
-            # Playwright uses text= for exact text match
-            return f'text="{value}"'
-
-        elif strategy == LocatorStrategy.PARTIAL_LINK_TEXT:
-            # Playwright uses text= with regex for partial match
-            return f"text=/{value}/"
-
-        else:
-            raise ValueError(
-                f"Locator strategy {strategy} not supported by Playwright. "
-                f"Supported strategies: {[s.value for s in LocatorStrategy]}"
-            )
+    def __str__(self) -> str:
+        """User-friendly string representation."""
+        return f"{self.description} ['{self.selector}']"

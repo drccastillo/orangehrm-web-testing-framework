@@ -1,0 +1,2 @@
+[32mINFO    [0m tests_playwright.test_login_pw:logger.py:123 TEST STEP: Test login page elements visibility
+[32mINFO    [0m tests_playwright.test_login_pw:logger.py:126 TEST STEP PASSED: Test login page elements visibility

@@ -1,12 +1,10 @@
 """
-Unified pytest configuration for framework-agnostic tests.
+Pytest configuration for Playwright-based tests.
 
-This conftest supports BOTH Selenium and Playwright through BrowserProtocol.
-Use --framework flag to choose: pytest --framework=selenium or --framework=playwright
+This conftest provides fixtures for Playwright browser automation
+through the BrowserProtocol abstraction layer.
 """
 
-import argparse
-import contextlib
 from datetime import datetime
 
 import pytest
@@ -41,19 +39,6 @@ def config_service() -> ConfigService:
     return _config
 
 
-@pytest.fixture(scope="session")
-def framework(request):
-    """
-    Get automation framework from command line or use default (selenium).
-
-    Usage:
-        pytest --framework=selenium  (default)
-        pytest --framework=playwright
-
-    Returns:
-        Framework name (selenium or playwright)
-    """
-    return request.config.getoption("--framework", default="selenium")
 
 
 @pytest.fixture(scope="session")
@@ -63,12 +48,17 @@ def browser_name(request):
 
     Usage:
         pytest --browser=firefox
-        pytest --browser=chrome  (default)
+        pytest --browser=chromium  (default from pytest-playwright)
 
     Returns:
         Browser name
     """
-    return request.config.getoption("--browser", default=_config.default_browser)
+    # pytest-playwright uses 'chromium', 'firefox', 'webkit'
+    # Map to our naming: chromium->chrome
+    pw_browser = request.config.getoption("--browser", default="chromium")
+    if pw_browser == "chromium":
+        return "chrome"  # Our factory uses 'chrome'
+    return pw_browser
 
 
 @pytest.fixture(scope="session")
@@ -77,53 +67,52 @@ def headless(request):
     Get headless mode from command line or use default.
 
     Usage:
-        pytest --headless
+        pytest --headed  (to run in headed mode)
+        Default is headless mode
 
     Returns:
-        True if headless mode, False otherwise
+        True for headless (default), False if --headed flag is used
     """
-    return request.config.getoption("--headless", default=_config.headless)
+    # pytest-playwright uses --headed flag (default is headless)
+    headed = request.config.getoption("--headed", default=False)
+    return not headed  # Invert: headed=False means headless=True
 
 
 @pytest.fixture(scope="function")
-def browser(framework, browser_name, headless):
+def browser(browser_name, headless):
     """
-    Create unified browser instance using BrowserFactory.
+    Create Playwright browser instance using BrowserFactory.
 
-    This fixture works with ANY automation framework (Selenium, Playwright)
-    based on the --framework flag.
+    This fixture creates a Playwright browser adapter that implements
+    BrowserProtocol for framework-agnostic test code.
 
     Args:
-        framework: Automation framework (selenium or playwright)
-        browser_name: Browser to use (chrome, firefox, edge)
+        browser_name: Browser to use (chrome, chromium, firefox, edge)
         headless: Whether to run in headless mode
 
     Yields:
-        BrowserProtocol: Unified browser adapter
+        BrowserProtocol: Playwright browser adapter
 
     Example:
-        # Run with Selenium (default)
-        pytest tests/ --browser=chrome
+        # Run with default browser (chromium/chrome)
+        pytest tests/
 
-        # Run with Playwright
-        pytest tests/ --framework=playwright --browser=firefox
+        # Run with Firefox
+        pytest tests/ --browser=firefox
 
-        # Run headless
-        pytest tests/ --framework=selenium --headless
+        # Run in headed mode (default is headless)
+        pytest tests/ --headed
     """
-    logger.info(f"Creating {framework} browser: {browser_name} (headless={headless})")
+    logger.info(f"Creating Playwright browser: {browser_name} (headless={headless})")
 
     # Create browser using BrowserFactory
     browser_instance = BrowserFactory.create(
-        framework=framework,
         browser=browser_name,
         headless=headless,
         timeout=_config.default_timeout,
-        selenium_grid_url=_config.get_selenium_grid_url() if framework == "selenium" else None,
         maximize_window=_config.maximize_window,
         window_width=_config.window_width,
         window_height=_config.window_height,
-        page_load_timeout=_config.page_load_timeout,
     )
 
     yield browser_instance
@@ -136,16 +125,16 @@ def browser(framework, browser_name, headless):
 @pytest.fixture(scope="function")
 def login_page(browser, config_service):
     """
-    Create unified LoginPage instance and navigate to login page.
+    Create LoginPage instance and navigate to login page.
 
-    This LoginPage works with ANY framework through BrowserProtocol.
+    The LoginPage uses BrowserProtocol for framework-agnostic operations.
 
     Args:
-        browser: Browser adapter (from browser fixture)
+        browser: Playwright browser adapter (from browser fixture)
         config_service: Configuration service
 
     Yields:
-        LoginPage: Unified login page instance
+        LoginPage: Login page instance
 
     Example:
         def test_login(login_page, config_service):
@@ -160,17 +149,17 @@ def login_page(browser, config_service):
 @pytest.fixture(scope="function")
 def leave_page(browser, config_service, login_page):
     """
-    Create unified LeavePage instance after login.
+    Create LeavePage instance after login.
 
-    This LeavePage works with ANY framework through BrowserProtocol.
+    The LeavePage uses BrowserProtocol for framework-agnostic operations.
 
     Args:
-        browser: Browser adapter (from browser fixture)
+        browser: Playwright browser adapter (from browser fixture)
         config_service: Configuration service
         login_page: Login page fixture (to perform login first)
 
     Yields:
-        LeavePage: Unified leave page instance
+        LeavePage: Leave page instance
 
     Example:
         def test_navigate_to_leave_list(leave_page):
@@ -240,7 +229,7 @@ def _take_screenshot(browser, test_name: str):
     Take a screenshot and save it to the screenshots directory.
 
     Args:
-        browser: BrowserProtocol instance
+        browser: BrowserProtocol instance (Playwright adapter)
         test_name: Name of the test
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -258,33 +247,11 @@ def pytest_addoption(parser):
     """
     Add custom command line options for pytest.
 
+    Note: pytest-playwright already provides --browser and --headless options,
+    so we don't need to register them again. We use the existing options.
+
     Args:
         parser: Pytest parser
     """
-    # Add --framework option (unique to our implementation)
-    with contextlib.suppress(ValueError, argparse.ArgumentError):
-        parser.addoption(
-            "--framework",
-            action="store",
-            default="selenium",
-            help="Automation framework to use: selenium (default) or playwright",
-            choices=["selenium", "playwright"],
-        )
-
-    # Add --browser option if not already added by pytest-playwright
-    with contextlib.suppress(ValueError, argparse.ArgumentError):
-        parser.addoption(
-            "--browser",
-            action="store",
-            default=_config.default_browser,
-            help="Browser to use: chrome (default), firefox, edge, chromium",
-        )
-
-    # Add --headless option if not already added by pytest-playwright
-    with contextlib.suppress(ValueError, argparse.ArgumentError):
-        parser.addoption(
-            "--headless",
-            action="store_true",
-            default=_config.headless,
-            help="Run tests in headless mode",
-        )
+    # pytest-playwright already provides --browser and --headless options
+    # We'll use those directly in our fixtures

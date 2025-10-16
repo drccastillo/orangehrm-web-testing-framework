@@ -42,8 +42,8 @@ htmlcov/
 *.log
 
 # Reports
-reports_selenium/
-reports_playwright/
+reports/
+reports/
 *.html
 *.xml
 screenshots/
@@ -59,10 +59,10 @@ playwright-report/
 *.mp4
 
 # Allure (dentro de carpetas de reportes)
-reports_selenium/allure-results/
-reports_selenium/allure-report/
-reports_playwright/allure-results/
-reports_playwright/allure-report/
+reports/allure-results/
+reports/allure-report/
+reports/allure-results/
+reports/allure-report/
 .allure/
 
 # Environment variables

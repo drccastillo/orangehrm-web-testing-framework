@@ -9,7 +9,27 @@ adapters must implement, enabling framework-agnostic test code.
 from typing import Any, Protocol, runtime_checkable
 
 from src.core.element_protocol import WebElementProtocol
-from src.core.locator import Locator
+
+
+@runtime_checkable
+class LocatorProtocol(Protocol):
+    """
+    Protocol for locator objects.
+
+    Any class that has a to_native() method returning a string
+    and a description attribute can be used as a locator.
+    """
+
+    description: str
+
+    def to_native(self) -> str:
+        """
+        Convert locator to native format.
+
+        Returns:
+            Native selector string
+        """
+        ...
 
 
 @runtime_checkable
@@ -47,12 +67,12 @@ class BrowserProtocol(Protocol):
         """
         ...
 
-    def find_element(self, locator: Locator) -> WebElementProtocol:
+    def find_element(self, locator: LocatorProtocol) -> WebElementProtocol:
         """
         Find a single element on the page.
 
         Args:
-            locator: Locator value object (framework-agnostic)
+            locator: LocatorProtocol value object (framework-agnostic)
 
         Returns:
             WebElementProtocol: Wrapped element that implements the protocol
@@ -66,12 +86,12 @@ class BrowserProtocol(Protocol):
         """
         ...
 
-    def find_elements(self, locator: Locator) -> list[WebElementProtocol]:
+    def find_elements(self, locator: LocatorProtocol) -> list[WebElementProtocol]:
         """
         Find all elements matching the locator.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             List of WebElementProtocol objects (empty list if none found)
@@ -165,12 +185,12 @@ class BrowserProtocol(Protocol):
         """
         ...
 
-    def switch_to_frame(self, locator: Locator) -> None:
+    def switch_to_frame(self, locator: LocatorProtocol) -> None:
         """
         Switch context to an iframe.
 
         Args:
-            locator: Locator for the iframe element
+            locator: LocatorProtocol for the iframe element
 
         Example:
             >>> browser.switch_to_frame(iframe_locator)
@@ -199,6 +219,83 @@ class BrowserProtocol(Protocol):
         Example:
             >>> source = browser.get_page_source()
             >>> assert "<html" in source
+        """
+        ...
+
+    def is_element_visible(self, locator: LocatorProtocol, timeout: int | None = None) -> bool:
+        """
+        Check if an element is visible on the page.
+
+        Args:
+            locator: LocatorProtocol value object
+            timeout: Optional timeout in seconds (uses default if not specified)
+
+        Returns:
+            True if element becomes visible within timeout, False otherwise
+
+        Example:
+            >>> if browser.is_element_visible(error_message_locator):
+            ...     print("Error message is displayed")
+        """
+        ...
+
+    def is_element_hidden(self, locator: LocatorProtocol, timeout: int | None = None) -> bool:
+        """
+        Check if an element is hidden (not visible) on the page.
+
+        Args:
+            locator: LocatorProtocol value object
+            timeout: Optional timeout in seconds (uses default if not specified)
+
+        Returns:
+            True if element becomes hidden within timeout, False otherwise
+
+        Example:
+            >>> if browser.is_element_hidden(spinner_locator):
+            ...     print("Loading spinner has disappeared")
+        """
+        ...
+
+    def is_element_present(self, locator: LocatorProtocol) -> bool:
+        """
+        Check if an element is present in the DOM (regardless of visibility).
+
+        Args:
+            locator: LocatorProtocol value object
+
+        Returns:
+            True if element is present in DOM, False otherwise
+
+        Example:
+            >>> if browser.is_element_present(submit_button_locator):
+            ...     print("Submit button exists in DOM")
+        """
+        ...
+
+    def wait_for_element_to_disappear(self, locator: LocatorProtocol) -> bool:
+        """
+        Wait for an element to disappear from the page.
+
+        Args:
+            locator: LocatorProtocol value object
+
+        Returns:
+            True if element disappeared within timeout, False otherwise
+
+        Example:
+            >>> browser.wait_for_element_to_disappear(loading_spinner_locator)
+        """
+        ...
+
+    def scroll_to_element(self, locator: LocatorProtocol) -> None:
+        """
+        Scroll to bring an element into view.
+
+        Args:
+            locator: LocatorProtocol value object
+
+        Example:
+            >>> browser.scroll_to_element(footer_locator)
         """
         ...
 

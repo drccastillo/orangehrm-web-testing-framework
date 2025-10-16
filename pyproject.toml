@@ -1,12 +1,11 @@
 [project]
 name = "orange-hrm-test-framework"
-version = "0.1.0"
-description = "Web testing automation framework for OrangeHRM"
+version = "0.2.0"
+description = "Playwright-based web testing automation framework for OrangeHRM"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "pytest>=8.4.2",
-    "selenium>=4.35.0",
     "python-dotenv>=1.0.0",
     "pytest-xdist>=3.6.0",
     "pytest-html>=4.1.1",
@@ -23,7 +22,7 @@ build-backend = "hatchling.build"
 packages = ["src", "tests", "utils"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests_selenium", "tests_playwright"]
+testpaths = ["tests", "unittests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
@@ -36,8 +35,6 @@ markers = [
     "smoke: Quick smoke tests",
     "regression: Full regression tests",
     "login: Login related tests",
-    "playwright: Tests using Playwright",
-    "selenium: Tests using Selenium",
 ]
 
 [dependency-groups]
@@ -71,8 +68,7 @@ extend-exclude = '''
   | build
   | dist
   | __pycache__
-  | reports_playwright
-  | reports_selenium
+  | reports
   | logs
 )/
 '''
@@ -88,8 +84,7 @@ exclude = [
     "build",
     "dist",
     "*.egg-info",
-    "reports_playwright",
-    "reports_selenium",
+    "reports",
     "logs",
 ]
 
@@ -115,9 +110,8 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests_*/**" = ["S101"]
+"tests/**" = ["S101"]
 "unittests/**" = ["S101"]
-"src/pages_selenium/login_page.py" = ["N802"]  # Properties expose constants as uppercase
 
 # isort configuration
 [tool.isort]
@@ -137,14 +131,13 @@ warn_unused_configs = true
 disallow_untyped_defs = false
 ignore_missing_imports = true
 exclude = [
-    "tests_selenium/",
-    "tests_playwright/",
+    "tests/",
     "unittests/",
 ]
 
 # Bandit configuration
 [tool.bandit]
-exclude_dirs = ["tests_selenium", "tests_playwright", "unittests", ".venv"]
+exclude_dirs = ["tests", "unittests", ".venv"]
 skips = ["B101"]  # Skip assert warnings in general code
 
 # pydocstyle configuration
@@ -189,8 +182,7 @@ max-parents = 10
 pythonVersion = "3.10"
 typeCheckingMode = "basic"
 exclude = [
-    "**/tests_selenium/**",
-    "**/tests_playwright/**",
+    "**/tests/**",
     "**/unittests/**",
     "**/.venv/**",
     "**/node_modules/**",

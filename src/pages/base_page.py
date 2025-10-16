@@ -14,7 +14,7 @@ from typing import Any
 
 from src.core.browser_protocol import BrowserProtocol
 from src.core.element_protocol import WebElementProtocol
-from src.core.locator import Locator
+from src.core.browser_protocol import LocatorProtocol
 from src.utils.element_highlighter import ElementHighlighter
 from utils.exceptions import (
     ElementNotClickableException,
@@ -73,10 +73,8 @@ class BasePage:
     def highlighter(self) -> ElementHighlighter:
         """Get or create ElementHighlighter (lazy loading)."""
         if self._highlighter is None:
-            # Create highlighter based on browser type
-            # ElementHighlighter will need to be updated to work with BrowserProtocol
-            # For now, we'll create a placeholder
-            self._highlighter = ElementHighlighter(self.browser)  # type: ignore[arg-type]
+            # Create highlighter with BrowserProtocol
+            self._highlighter = ElementHighlighter(self.browser)
         return self._highlighter
 
     @highlighter.setter
@@ -84,12 +82,12 @@ class BasePage:
         """Set the highlighter."""
         self._highlighter = value
 
-    def find_element(self, locator: Locator) -> WebElementProtocol:
+    def find_element(self, locator: LocatorProtocol) -> WebElementProtocol:
         """
         Find a single element.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             WebElementProtocol: Element that implements the protocol
@@ -109,12 +107,12 @@ class BasePage:
             self.logger.error(f"Element not found: {locator.description}")
             raise
 
-    def find_elements(self, locator: Locator) -> list[WebElementProtocol]:
+    def find_elements(self, locator: LocatorProtocol) -> list[WebElementProtocol]:
         """
         Find all elements matching the locator.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             List of WebElementProtocol objects (empty list if none found)
@@ -128,12 +126,12 @@ class BasePage:
         self.logger.debug(f"Found {len(elements)} elements: {locator.description}")
         return elements
 
-    def click(self, locator: Locator) -> None:
+    def click(self, locator: LocatorProtocol) -> None:
         """
         Click on an element.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Raises:
             ElementNotFoundException: If element is not found
@@ -150,12 +148,12 @@ class BasePage:
             self.logger.error(f"Failed to click element: {locator.description}")
             raise ElementNotClickableException(locator.to_native()) from e
 
-    def send_keys(self, locator: Locator, text: str, clear_first: bool = True) -> None:
+    def send_keys(self, locator: LocatorProtocol, text: str, clear_first: bool = True) -> None:
         """
         Type text into an input field.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
             text: Text to type
             clear_first: Whether to clear the field before typing
 
@@ -175,12 +173,12 @@ class BasePage:
         element.send_keys(text)
         self.logger.debug(f"Sent keys to element: {locator.description}")
 
-    def get_text(self, locator: Locator) -> str:
+    def get_text(self, locator: LocatorProtocol) -> str:
         """
         Get the text content of an element.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             Text content of the element
@@ -193,12 +191,12 @@ class BasePage:
         self.logger.debug(f"Got text from element: {locator.description} -> '{text}'")
         return text
 
-    def get_attribute(self, locator: Locator, attribute: str) -> str | None:
+    def get_attribute(self, locator: LocatorProtocol, attribute: str) -> str | None:
         """
         Get an attribute value from an element.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
             attribute: Name of the attribute
 
         Returns:
@@ -217,12 +215,12 @@ class BasePage:
         self.logger.debug(f"Got attribute '{attribute}' from {locator.description} -> '{value}'")
         return value
 
-    def is_element_visible(self, locator: Locator) -> bool:
+    def is_element_visible(self, locator: LocatorProtocol) -> bool:
         """
         Check if an element is visible on the page.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             True if element is visible, False otherwise
@@ -239,12 +237,12 @@ class BasePage:
         except ElementNotFoundException:
             return False
 
-    def is_element_present(self, locator: Locator) -> bool:
+    def is_element_present(self, locator: LocatorProtocol) -> bool:
         """
         Check if an element is present in the DOM.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
 
         Returns:
             True if element is present, False otherwise
@@ -320,12 +318,12 @@ class BasePage:
 
         return self.browser.execute_script(script, *args)
 
-    def scroll_to_element(self, locator: Locator) -> None:
+    def scroll_to_element(self, locator: LocatorProtocol) -> None:
         """
         Scroll to an element on the page.
 
         Args:
-            locator: Locator value object
+            locator: LocatorProtocol value object
         """
         element = self.find_element(locator)
         self.execute_script("arguments[0].scrollIntoView(true);", element)
@@ -344,12 +342,12 @@ class BasePage:
         self.logger.info(f"Taking screenshot: {path}")
         return self.browser.take_screenshot(path)
 
-    def switch_to_frame(self, locator: Locator) -> None:
+    def switch_to_frame(self, locator: LocatorProtocol) -> None:
         """
         Switch context to an iframe.
 
         Args:
-            locator: Locator for the iframe element
+            locator: LocatorProtocol for the iframe element
         """
         self.logger.debug(f"Switching to frame: {locator.description}")
         self.browser.switch_to_frame(locator)

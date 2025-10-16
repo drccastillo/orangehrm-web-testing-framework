@@ -41,10 +41,6 @@ class TestEnvironmentConfigServiceContract:
         assert hasattr(config, "password")
         assert isinstance(config.password, str)
 
-    def test_has_selenium_grid_url_property(self, config):
-        """Provides selenium_grid_url property."""
-        assert hasattr(config, "selenium_grid_url")
-        assert isinstance(config.selenium_grid_url, str)
 
     def test_has_browser_configuration(self, config):
         """Provides browser configuration properties."""
@@ -62,9 +58,6 @@ class TestEnvironmentConfigServiceContract:
 
         assert hasattr(config, "page_load_timeout")
         assert isinstance(config.page_load_timeout, int)
-
-        assert hasattr(config, "implicit_wait")
-        assert isinstance(config.implicit_wait, int)
 
     def test_has_window_configuration(self, config):
         """Provides window configuration properties."""
@@ -90,14 +83,6 @@ class TestEnvironmentConfigServiceContract:
         assert hasattr(config, "reports_dir")
         assert isinstance(config.reports_dir, Path)
 
-    def test_has_get_selenium_grid_url_method(self, config):
-        """Provides get_selenium_grid_url method."""
-        assert hasattr(config, "get_selenium_grid_url")
-        assert callable(config.get_selenium_grid_url)
-
-        url = config.get_selenium_grid_url()
-        assert isinstance(url, str)
-        assert url.endswith("/wd/hub")
 
     def test_has_ensure_directories_method(self, config):
         """Provides ensure_directories method."""
@@ -176,17 +161,6 @@ class TestEnvironmentConfigServiceBehavior:
         assert config.default_timeout == 20
         assert config.window_width == 1280
 
-    def test_get_selenium_grid_url_returns_hub_endpoint(self, config):
-        """get_selenium_grid_url returns URL with /wd/hub endpoint."""
-        url = config.get_selenium_grid_url()
-        assert url.endswith("/wd/hub")
-        assert "http" in url
-
-    def test_get_selenium_grid_url_accepts_browser_parameter(self, config):
-        """get_selenium_grid_url accepts browser parameter (for future use)."""
-        url = config.get_selenium_grid_url(browser="chrome")
-        assert isinstance(url, str)
-        assert url.endswith("/wd/hub")
 
     def test_ensure_directories_creates_paths(self, tmp_path, monkeypatch):
         """ensure_directories creates screenshots and reports directories."""
@@ -266,7 +240,6 @@ class TestEnvironmentConfigServiceValidation:
         """All timeout values are positive."""
         assert config.default_timeout > 0
         assert config.page_load_timeout > 0
-        assert config.implicit_wait >= 0
 
     def test_window_dimensions_are_positive(self, config):
         """Window dimensions are positive."""

@@ -1,0 +1,2 @@
+[32mINFO    [0m tests_playwright.test_login_pw:logger.py:123 TEST STEP: Test login with empty fields
+[32mINFO    [0m tests_playwright.test_login_pw:logger.py:126 TEST STEP PASSED: Test login with empty fields
