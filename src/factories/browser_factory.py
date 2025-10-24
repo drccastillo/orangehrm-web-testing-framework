@@ -82,7 +82,7 @@ class BrowserFactory:
 
         cls._logger.info(
             f"Creating Playwright browser: {browser_type.value} "
-            f"(headless={headless}, timeout={timeout})"
+            f"(headless={headless}, timeout={timeout})",
         )
 
         return cls._create_playwright_browser(
@@ -141,7 +141,7 @@ class BrowserFactory:
             context = browser_instance.new_context(no_viewport=True)
         else:
             context = browser_instance.new_context(
-                viewport={"width": window_width, "height": window_height}
+                viewport={"width": window_width, "height": window_height},
             )
 
         page = context.new_page()

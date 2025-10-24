@@ -41,8 +41,8 @@ htmlcov/
 .tox/
 *.log
 
-# Reports
-reports/
+# Reports (only root level)
+/reports/
 *.html
 *.xml
 
@@ -78,3 +78,10 @@ uv.lock
 # Misc
 .claude/
 CLAUDE.md
+
+# Playwright
+node_modules/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

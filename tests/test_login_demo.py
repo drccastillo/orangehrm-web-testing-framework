@@ -21,7 +21,7 @@ import time
 import pytest
 from playwright.sync_api import expect
 
-from src.pages.login_page import LoginPage
+from src.ui.pages.login.login_page import LoginPage
 from utils.logger import TestLogger
 
 # Initialize logger for this module
@@ -53,24 +53,21 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     password = config_service.password
 
     # Act - Step 1: Highlight and enter username
-    username_field = login_page.locators.USERNAME_INPUT(login_page.page)
-    username_field.highlight()
+    login_page.username_input.highlight()
     time.sleep(1)  # Pause to see highlight
 
     login_page.enter_username(username)
     logger.debug(f"Entered username: {username}")
 
     # Act - Step 2: Highlight and enter password
-    password_field = login_page.locators.PASSWORD_INPUT(login_page.page)
-    password_field.highlight()
+    login_page.password_input.highlight()
     time.sleep(1)
 
     login_page.enter_password(password)
     logger.debug("Entered password")
 
     # Act - Step 3: Highlight and click login button
-    login_button = login_page.locators.LOGIN_BUTTON(login_page.page)
-    login_button.highlight()
+    login_page.login_button.highlight()
     time.sleep(1)
 
     login_page.click_login_button()
@@ -104,29 +101,28 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
     invalid_password = "invalid_password"
 
     # Act - Highlight and enter invalid username
-    login_page.locators.USERNAME_INPUT(login_page.page).highlight()
+    login_page.username_input.highlight()
     time.sleep(0.5)
     login_page.enter_username(invalid_username)
 
     # Act - Highlight and enter invalid password
-    login_page.locators.PASSWORD_INPUT(login_page.page).highlight()
+    login_page.password_input.highlight()
     time.sleep(0.5)
     login_page.enter_password(invalid_password)
 
     # Act - Highlight and click login button
-    login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
+    login_page.login_button.highlight()
     time.sleep(0.5)
     login_page.click_login_button()
 
     # Assert - Highlight and verify error message
     time.sleep(1)  # Wait for error to appear
-    error_locator = login_page.locators.ERROR_MESSAGE(login_page.page)
-    error_locator.highlight()
+    login_page.error_message.highlight()
     time.sleep(1)
 
     # Use Playwright expect for assertions
-    expect(error_locator).to_be_visible(timeout=5000)
-    expect(error_locator).to_contain_text("Invalid credentials")
+    expect(login_page.error_message).to_be_visible(timeout=5000)
+    expect(login_page.error_message).to_contain_text("Invalid credentials")
 
     logger.info("Invalid login handled correctly - error message displayed")
 
@@ -156,13 +152,13 @@ def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     password = config_service.password
 
     # Act - Highlight the elements we're about to interact with
-    login_page.locators.USERNAME_INPUT(login_page.page).highlight()
+    login_page.username_input.highlight()
     time.sleep(0.5)
 
-    login_page.locators.PASSWORD_INPUT(login_page.page).highlight()
+    login_page.password_input.highlight()
     time.sleep(0.5)
 
-    login_page.locators.LOGIN_BUTTON(login_page.page).highlight()
+    login_page.login_button.highlight()
     time.sleep(0.5)
 
     # Act - Execute with method chaining

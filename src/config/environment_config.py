@@ -102,7 +102,7 @@ class EnvironmentConfigService:
         if value is None:
             raise ConfigurationException(
                 f"Required environment variable '{key}' is not set. "
-                f"Please define it in your .env file or environment."
+                f"Please define it in your .env file or environment.",
             )
         return value
 

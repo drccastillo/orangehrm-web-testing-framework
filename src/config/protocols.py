@@ -6,7 +6,6 @@ This enables dependency injection and makes the framework testable.
 """
 
 # pylint: disable=unnecessary-ellipsis
-
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 

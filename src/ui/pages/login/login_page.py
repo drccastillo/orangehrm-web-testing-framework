@@ -5,11 +5,9 @@ This LoginPage uses Playwright Page directly, eliminating adapter overhead.
 """
 
 # pylint: disable=import-error  # src module is in project root
+from playwright.sync_api import Locator, Page
 
-from playwright.sync_api import Page
-
-from src.pages.base_page import BasePage
-from src.pages.locators.login_locators import LoginLocators
+from src.ui.pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
@@ -21,6 +19,7 @@ class LoginPage(BasePage):
         - No adapter overhead
         - Simpler, more maintainable code
         - Full power of Playwright features
+        - Encapsulated locators within the page object
 
     Example:
         >>> from playwright.sync_api import sync_playwright
@@ -40,7 +39,25 @@ class LoginPage(BasePage):
             timeout: Default timeout for operations in seconds
         """
         super().__init__(page, timeout)
-        self.locators = LoginLocators
+
+        # Input fields - using placeholder text (user-facing)
+        self.username_input: Locator = page.get_by_placeholder("Username")
+        self.password_input: Locator = page.get_by_placeholder("Password")
+
+        # Buttons - using role (accessibility-first)
+        self.login_button: Locator = page.get_by_role("button", name="Login")
+
+        # Messages and alerts - using text
+        self.error_message: Locator = page.get_by_text("Invalid credentials")
+
+        # Branding elements
+        self.login_branding: Locator = page.get_by_alt_text("company-branding")
+        # Multiple logos exist; use .last to get the visible one (first is hidden)
+        self.login_logo: Locator = page.get_by_alt_text("orangehrm-logo").last
+        self.login_title: Locator = page.get_by_role("heading", name="Login")
+        self.forgot_password_link: Locator = page.get_by_text("Forgot your password?")
+        self.login_footer: Locator = page.get_by_text("OrangeHRM OS")
+        self.copyright_text: Locator = page.get_by_text("© 2005 - 2025 OrangeHRM, Inc")
 
     def enter_username(self, username: str) -> "LoginPage":
         """
@@ -55,8 +72,7 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_username("Admin").enter_password("pass").click_login_button()
         """
-        # Use functional locator (callable)
-        self.send_keys(self.locators.USERNAME_INPUT(self.page), username)
+        self.send_keys(self.username_input, username)
         return self
 
     def enter_password(self, password: str) -> "LoginPage":
@@ -69,12 +85,12 @@ class LoginPage(BasePage):
         Returns:
             Self for method chaining
         """
-        self.send_keys(self.locators.PASSWORD_INPUT(self.page), password)
+        self.send_keys(self.password_input, password)
         return self
 
     def click_login_button(self) -> None:
         """Click the login button to submit credentials."""
-        self.click(self.locators.LOGIN_BUTTON(self.page))
+        self.click(self.login_button)
 
     def login(self, username: str, password: str) -> None:
         """
@@ -106,8 +122,7 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_username("wrong").clear_username().enter_username("correct")
         """
-        username_field = self.locators.USERNAME_INPUT(self.page)
-        username_field.clear()
+        self.username_input.clear()
         return self
 
     def clear_password(self) -> "LoginPage":
@@ -120,6 +135,5 @@ class LoginPage(BasePage):
         Example:
             >>> login_page.enter_password("wrong").clear_password().enter_password("correct")
         """
-        password_field = self.locators.PASSWORD_INPUT(self.page)
-        password_field.clear()
+        self.password_input.clear()
         return self

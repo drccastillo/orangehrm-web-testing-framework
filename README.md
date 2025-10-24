@@ -20,40 +20,42 @@ orangehrm-web-testing-framework/
 │   │   ├── protocols.py              # ConfigService protocol
 │   │   └── environment_config.py     # Config implementation
 │   ├── enums/
-│   │   ├── browser_types.py          # Browser type enumeration
-│   │   └── visual_debugging.py       # Visual debugging constants
+│   │   └── browser_types.py          # Browser type enumeration
 │   ├── factories/
 │   │   └── browser_factory.py        # Playwright browser factory
-│   ├── pages/
-│   │   ├── base_page.py              # Base page with common methods
-│   │   ├── login_page.py             # Login page implementation
-│   │   ├── leave_page.py             # Leave page implementation
-│   │   ├── protocols.py              # PageObjectProtocol base interface
-│   │   └── locators/
-│   │       ├── login_locators.py     # Functional locators for LoginPage
-│   │       └── leave_locators.py     # Functional locators for LeavePage
-│   └── utils/
-│       └── element_highlighter.py    # Visual debugging utility
+│   └── ui/                           # UI automation layer
+│       ├── components/
+│       │   └── navigation_header.py  # Global navigation component
+│       └── pages/
+│           ├── base_page.py          # Base page with common methods
+│           ├── login/
+│           │   └── login_page.py     # Login page implementation
+│           └── leave/                # Leave module pages
+│               ├── leave_base_page.py    # Leave module navigation
+│               ├── apply/
+│               ├── assign/
+│               ├── configure/
+│               ├── entitlements/
+│               ├── list/
+│               ├── my_leave/
+│               └── reports/
 ├── tests/
 │   ├── conftest.py                   # Playwright fixtures
 │   ├── test_login.py                 # Login tests
-│   └── test_leave.py                 # Leave tests
+│   └── test_leave.py                 # Leave module tests
 ├── unittests/                        # Framework unit tests
 ├── utils/
 │   ├── logger.py                     # Centralized logging system
 │   └── exceptions.py                 # Custom exception hierarchy
 ├── logs/                             # Daily test logs
 ├── .env                              # Environment variables
-├── pyproject.toml                    # Dependencies (uv)
-├── GUIDE_ADD_NEW_PAGE.md             # Developer guide for adding pages
-├── PHASE_3_CLEANUP_SUMMARY.md        # Refactoring documentation
-└── REFACTOR_SUMMARY.md               # Complete refactoring history
+└── pyproject.toml                    # Dependencies (uv)
 ```
 
 ## 🚀 Initial Setup
 
 ### Prerequisites:
-- Python 3.10+
+- Python 3.13+
 - UV package manager
 
 ### Installation:
@@ -79,15 +81,31 @@ Copy `.env.example` to `.env`:
 cp .env.example .env
 ```
 
-Edit `.env` with your credentials:
+Edit `.env` with your credentials (see `.env.example` for all required variables):
 ```env
+# Application Configuration
 URL=https://opensource-demo.orangehrmlive.com/web/index.php
-USER=Admin
-PASSWORD=admin123
+ORANGEHRM_USERNAME=Admin
+ORANGEHRM_PASSWORD=admin123
+
+# Browser Configuration
 BROWSER=chromium
 HEADLESS=False
+
+# Timeout Configuration (seconds)
 DEFAULT_TIMEOUT=10
+PAGE_LOAD_TIMEOUT=30
+
+# Window Configuration
+WINDOW_WIDTH=1920
+WINDOW_HEIGHT=1080
+MAXIMIZE_WINDOW=True
+
+# Screenshot Configuration
+SCREENSHOT_ON_FAILURE=True
 ```
+
+**⚠️ Important**: All environment variables are REQUIRED. The framework uses strict validation and will raise `ConfigurationException` if any variable is missing.
 
 ## 🧪 Running Tests
 
@@ -198,78 +216,63 @@ allure open reports_playwright/allure-report
 ### Example Test:
 
 ```python
+import re
 import pytest
+from playwright.sync_api import expect
+from src.ui.pages.login.login_page import LoginPage
 from src.config.protocols import ConfigService
-from src.pages.login_page import LoginPage
 
 @pytest.mark.smoke
 def test_login(login_page: LoginPage, config_service: ConfigService):
-    """
-    Test successful login with valid credentials.
-    """
+    """Test successful login with valid credentials."""
     # The login_page fixture already navigates to the page
     login_page.login(config_service.username, config_service.password)
 
-    # Verify successful login
-    assert "dashboard" in login_page.get_current_url()
+    # Verify successful login using Playwright's expect
+    expect(login_page.page).to_have_url(re.compile(r"dashboard"), timeout=10000)
 
 @pytest.mark.smoke
 def test_login_chaining(login_page: LoginPage, config_service: ConfigService):
-    """
-    Test login using method chaining (fluent interface).
-    """
+    """Test login using method chaining (fluent interface)."""
     login_page.enter_username(config_service.username)\
               .enter_password(config_service.password)\
               .click_login_button()
 
-    assert "dashboard" in login_page.get_current_url()
+    expect(login_page.page).to_have_url(re.compile(r"dashboard"), timeout=10000)
 ```
 
 ### Create a New Page Object:
 
-See [GUIDE_ADD_NEW_PAGE.md](GUIDE_ADD_NEW_PAGE.md) for a complete step-by-step guide.
-
 **Quick Example:**
 
 ```python
-# 1. Create locators file: src/pages/locators/dashboard_locators.py
-class DashboardLocators:
-    """Functional locators for Dashboard page."""
-
-    @staticmethod
-    def WELCOME_TEXT(page):
-        """Welcome message text."""
-        return page.get_by_role("heading", name="Dashboard")
-
-    @staticmethod
-    def USER_DROPDOWN(page):
-        """User dropdown menu."""
-        return page.get_by_role("button", name="user-dropdown")
-
-# 2. Create page object: src/pages/dashboard_page.py
+# Create page object: src/ui/pages/dashboard/dashboard_page.py
 from playwright.sync_api import Page
-from src.pages.base_page import BasePage
-from src.pages.locators.dashboard_locators import DashboardLocators
+from src.ui.pages.base_page import BasePage
 
 class DashboardPage(BasePage):
     """Dashboard page implementation."""
 
     def __init__(self, page: Page, timeout: int = 10):
         super().__init__(page, timeout)
-        self.locators = DashboardLocators
 
-    def get_welcome_message(self) -> str:
-        """Get the welcome message text."""
-        return self.get_text(self.locators.WELCOME_TEXT(self.page))
+        # Define locators using Playwright functional locators
+        self.page_title = page.get_by_role("heading", name="Dashboard")
+        self.user_dropdown = page.get_by_role("button", name="user-dropdown")
 
-    def click_user_dropdown(self) -> None:
+    def get_page_title(self) -> str:
+        """Get the page title text."""
+        return self.get_text(self.page_title)
+
+    def click_user_dropdown(self):
         """Click the user dropdown menu."""
-        self.click(self.locators.USER_DROPDOWN(self.page))
+        self.click(self.user_dropdown)
+        return self  # Return self for method chaining
 
-# 3. Use in tests
+# Use in tests
 def test_dashboard(dashboard_page):
-    message = dashboard_page.get_welcome_message()
-    assert "Dashboard" in message
+    title = dashboard_page.get_page_title()
+    expect(dashboard_page.page_title).to_contain_text("Dashboard")
 ```
 
 ## 🎯 Framework Features
@@ -290,21 +293,23 @@ The framework uses Playwright's recommended user-facing locators:
 - Self-documenting code
 - Reflects how users interact with the page
 
-### Base Page (base_page.py):
+### Base Page (src/ui/pages/base_page.py):
 - ✅ Automatic waits (Playwright's auto-waiting)
 - ✅ Reusable methods (click, send_keys, get_text, etc.)
+- ✅ NavigationHeader component for global navigation
 - ✅ Frame handling
 - ✅ JavaScript execution
 - ✅ Scroll to elements
 - ✅ Visibility and presence verification
 - ✅ Integrated logging in all actions
-- ✅ Flexible locator support (Locator | str | Callable)
+- ✅ Direct Playwright Locator support
 
 ### Configuration System:
 - ✅ Dependency Injection via ConfigService protocol
 - ✅ Environment-based configuration (.env)
+- ✅ Strict validation - all variables required (no defaults)
 - ✅ Type-safe configuration access
-- ✅ No global singletons
+- ✅ Raises ConfigurationException for missing/invalid variables
 
 ### Logger Utility (utils/logger.py):
 - ✅ Centralized logger with automatic configuration
@@ -325,9 +330,15 @@ The framework uses Playwright's recommended user-facing locators:
 
 ### Pytest Markers:
 ```python
-@pytest.mark.smoke      # Quick smoke tests
-@pytest.mark.regression # Complete regression tests
-@pytest.mark.login      # Login-specific tests
+@pytest.mark.smoke         # Quick smoke tests
+@pytest.mark.regression    # Complete regression tests
+@pytest.mark.login         # Login-specific tests
+@pytest.mark.navigation    # Navigation tests
+@pytest.mark.component     # Component tests
+@pytest.mark.integration   # Integration tests
+@pytest.mark.cross_module  # Cross-module navigation tests
+@pytest.mark.performance   # Performance tests
+@pytest.mark.leave         # Leave module tests
 ```
 
 ## 📊 Reports and Logs
@@ -378,7 +389,7 @@ grep "LoginPage" logs/test_automation_*.log
 
 ### In Page Objects:
 ```python
-from src.pages.base_page import BasePage
+from src.ui.pages.base_page import BasePage
 
 class MyPage(BasePage):
     def my_action(self):
@@ -448,16 +459,16 @@ uv run bandit -r src/ utils/
 
 ## 🏛️ Architecture Principles
 
-### SOLID Principles Applied:
+### Design Principles Applied:
 
 1. **Single Responsibility Principle (SRP)**:
    - Each page class has one responsibility
-   - ElementHighlighter separated from BasePage
-   - Locators in separate files
+   - Components separated from pages (NavigationHeader)
+   - Module-specific navigation in base classes (LeaveBasePage)
 
 2. **Open/Closed Principle (OCP)**:
    - Add new pages without modifying existing code
-   - No need to edit protocols.py for new pages
+   - Extend functionality through inheritance and composition
 
 3. **Dependency Inversion Principle (DIP)**:
    - Depend on ConfigService protocol, not concrete implementation
@@ -465,37 +476,34 @@ uv run bandit -r src/ utils/
 
 4. **YAGNI (You Aren't Gonna Need It)**:
    - Removed unnecessary abstractions (adapters, page-specific protocols)
-   - Single implementation = no need for protocols
+   - Direct Playwright API usage (no wrappers)
+   - Component composition over deep inheritance
 
-### Refactoring History:
+### Recent Improvements:
 
 The framework has undergone significant refactoring to improve simplicity and maintainability:
 
-- **Phase 1**: Removed dual Selenium/Playwright support (Playwright only)
-- **Phase 2**: Eliminated adapter layer (direct Playwright API usage)
-- **Phase 3**: Removed page-specific protocols (YAGNI principle)
-- **Phase 4**: Implemented Playwright functional locators
-- **Phase 5**: Removed PlaywrightLocator wrapper class
+- **Architecture Simplification**: Removed dual Selenium/Playwright support (Playwright only)
+- **Direct API Usage**: Eliminated adapter layer (direct Playwright API usage)
+- **YAGNI Principle**: Removed page-specific protocols and unnecessary abstractions
+- **Functional Locators**: Implemented Playwright's user-facing locators
+- **Component Model**: Restructured to `src/ui/` with components and pages separation
+- **Navigation System**: Global (NavigationHeader) and module-specific (LeaveBasePage) navigation
 
 **Result**: 51% code reduction, simpler architecture, better maintainability
 
-See [PHASE_3_CLEANUP_SUMMARY.md](PHASE_3_CLEANUP_SUMMARY.md) and [REFACTOR_SUMMARY.md](REFACTOR_SUMMARY.md) for details.
-
-## 📚 Documentation
-
-- **[GUIDE_ADD_NEW_PAGE.md](GUIDE_ADD_NEW_PAGE.md)**: Step-by-step guide for adding new pages
-- **[PHASE_3_CLEANUP_SUMMARY.md](PHASE_3_CLEANUP_SUMMARY.md)**: Recent refactoring summary
-- **[REFACTOR_SUMMARY.md](REFACTOR_SUMMARY.md)**: Complete refactoring history
-
 ## 🤝 Contributing
 
-1. Follow the Page Object Model pattern
-2. Use Playwright functional locators (get_by_role, get_by_label, etc.)
-3. Create locators as @staticmethod functions
-4. Use dependency injection for configuration
-5. Add tests with appropriate markers
-6. Document public methods with docstrings
-7. Run pre-commit hooks before committing
+1. **Follow the Page Object Model pattern** - Create pages in `src/ui/pages/`
+2. **Use Playwright functional locators** - Prefer `get_by_role()`, `get_by_label()` over CSS/XPath
+3. **Define locators inline** - No separate locator files (define in `__init__`)
+4. **Use dependency injection** - Configuration via fixtures, not global imports
+5. **Add appropriate test markers** - Use `@pytest.mark.smoke`, `@pytest.mark.regression`, etc.
+6. **Return self for chaining** - Enable fluent interface pattern
+7. **Use expect() for assertions** - Playwright's `expect()` with auto-waiting
+8. **Document public methods** - Add docstrings explaining purpose and usage
+9. **Run pre-commit hooks** - Ensure code quality before committing
+10. **Component composition** - Reusable components (like NavigationHeader) over deep inheritance
 
 ## 📄 License
 

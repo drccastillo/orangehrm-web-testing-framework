@@ -17,7 +17,7 @@ import re
 import pytest
 from playwright.sync_api import expect
 
-from src.pages.login_page import LoginPage
+from src.ui.pages.login.login_page import LoginPage
 
 
 @pytest.mark.smoke
@@ -69,9 +69,8 @@ def test_invalid_login(login_page: LoginPage):
     login_page.login(invalid_username, invalid_password)
 
     # Assert - Playwright assertions
-    error_locator = login_page.locators.ERROR_MESSAGE(login_page.page)
-    expect(error_locator).to_be_visible(timeout=5000)
-    expect(error_locator).to_contain_text("Invalid credentials")
+    expect(login_page.error_message).to_be_visible(timeout=5000)
+    expect(login_page.error_message).to_contain_text("Invalid credentials")
 
 
 @pytest.mark.smoke
@@ -97,10 +96,11 @@ def test_login_page_elements_visible(login_page: LoginPage):
     # (Page load happens automatically)
 
     # Assert - Verify all key elements are visible
-    expect(login_page.locators.USERNAME_INPUT(login_page.page)).to_be_visible()
-    expect(login_page.locators.PASSWORD_INPUT(login_page.page)).to_be_visible()
-    expect(login_page.locators.LOGIN_BUTTON(login_page.page)).to_be_visible()
-    expect(login_page.locators.LOGIN_LOGO(login_page.page)).to_be_visible()
+    expect(login_page.username_input).to_be_visible()
+    expect(login_page.password_input).to_be_visible()
+    expect(login_page.login_button).to_be_visible()
+    expect(login_page.login_branding).to_be_visible()
+    expect(login_page.login_logo).to_be_visible()
 
 
 @pytest.mark.regression

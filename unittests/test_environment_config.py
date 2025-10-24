@@ -278,7 +278,7 @@ class TestEnvironmentConfigServiceCustomEnvFile:
             "WINDOW_WIDTH=1920\n"
             "WINDOW_HEIGHT=1080\n"
             "MAXIMIZE_WINDOW=true\n"
-            "SCREENSHOT_ON_FAILURE=true\n"
+            "SCREENSHOT_ON_FAILURE=true\n",
         )
 
         # Create config with custom path
@@ -403,7 +403,7 @@ class TestEnvironmentConfigServiceValidation:
             "WINDOW_WIDTH=1920\n"
             "WINDOW_HEIGHT=1080\n"
             "MAXIMIZE_WINDOW=true\n"
-            "SCREENSHOT_ON_FAILURE=true\n"
+            "SCREENSHOT_ON_FAILURE=true\n",
         )
 
         with pytest.raises(ConfigurationException) as exc_info:

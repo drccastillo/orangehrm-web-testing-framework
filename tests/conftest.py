@@ -7,7 +7,7 @@ using native Playwright Page objects.
 
 # pylint: disable=import-error  # src and utils modules are in project root
 # pylint: disable=redefined-outer-name  # pytest fixtures pattern
-
+import re
 from datetime import datetime
 
 import pytest
@@ -16,9 +16,12 @@ from playwright.sync_api import expect
 from src.config.environment_config import EnvironmentConfigService
 from src.config.protocols import ConfigService
 from src.factories.browser_factory import BrowserFactory
-from src.pages.leave_page import LeavePage
-from src.pages.login_page import LoginPage
+from src.ui.pages.base_page import BasePage
+from src.ui.pages.login.login_page import LoginPage
 from utils.logger import TestLogger
+
+# LeaveListPage is now created by NavigationHeader.navigate_to_leave()
+# from src.ui.pages.leave.list.leave_list_page import LeaveListPage
 
 # Initialize logger for conftest
 logger = TestLogger.get_logger(__name__)
@@ -162,50 +165,140 @@ def login_page(browser, config_service):
         browser: Playwright Page instance (from browser fixture)
         config_service: Configuration service
 
-    Returns:
+    Yields:
         LoginPage: Login page instance
 
     Example:
         def test_login(login_page, config_service):
             login_page.login(config_service.username, config_service.password)
-            assert "dashboard" in login_page.get_current_url()
+            expect(login_page.page).to_have_url(re.compile(r"dashboard", re.IGNORECASE))
     """
     page = LoginPage(browser, timeout=config_service.default_timeout)
     page.navigate_to(config_service.base_url)
-    return page
+
+    yield page  # noqa: PT022  # Keep yield for consistency and future teardown
 
 
 @pytest.fixture
-def leave_page(browser, config_service, login_page):
+def dashboard_page(browser, config_service, login_page):
     """
-    Create LeavePage instance after login.
+    Create BasePage instance at Dashboard (default landing page after login).
+
+    This fixture is ideal for navigation and cross-module tests as it starts
+    at the Dashboard, which is the default page users see after login.
 
     Args:
         browser: Playwright Page instance (from browser fixture)
         config_service: Configuration service
         login_page: Login page fixture (to perform login first)
 
-    Returns:
-        LeavePage: Leave page instance
+    Yields:
+        BasePage: Page object at Dashboard with nav_header available
+
+    Cleanup:
+        Optionally logs out to ensure clean state between tests.
 
     Example:
-        def test_navigate_to_leave_list(leave_page):
-            leave_page.navigate_to_leave_list()
-            assert "leave/viewLeaveList" in leave_page.get_current_url()
+        def test_navigate_to_leave(dashboard_page):
+            nav = dashboard_page.nav_header
+            nav.navigate_to_leave()
+            expect(dashboard_page.page).to_have_url(re.compile(r"leave", re.IGNORECASE))
     """
-    # First login to access leave module
+    # Setup: Login and verify we're at Dashboard
     login_page.login(config_service.username, config_service.password)
 
-    # Create leave page instance
-    page = LeavePage(browser, timeout=config_service.default_timeout)
+    # Create BasePage instance (Dashboard is default landing page)
+    page = BasePage(browser, timeout=config_service.default_timeout)
 
-    # Navigate to Leave section
-    page.navigate_to_leave_menu()
+    # Verify we're on dashboard (default after login)
+    expect(page.page).to_have_url(re.compile(r"dashboard", re.IGNORECASE), timeout=10000)
+    logger.info("Dashboard page loaded successfully")
+
+    yield page
+
+    # Teardown: Logout to ensure clean state for next test
+    try:
+        if hasattr(page, "nav_header") and page.nav_header:
+            logger.debug("Logging out in dashboard_page teardown")
+            page.nav_header.logout()
+            logger.info("Logout successful in teardown")
+    except Exception as e:
+        logger.debug(f"Logout in teardown skipped or failed: {e}")
+        # Not critical - browser fixture will close everything anyway
+
+
+@pytest.fixture
+def leave_page(dashboard_page):
+    """
+    Create LeaveListPage instance after navigating to Leave from Dashboard.
+
+    This fixture starts from Dashboard (already logged in via dashboard_page)
+    and navigates to the Leave module using NavigationHeader.
+
+    Args:
+        dashboard_page: Dashboard page fixture (already logged in)
+
+    Yields:
+        LeaveListPage: Leave page instance ready for interaction
+
+    Cleanup:
+        No explicit cleanup needed - dashboard_page fixture handles logout.
+
+    Example:
+        def test_apply_leave(leave_page):
+            leave_page.navigate_to_apply_leave()
+            # ... test leave-specific functionality
+
+    Note:
+        NavigationHeader.navigate_to_leave() now returns the page object directly,
+        eliminating the need to manually create LeaveListPage instance.
+    """
+    # Navigate to Leave from Dashboard - nav_header returns the page object
+    page = dashboard_page.nav_header.navigate_to_leave()
 
     # Wait for page to load - verify page title is visible
-    expect(page.locators.PAGE_TITLE(page.page)).to_be_visible(timeout=10000)
+    expect(page.page_title).to_be_visible(timeout=10000)
+    logger.info("Leave page loaded successfully")
 
-    return page
+    yield page  # noqa: PT022  # Keep yield for consistency and future teardown
+
+
+@pytest.fixture
+def leave_period_page(leave_page):
+    """
+    Create LeavePeriodPage instance by navigating from Leave page.
+
+    This fixture:
+    1. Starts from leave_page (already in Leave module context)
+    2. Uses leave_page.navigate_to_leave_period() to get page object
+    3. Returns LeavePeriodPage instance ready for testing
+
+    Args:
+        leave_page: Leave page fixture (already in Leave module)
+
+    Yields:
+        LeavePeriodPage: Leave Period page instance ready for interaction
+
+    Example:
+        def test_configure_period(leave_period_page):
+            leave_period_page.configure_leave_period("January", "01")
+            leave_period_page.save()
+
+    Note:
+        LeaveBasePage.navigate_to_leave_period() now returns the page object directly,
+        eliminating the need to manually create LeavePeriodPage instance or pass
+        browser/config_service parameters.
+
+        Hierarchy: dashboard -> leave -> leave_period (clean and logical)
+    """
+    # Navigate to Leave Period from Leave page - returns the page object
+    page = leave_page.navigate_to_leave_period()
+
+    # Wait for page to load - verify page title is visible
+    expect(page.page_title).to_be_visible(timeout=10000)
+
+    logger.info("Leave Period page loaded successfully")
+    yield page  # noqa: PT022
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

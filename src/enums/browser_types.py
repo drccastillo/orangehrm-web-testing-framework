@@ -48,5 +48,5 @@ class BrowserType(str, Enum):
         except ValueError as e:
             supported = ", ".join(b.value for b in cls)
             raise ValueError(
-                f"Unsupported browser: {value}. Supported browsers: {supported}"
+                f"Unsupported browser: {value}. Supported browsers: {supported}",
             ) from e
