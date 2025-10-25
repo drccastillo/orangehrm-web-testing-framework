@@ -78,7 +78,9 @@ class ApplyLeavePage(LeaveBasePage):
             This is a placeholder method. Implement actual form filling logic
             once locators are identified from the application.
         """
-        self.logger.info(f"Applying leave: {leave_type} from {from_date} to {to_date}")
+        self.logger.info(
+            f"Applying leave: {leave_type} from {from_date} to {to_date} with comments: {comments}"
+        )
         # TODO: Implement actual form filling logic
         # self.select_leave_type(leave_type)
         # self.fill_dates(from_date, to_date)
