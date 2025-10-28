@@ -55,7 +55,7 @@ class EnvironmentConfigService:
         self._password = self._get_required_env("ORANGEHRM_PASSWORD")
 
         # Browser Configuration - validate using BrowserType enum
-        browser_str = self._get_required_env("BROWSER")
+        browser_str = self._get_required_env("PW_BROWSER")
         try:
             browser_enum = BrowserType.from_string(browser_str)
             self._default_browser = browser_enum.value
@@ -172,6 +172,7 @@ class EnvironmentConfigService:
     @property
     def window_width(self) -> int:
         """Get the browser window width in pixels."""
+        """"""
         return self._window_width
 
     @property
@@ -213,5 +214,5 @@ class EnvironmentConfigService:
             f"EnvironmentConfigService("
             f"base_url={self.base_url}, "
             f"browser={self.default_browser}, "
-            f"headless={self.headless})"
+            f"headless={self.headless}"
         )

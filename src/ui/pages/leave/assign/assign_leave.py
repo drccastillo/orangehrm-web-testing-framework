@@ -37,6 +37,12 @@ class AssignLeavePage(LeaveBasePage):
 
         # Page-specific elements for Assign Leave
         self.page_title: Locator = page.get_by_role("heading", name="Assign Leave", exact=True)
+        self.apply_leave_tab: Locator = page.get_by_role("link", name="Apply", exact=True)
+        self.leave_type_dropdown: Locator = page.get_by_role(
+            "combobox", name="Leave Type", exact=True
+        )
+        self.from_date_input: Locator = page.get_by_role("textbox", name="From Date", exact=True)
+        self.to_date_input: Locator = page.get_by_role("textbox", name="To Date", exact=True)
 
         # Assign leave form elements
         # TODO: Add actual locators based on OrangeHRM Assign Leave form

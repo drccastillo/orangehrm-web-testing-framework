@@ -41,6 +41,10 @@ class AddEntitlementsPage(LeaveBasePage):
             name="Add Leave Entitlement",
             exact=True,
         )
+        self.add_entitlement_button: Locator = page.get_by_role(
+            "button", name="Add Entitlement", exact=True
+        )
+        self.cancel_button: Locator = page.get_by_role("button", name="Cancel", exact=True)
 
         # Add entitlements form elements
         # TODO: Add actual locators based on OrangeHRM Add Entitlements form

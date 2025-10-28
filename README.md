@@ -1,5 +1,10 @@
 # OrangeHRM Web Testing Automation Framework
 
+[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/orangehrm-web-testing-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/orangehrm-web-testing-framework/actions/workflows/ci.yml)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![Playwright](https://img.shields.io/badge/playwright-1.55.0-green.svg)](https://playwright.dev/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 Modern web test automation framework for OrangeHRM using Python, Pytest, and Playwright.
 
 ## 🏗️ Architecture and Design Patterns
@@ -162,6 +167,103 @@ uv run pytest unittests/ -v
 uv run pytest unittests/test_config.py -v
 uv run pytest unittests/test_environment_config.py -v
 ```
+
+## 🚀 CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+This project uses GitHub Actions for continuous integration and automated testing.
+
+#### Main CI Workflow
+
+**Triggers:**
+- Push to `main` branch
+- Pull requests to `main`
+- Manual dispatch
+
+**Jobs:**
+- **code-quality**: Linting (ruff), type checking (mypy, pyright), security scan (bandit) - ~2 min
+- **unit-tests**: Framework unit tests (no browser required) - ~1 min
+- **smoke-tests**: Critical path integration tests (chromium only) - ~3-5 min
+- **regression-tests**: Full test suite with multiple browsers (chromium, firefox, webkit) - ~25-35 min (main branch only)
+
+**Execution Time:**
+- PR checks: ~5-7 minutes (parallel execution)
+- Main branch: Adds regression tests (~25-35 min total)
+
+#### Scheduled Tests
+
+**Triggers:**
+- Daily at 2 AM UTC
+- Manual dispatch
+
+**Purpose:** Nightly regression tests across all browsers and test categories for continuous monitoring.
+
+### Required GitHub Secrets
+
+To enable CI/CD, configure these secrets in your repository:
+
+**Navigate to:** Repository → Settings → Secrets and variables → Actions → New repository secret
+
+| Secret Name | Description | Example Value |
+|------------|-------------|---------------|
+| `ORANGEHRM_USERNAME` | OrangeHRM login username | `Admin` |
+| `ORANGEHRM_PASSWORD` | OrangeHRM login password | `admin123` |
+| `ORANGEHRM_URL` | OrangeHRM base URL (optional) | Defaults to public demo site |
+
+### Status Checks for PR Merge
+
+Pull requests must pass these checks before merging to `main`:
+- ✅ Code quality (linting, formatting, type checking)
+- ✅ Unit tests
+- ✅ Smoke tests
+
+**Configure branch protection:**
+1. Go to repository **Settings → Branches → Add branch protection rule**
+2. Branch name pattern: `main`
+3. Enable: **Require status checks to pass before merging**
+4. Select status checks: `code-quality`, `unit-tests`, `smoke-tests`
+5. Save changes
+
+### Local CI Validation
+
+Test your changes locally before pushing to ensure CI will pass:
+
+```bash
+# Run comprehensive validation script
+./scripts/ci-validate.sh
+
+# Or manually run checks
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy src/ utils/
+uv run pytest unittests/ -v
+uv run pytest tests/ -m smoke -v
+```
+
+### Viewing Test Results
+
+**GitHub Actions Dashboard:**
+1. Go to repository **Actions** tab
+2. Select workflow run to view logs and results
+3. Download artifacts (Playwright reports, logs, screenshots)
+
+**Artifacts Generated:**
+- Playwright HTML reports
+- Test results (screenshots, videos, traces)
+- Test logs
+- Retention: 30 days for main workflow, 14 days for scheduled tests
+
+### Troubleshooting CI Failures
+
+| Issue | Solution |
+|-------|----------|
+| Tests pass locally but fail in CI | Verify GitHub Secrets are configured correctly |
+| Timeout errors | Tests may be slower in CI; check logs for specific failures |
+| Cache issues | Clear cache in Actions tab → Caches |
+| Browser compatibility issues | Review browser-specific logs in artifacts |
+
+For detailed workflow documentation, see [.github/workflows/README.md](.github/workflows/README.md).
 
 ## 📊 Allure Reports
 
