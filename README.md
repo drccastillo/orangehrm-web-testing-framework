@@ -351,15 +351,41 @@ Reports are **automatically generated** in GitHub Actions workflows:
 3. Scroll down to **Artifacts** section
 4. Download available artifacts:
    - `html-report-*` - pytest HTML report (single file)
-   - `allure-results-*` - Allure JSON results
+   - `allure-results-*` - Allure JSON results (raw data)
+   - `allure-report` - Complete Allure HTML report (ready to view)
    - `test-results-*` - Screenshots, logs, and traces
+
+**Viewing Allure Report Online (GitHub Pages):**
+
+After each CI run, an Allure report is automatically generated and published to GitHub Pages:
+
+1. Enable GitHub Pages in your repository:
+   - Go to **Settings** → **Pages**
+   - Source: **Deploy from a branch**
+   - Branch: **gh-pages** → **/ (root)**
+   - Click **Save**
+
+2. Access the report at:
+   ```
+   https://<your-username>.github.io/<repository-name>/
+   ```
+
+3. The report includes:
+   - ✅ Combined results from all test jobs (smoke + regression)
+   - ✅ Historical trends (up to 20 previous runs)
+   - ✅ Interactive charts and statistics
+   - ✅ Detailed test execution timeline
 
 **Viewing Downloaded Allure Reports:**
 ```bash
-# Extract the downloaded artifact
-unzip allure-results-smoke.zip
+# Option 1: Download complete allure-report artifact (recommended)
+unzip allure-report.zip
+cd allure-history
+python3 -m http.server 8000
+# Open http://localhost:8000 in browser
 
-# Serve the Allure report
+# Option 2: Download allure-results and generate locally
+unzip allure-results-smoke.zip
 allure serve allure-results/
 ```
 
