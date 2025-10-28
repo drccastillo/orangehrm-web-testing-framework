@@ -4,7 +4,6 @@ Tests exception hierarchy and error messages.
 """
 
 import pytest
-from selenium.webdriver.common.by import By
 
 from utils.exceptions import (
     ConfigurationException,
@@ -43,14 +42,14 @@ class TestElementNotFoundException:
 
     def test_element_not_found_exception_with_locator(self):
         """Test ElementNotFoundException with locator tuple."""
-        locator = (By.ID, "test-id")
+        locator = ("id", "test-id")
         error = ElementNotFoundException(locator)
         assert "test-id" in str(error)
         assert error.locator == locator
 
     def test_element_not_found_exception_with_custom_message(self):
         """Test ElementNotFoundException with custom message."""
-        locator = (By.CSS_SELECTOR, ".test-class")
+        locator = ("css", ".test-class")
         custom_msg = "Custom error message"
         error = ElementNotFoundException(locator, custom_msg)
         assert str(error) == custom_msg
@@ -58,7 +57,7 @@ class TestElementNotFoundException:
 
     def test_element_not_found_exception_default_message(self):
         """Test ElementNotFoundException default message format."""
-        locator = (By.NAME, "username")
+        locator = ("name", "username")
         error = ElementNotFoundException(locator)
         assert "Element not found" in str(error)
         assert "username" in str(error)
@@ -73,14 +72,14 @@ class TestElementNotClickableException:
 
     def test_element_not_clickable_exception_with_locator(self):
         """Test ElementNotClickableException with locator tuple."""
-        locator = (By.ID, "submit-button")
+        locator = ("id", "submit-button")
         error = ElementNotClickableException(locator)
         assert "submit-button" in str(error)
         assert error.locator == locator
 
     def test_element_not_clickable_exception_default_message(self):
         """Test ElementNotClickableException default message format."""
-        locator = (By.XPATH, "//button[@type='submit']")
+        locator = ("xpath", "//button[@type='submit']")
         error = ElementNotClickableException(locator)
         assert "not clickable" in str(error)
 
