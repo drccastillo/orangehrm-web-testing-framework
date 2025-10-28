@@ -1,0 +1,158 @@
+# Pre-commit hooks configuration for OrangeHRM Testing Framework
+# See https://pre-commit.com for more information
+
+default_language_version:
+  python: python3.10
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML files
+      - id: check-toml
+        name: Check TOML files
+      - id: check-json
+        name: Check JSON files
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: debug-statements
+        name: Check for debug statements
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+        args: ['--fix=lf']
+
+  # - repo: https://github.com/asottile/reorder-python-imports
+  #   rev: v3.16.0
+  #   hooks:
+  #     - id: reorder-python-imports
+
+  # - repo: https://github.com/asottile/add-trailing-comma
+  #   rev: v3.2.0
+  #   hooks:
+  #     - id: add-trailing-comma
+
+  # # Python import sorting
+  # - repo: https://github.com/pycqa/isort
+  #   rev: 7.0.0
+  #   hooks:
+  #     - id: isort
+  #       name: Sort imports with isort
+  #       args: ['--profile', 'black', '--line-length', '100']
+
+  # Python code formatting with Black (disabled - using ruff-format instead)
+  # - repo: https://github.com/psf/black
+  #   rev: 25.9.0
+  #   hooks:
+  #     - id: black
+  #       name: Format code with Black
+  #       args: ['--line-length', '100']
+  #       language_version: python3.10
+
+  # Ruff - Fast Python linter and formatter (replaces flake8, autoflake, isort checks, and black)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      # Linter
+      - id: ruff
+        name: Run Ruff linter
+        args:
+          - --fix
+          - --exit-non-zero-on-fix
+          - --line-length=100
+        types_or: [python, pyi]
+      # Formatter (alternative to Black, but we'll use both for now)
+      - id: ruff-format
+        name: Format with Ruff
+        args: ['--line-length', '100']
+        types_or: [python, pyi]
+
+  # Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.18.2
+    hooks:
+      - id: mypy
+        name: Type check with mypy
+        additional_dependencies:
+          - pytest
+          - selenium
+          - playwright
+        args:
+          - --ignore-missing-imports
+          - --no-strict-optional
+          - --warn-redundant-casts
+          - --warn-unused-ignores
+        exclude: ^(tests_|unittests/)
+
+  # Type checking with Pyright
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.406
+    hooks:
+      - id: pyright
+        name: Type check with Pyright
+        additional_dependencies:
+          - pytest
+          - selenium
+          - playwright
+          - python-dotenv
+        exclude: ^(tests_|unittests/)
+
+  # Code quality checks with Pylint
+  # - repo: https://github.com/pycqa/pylint
+  #   rev: v4.0.0
+  #   hooks:
+  #     - id: pylint
+  #       name: Lint with Pylint
+  #       args:
+  #         - --rcfile=pyproject.toml
+  #       additional_dependencies:
+  #         - pytest
+  #         - selenium
+  #         - playwright
+  #         - python-dotenv
+  #         - pylint-pytest  # Plugin for pytest-specific linting
+  #       exclude: ^unittests/  # Only exclude unittests/, include tests/
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.6
+    hooks:
+      - id: bandit
+        name: Security check with Bandit
+        args: ['-c', 'pyproject.toml']
+        additional_dependencies: ['bandit[toml]']
+        exclude: ^(tests_|unittests/)
+
+  # Documentation checks (disabled - can be enabled if docstring style enforcement is needed)
+  # - repo: https://github.com/pycqa/pydocstyle
+  #   rev: 6.3.0
+  #   hooks:
+  #     - id: pydocstyle
+  #       name: Check docstrings
+  #       args:
+  #         - --convention=google
+  #         - --add-ignore=D100,D104,D105,D107,D212,D205
+  #       exclude: ^(tests_|unittests/)
+
+  # Remove unused imports and variables
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        name: Remove unused imports
+        args:
+          - --in-place
+          - --remove-all-unused-imports
+          - --remove-unused-variables
+          - --remove-duplicate-keys
+          - --ignore-init-module-imports
+
+# Configuration for specific tools can be added to pyproject.toml

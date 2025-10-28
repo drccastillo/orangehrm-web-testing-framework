@@ -1,0 +1,85 @@
+name: Scheduled Regression Tests
+
+on:
+  schedule:
+    # Daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  nightly-regression:
+    name: Nightly Regression (${{ matrix.browser }} - ${{ matrix.markers }})
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
+      options: --ipc=host --init
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+        markers: [smoke, regression, leave, navigation]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-docker-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            uv-docker-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create .env file
+        run: |
+          cat << EOF > .env
+          URL=${{ secrets.ORANGEHRM_URL || 'https://opensource-demo.orangehrmlive.com/web/index.php' }}
+          ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
+          ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
+          BROWSER=${{ matrix.browser }}
+          HEADLESS=True
+          DEFAULT_TIMEOUT=10
+          PAGE_LOAD_TIMEOUT=30
+          WINDOW_WIDTH=1920
+          WINDOW_HEIGHT=1080
+          MAXIMIZE_WINDOW=True
+          SCREENSHOT_ON_FAILURE=True
+          EOF
+
+      - name: Run tests
+        run: uv run pytest tests/ -m ${{ matrix.markers }} -v --tb=short -n auto
+        timeout-minutes: 45
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-playwright-report-${{ matrix.browser }}-${{ matrix.markers }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-test-results-${{ matrix.browser }}-${{ matrix.markers }}
+          path: |
+            test-results/
+            logs/
+            reports/
+          retention-days: 14

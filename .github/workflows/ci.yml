@@ -1,0 +1,256 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  # ============================================================================
+  # Job 1: Code Quality Checks (Fast, runs in parallel)
+  # ============================================================================
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run Ruff format check
+        run: uv run ruff format --check .
+
+      - name: Run Ruff linter
+        run: uv run ruff check .
+
+      - name: Run mypy type checking
+        run: uv run mypy src/ utils/
+
+      - name: Run pyright type checking
+        run: uv run pyright src/ utils/
+        continue-on-error: true  # Pyright can be strict
+
+      - name: Run Bandit security scan
+        run: uv run bandit -r src/ utils/ -c pyproject.toml
+
+  # ============================================================================
+  # Job 2: Unit Tests (Fast, no browser needed)
+  # ============================================================================
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run unit tests
+        run: uv run pytest unittests/ -v --tb=short
+
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-logs
+          path: logs/
+          retention-days: 30
+
+  # ============================================================================
+  # Job 3: Smoke Tests (Critical paths, runs on all branches)
+  # ============================================================================
+  smoke-tests:
+    name: Smoke Tests (Chromium)
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
+      options: --ipc=host --init
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-docker-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            uv-docker-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create .env file
+        run: |
+          cat << EOF > .env
+          URL=${{ secrets.ORANGEHRM_URL }}
+          ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
+          ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
+          BROWSER=chromium
+          HEADLESS=True
+          DEFAULT_TIMEOUT=10
+          PAGE_LOAD_TIMEOUT=30
+          WINDOW_WIDTH=1920
+          WINDOW_HEIGHT=1080
+          MAXIMIZE_WINDOW=True
+          SCREENSHOT_ON_FAILURE=True
+          EOF
+
+      - name: Run smoke tests
+        run: uv run pytest tests/ -m smoke -v --tb=short -n auto
+        timeout-minutes: 10
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-smoke
+          path: |
+            test-results/
+            logs/
+            reports/
+          retention-days: 30
+
+  # ============================================================================
+  # Job 4: Regression Tests (Full suite, main branch only)
+  # ============================================================================
+  regression-tests:
+    name: Regression Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
+      options: --ipc=host --init
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-docker-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            uv-docker-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create .env file
+        run: |
+          cat << EOF > .env
+          URL=${{ secrets.ORANGEHRM_URL || 'https://opensource-demo.orangehrmlive.com/web/index.php' }}
+          ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
+          ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
+          BROWSER=${{ matrix.browser }}
+          HEADLESS=True
+          DEFAULT_TIMEOUT=10
+          PAGE_LOAD_TIMEOUT=30
+          WINDOW_WIDTH=1920
+          WINDOW_HEIGHT=1080
+          MAXIMIZE_WINDOW=True
+          SCREENSHOT_ON_FAILURE=True
+          EOF
+
+      - name: Run regression tests
+        run: uv run pytest tests/ -m regression -v --tb=short -n auto
+        timeout-minutes: 30
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-regression-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-regression-${{ matrix.browser }}
+          path: |
+            test-results/
+            logs/
+            reports/
+          retention-days: 30

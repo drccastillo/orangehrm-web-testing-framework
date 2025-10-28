@@ -1,0 +1,215 @@
+[project]
+name = "orange-hrm-test-framework"
+version = "0.2.0"
+description = "Playwright-based web testing automation framework for OrangeHRM"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pytest>=8.4.2",
+    "python-dotenv>=1.1.1",
+    "pytest-xdist>=3.8.0",
+    "pytest-html>=4.1.1",
+    "playwright>=1.55.0",
+    "pytest-playwright>=0.7.1",
+    "allure-pytest>=2.15.0",
+    "ptpython>=3.0.31",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src", "tests", "utils"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "unittests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = """
+    -v
+    --tb=short
+    --strict-markers
+"""
+markers = [
+    "smoke: Quick smoke tests",
+    "regression: Full regression tests",
+    "login: Login related tests",
+    "navigation: Navigation related tests",
+    "component: Component tests (reusable UI components)",
+    "integration: Integration tests (cross-module, end-to-end)",
+    "cross_module: Cross-module navigation tests",
+    "performance: Performance and reliability tests",
+    "leave: Leave module tests",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.9.0",
+    "ruff>=0.14.1",
+    "mypy>=1.18.2",
+    "pyright>=1.1.406",
+    "pre-commit>=4.3.0",
+    "isort>=7.0.0",
+    "autoflake>=2.3.1",
+    "bandit>=1.8.6",
+    "pydocstyle>=6.3.0",
+    "pylint>=4.0.2",
+    "pylint-pytest>=1.1.7",
+]
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | __pycache__
+  | reports
+  | logs
+)/
+'''
+
+# Ruff configuration
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    "reports",
+    "logs",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "PT",   # flake8-pytest-style
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "B904",  # Allow raising exceptions without from e
+    "N812",  # Allow EC as alias for expected_conditions (standard convention)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**" = ["S101"]
+"unittests/**" = ["S101"]
+
+# isort configuration
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+known_first_party = ["src", "utils"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+multi_line_output = 3
+include_trailing_comma = true
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    "tests/",
+    "unittests/",
+]
+
+# Bandit configuration
+[tool.bandit]
+exclude_dirs = ["tests", "unittests", ".venv"]
+skips = ["B101"]  # Skip assert warnings in general code
+
+# pydocstyle configuration
+[tool.pydocstyle]
+convention = "google"
+add_ignore = ["D100", "D104", "D105", "D107", "D212", "D205"]
+match = "(?!test_).*\\.py"
+match_dir = "^(?!(tests_|unittests|reports_|logs|\\.)).*"
+
+# Pylint configuration
+[tool.pylint.main]
+py-version = "3.13"
+ignore = [".venv", "build", "dist", "__pycache__"]
+# Removed ignore-patterns to allow linting tests/
+# Only ignore unittests/ for now (framework unit tests)
+ignore-patterns = ["^unittests/.*"]
+load-plugins = ["pylint_pytest"]
+
+[tool.pylint.messages_control]
+max-line-length = 100
+disable = [
+    "C0114",  # missing-module-docstring
+    "C0115",  # missing-class-docstring
+    "C0116",  # missing-function-docstring
+    "R0903",  # too-few-public-methods (common in Page Objects)
+    "R0904",  # too-many-public-methods (common in Page Objects)
+    "R0913",  # too-many-arguments
+    "W0212",  # protected-access (needed for some framework methods)
+    "C0103",  # invalid-name (allow short variable names)
+    "W1203",  # logging-fstring-interpolation (f-strings are fine in modern Python)
+    "W0718",  # broad-exception-caught (needed for robust error handling)
+    "R0801",  # duplicate-code (base classes naturally share similar code)
+    "W0613",  # unused-argument (common in fixtures and hooks)
+]
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "ex", "Run", "_", "id", "EC", "By", "pw"]
+
+[tool.pylint.design]
+max-attributes = 15
+max-parents = 10
+
+# Pyright configuration
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+exclude = [
+    "**/tests/**",
+    "**/unittests/**",
+    "**/.venv/**",
+    "**/node_modules/**",
+]
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnusedVariable = true
+reportUnusedImport = true
+reportDuplicateImport = true
+reportPrivateUsage = false
+reportConstantRedefinition = true
+reportArgumentType = "warning"
+reportReturnType = "warning"
+reportOptionalMemberAccess = "warning"
+reportOptionalCall = "warning"
+reportOptionalIterable = "warning"
+reportOptionalContextManager = "warning"
+reportOptionalOperand = "warning"
