@@ -142,7 +142,7 @@ jobs:
   # Job 3: Smoke Tests (Critical paths, runs on all branches)
   # ============================================================================
   smoke-tests:
-    name: Smoke Tests (Chromium)
+    name: Smoke Tests
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
@@ -396,6 +396,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+          force_orphan: true
 
       - name: Upload Allure Report as artifact
         if: always()
