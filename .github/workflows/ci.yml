@@ -135,7 +135,7 @@ jobs:
       - name: Create .env file
         run: |
           cat << EOF > .env
-          URL=${{ secrets.ORANGEHRM_URL }}
+          URL=${{ vars.ORANGEHRM_URL }}
           ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
           ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
           PW_BROWSER=chromium
@@ -212,7 +212,7 @@ jobs:
       - name: Create .env file
         run: |
           cat << EOF > .env
-          URL=${{ secrets.ORANGEHRM_URL || 'https://opensource-demo.orangehrmlive.com/web/index.php' }}
+          URL=${{ vars.ORANGEHRM_URL }}
           ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
           ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
           PW_BROWSER=${{ matrix.browser }}
