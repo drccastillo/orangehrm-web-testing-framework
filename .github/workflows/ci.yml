@@ -165,15 +165,27 @@ jobs:
           EOF
 
       - name: Run smoke tests
-        run: uv run pytest tests/ -m smoke -v --tb=short -n auto
+        run: |
+          uv run pytest tests/ -m smoke -v --tb=short -n auto \
+            --alluredir=reports/allure-results \
+            --html=reports/pytest-report.html \
+            --self-contained-html
         timeout-minutes: 10
 
-      - name: Upload Playwright report
+      - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-smoke
-          path: playwright-report/
+          name: html-report-smoke
+          path: reports/pytest-report.html
+          retention-days: 30
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-smoke
+          path: reports/allure-results/
           retention-days: 30
 
       - name: Upload test results
@@ -184,7 +196,7 @@ jobs:
           path: |
             test-results/
             logs/
-            reports/
+            reports/screenshots/
           retention-days: 30
 
   # ============================================================================
@@ -242,15 +254,27 @@ jobs:
           EOF
 
       - name: Run regression tests
-        run: uv run pytest tests/ -m regression -v --tb=short -n auto
+        run: |
+          uv run pytest tests/ -m regression -v --tb=short -n auto \
+            --alluredir=reports/allure-results \
+            --html=reports/pytest-report.html \
+            --self-contained-html
         timeout-minutes: 30
 
-      - name: Upload Playwright report
+      - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-regression-${{ matrix.browser }}
-          path: playwright-report/
+          name: html-report-regression-${{ matrix.browser }}
+          path: reports/pytest-report.html
+          retention-days: 30
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-regression-${{ matrix.browser }}
+          path: reports/allure-results/
           retention-days: 30
 
       - name: Upload test results
@@ -261,5 +285,5 @@ jobs:
           path: |
             test-results/
             logs/
-            reports/
+            reports/screenshots/
           retention-days: 30

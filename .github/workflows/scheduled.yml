@@ -62,15 +62,27 @@ jobs:
           EOF
 
       - name: Run tests
-        run: uv run pytest tests/ -m ${{ matrix.markers }} -v --tb=short -n auto
+        run: |
+          uv run pytest tests/ -m ${{ matrix.markers }} -v --tb=short -n auto \
+            --alluredir=reports/allure-results \
+            --html=reports/pytest-report.html \
+            --self-contained-html
         timeout-minutes: 45
 
-      - name: Upload Playwright report
+      - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-playwright-report-${{ matrix.browser }}-${{ matrix.markers }}
-          path: playwright-report/
+          name: html-report-nightly-${{ matrix.browser }}-${{ matrix.markers }}
+          path: reports/pytest-report.html
+          retention-days: 14
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-nightly-${{ matrix.browser }}-${{ matrix.markers }}
+          path: reports/allure-results/
           retention-days: 14
 
       - name: Upload test results
@@ -81,5 +93,5 @@ jobs:
           path: |
             test-results/
             logs/
-            reports/
+            reports/screenshots/
           retention-days: 14

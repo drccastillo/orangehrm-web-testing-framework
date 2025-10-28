@@ -41,8 +41,12 @@ htmlcov/
 .tox/
 *.log
 
-# Reports (only root level)
+# Test Reports
 /reports/
+reports/allure-results/
+reports/allure-report/
+reports/pytest-report.html
+reports/screenshots/
 *.html
 *.xml
 
@@ -57,8 +61,6 @@ playwright-report/
 *.mp4
 
 # Allure
-reports/allure-results/
-reports/allure-report/
 .allure/
 
 # Environment variables

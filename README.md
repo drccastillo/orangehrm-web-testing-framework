@@ -265,9 +265,35 @@ uv run pytest tests/ -m smoke -v
 
 For detailed workflow documentation, see [.github/workflows/README.md](.github/workflows/README.md).
 
+## 📊 Test Reports
+
+The framework supports multiple report formats for test results.
+
+### HTML Report (pytest-html)
+
+Generate a simple HTML report with test results:
+
+```bash
+# Generate HTML report
+uv run pytest tests/ --html=reports/pytest-report.html --self-contained-html
+
+# Open the report
+open reports/pytest-report.html  # macOS
+xdg-open reports/pytest-report.html  # Linux
+```
+
+**Features:**
+- ✅ Single self-contained HTML file
+- ✅ Test pass/fail summary
+- ✅ Execution time details
+- ✅ Error messages and logs
+- ✅ Quick overview of test results
+
+---
+
 ## 📊 Allure Reports
 
-The framework supports Allure Reports for professional test reporting.
+The framework supports Allure Reports for professional test reporting with advanced features.
 
 ### Install Allure CLI:
 
@@ -292,17 +318,17 @@ scoop install allure
 
 ```bash
 # Clean previous results
-rm -rf reports_playwright/allure-results/ reports_playwright/allure-report/
+rm -rf reports/allure-results/ reports/allure-report/
 
 # Run tests with Allure
-uv run pytest tests/ --alluredir=reports_playwright/allure-results
+uv run pytest tests/ --alluredir=reports/allure-results
 
 # Serve report (opens browser automatically)
-allure serve reports_playwright/allure-results
+allure serve reports/allure-results
 
 # Generate static HTML report
-allure generate reports_playwright/allure-results -o reports_playwright/allure-report --clean
-allure open reports_playwright/allure-report
+allure generate reports/allure-results -o reports/allure-report --clean
+allure open reports/allure-report
 ```
 
 ### Allure Report Features:
@@ -312,6 +338,42 @@ allure open reports_playwright/allure-report
 - ✅ Screenshots, logs, videos, and traces attached
 - ✅ Detailed step-by-step visualization
 - ✅ CI/CD integration (Jenkins, GitHub Actions, GitLab CI)
+
+---
+
+### CI/CD Reports
+
+Reports are **automatically generated** in GitHub Actions workflows:
+
+**Accessing Reports:**
+1. Go to **Actions** tab in GitHub repository
+2. Select a workflow run
+3. Scroll down to **Artifacts** section
+4. Download available artifacts:
+   - `html-report-*` - pytest HTML report (single file)
+   - `allure-results-*` - Allure JSON results
+   - `test-results-*` - Screenshots, logs, and traces
+
+**Viewing Downloaded Allure Reports:**
+```bash
+# Extract the downloaded artifact
+unzip allure-results-smoke.zip
+
+# Serve the Allure report
+allure serve allure-results/
+```
+
+**Combined Reports:**
+Both HTML and Allure reports are generated with every test run:
+```bash
+# This is automatically run in CI:
+uv run pytest tests/ \
+  --alluredir=reports/allure-results \
+  --html=reports/pytest-report.html \
+  --self-contained-html
+```
+
+---
 
 ## 📝 Writing Tests
 
@@ -450,7 +512,7 @@ Reports are automatically generated in:
 - **Screenshots**: `test-results/` (only on failures)
 - **Videos**: `test-results/` (if enabled)
 - **Traces**: `test-results/` (if enabled)
-- **Allure Reports**: `reports_playwright/allure-results/`
+- **Allure Reports**: `reports/allure-results/`
 - **Logs**: `logs/test_automation_YYYYMMDD.log` (daily logs)
 
 ## 🔍 Debugging
