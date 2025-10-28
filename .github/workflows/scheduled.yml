@@ -64,6 +64,7 @@ jobs:
       - name: Run tests
         run: |
           uv run pytest tests/ -m ${{ matrix.markers }} -v --tb=short -n auto \
+            --browser ${{ matrix.browser }} \
             --alluredir=reports/allure-results \
             --html=reports/pytest-report.html \
             --self-contained-html

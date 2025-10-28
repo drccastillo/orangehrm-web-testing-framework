@@ -7,6 +7,28 @@ on:
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+    inputs:
+      browsers:
+        description: 'Browsers to test'
+        required: false
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - chromium,firefox
+          - chromium,webkit
+          - firefox,webkit
+          - all
+      headless:
+        description: 'Run in headless mode'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 env:
   PYTHON_VERSION: "3.13"
@@ -166,7 +188,29 @@ jobs:
 
       - name: Run smoke tests
         run: |
+          # Build browser flags based on input
+          BROWSER_FLAGS=""
+          if [ "${{ github.event.inputs.browsers }}" == "all" ]; then
+            BROWSER_FLAGS="--browser chromium --browser firefox --browser webkit"
+          elif [ -n "${{ github.event.inputs.browsers }}" ]; then
+            # Convert "chromium,firefox" to "--browser chromium --browser firefox"
+            BROWSERS="${{ github.event.inputs.browsers }}"
+            for browser in ${BROWSERS//,/ }; do
+              BROWSER_FLAGS="$BROWSER_FLAGS --browser $browser"
+            done
+          else
+            BROWSER_FLAGS="--browser chromium"
+          fi
+
+          # Add --headed flag if needed
+          HEADED_FLAG=""
+          if [ "${{ github.event.inputs.headless }}" == "false" ]; then
+            HEADED_FLAG="--headed"
+          fi
+
+          # Run tests
           uv run pytest tests/ -m smoke -v --tb=short -n auto \
+            $BROWSER_FLAGS $HEADED_FLAG \
             --alluredir=reports/allure-results \
             --html=reports/pytest-report.html \
             --self-contained-html
@@ -255,7 +299,15 @@ jobs:
 
       - name: Run regression tests
         run: |
+          # Add --headed flag if needed
+          HEADED_FLAG=""
+          if [ "${{ github.event.inputs.headless }}" == "false" ]; then
+            HEADED_FLAG="--headed"
+          fi
+
+          # Run tests with browser from matrix
           uv run pytest tests/ -m regression -v --tb=short -n auto \
+            --browser ${{ matrix.browser }} $HEADED_FLAG \
             --alluredir=reports/allure-results \
             --html=reports/pytest-report.html \
             --self-contained-html
