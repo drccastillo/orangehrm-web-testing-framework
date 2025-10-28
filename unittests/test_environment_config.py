@@ -105,7 +105,7 @@ class TestEnvironmentConfigServiceBehavior:
         monkeypatch.setenv("URL", "http://test-url.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "TestUser")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "TestPass")
-        monkeypatch.setenv("BROWSER", "firefox")
+        monkeypatch.setenv("PW_BROWSER", "firefox")
         monkeypatch.setenv("HEADLESS", "true")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -133,7 +133,7 @@ class TestEnvironmentConfigServiceBehavior:
             "URL",
             "ORANGEHRM_USERNAME",
             "ORANGEHRM_PASSWORD",
-            "BROWSER",
+            "PW_BROWSER",
             "HEADLESS",
             "DEFAULT_TIMEOUT",
             "PAGE_LOAD_TIMEOUT",
@@ -161,7 +161,7 @@ class TestEnvironmentConfigServiceBehavior:
         monkeypatch.setenv("URL", "http://test.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("PW_BROWSER", "chrome")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
         monkeypatch.setenv("WINDOW_WIDTH", "1920")
@@ -190,7 +190,7 @@ class TestEnvironmentConfigServiceBehavior:
         monkeypatch.setenv("URL", "http://test.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("PW_BROWSER", "chrome")
         monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "20")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -210,7 +210,7 @@ class TestEnvironmentConfigServiceBehavior:
         monkeypatch.setenv("URL", "http://localhost")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("PW_BROWSER", "chrome")
         monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -271,7 +271,7 @@ class TestEnvironmentConfigServiceCustomEnvFile:
             "URL=http://custom-environment.com\n"
             "ORANGEHRM_USERNAME=CustomUser\n"
             "ORANGEHRM_PASSWORD=CustomPass\n"
-            "BROWSER=chrome\n"
+            "PW_BROWSER=chrome\n"
             "HEADLESS=false\n"
             "DEFAULT_TIMEOUT=10\n"
             "PAGE_LOAD_TIMEOUT=30\n"
@@ -325,7 +325,7 @@ class TestEnvironmentConfigServiceValidation:
         monkeypatch.setenv("URL", "http://test.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "invalid_browser")
+        monkeypatch.setenv("PW_BROWSER", "invalid_browser")
         monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "10")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -337,7 +337,7 @@ class TestEnvironmentConfigServiceValidation:
         with pytest.raises(ConfigurationException) as exc_info:
             EnvironmentConfigService()
 
-        assert "Invalid BROWSER configuration" in str(exc_info.value)
+        assert "Invalid PW_BROWSER configuration" in str(exc_info.value)
 
     def test_negative_timeout_raises_exception(self, monkeypatch):
         """Negative timeout value raises ConfigurationException."""
@@ -347,7 +347,7 @@ class TestEnvironmentConfigServiceValidation:
         monkeypatch.setenv("URL", "http://test.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("PW_BROWSER", "chrome")
         monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "-5")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -369,7 +369,7 @@ class TestEnvironmentConfigServiceValidation:
         monkeypatch.setenv("URL", "http://test.com")
         monkeypatch.setenv("ORANGEHRM_USERNAME", "user")
         monkeypatch.setenv("ORANGEHRM_PASSWORD", "pass")
-        monkeypatch.setenv("BROWSER", "chrome")
+        monkeypatch.setenv("PW_BROWSER", "chrome")
         monkeypatch.setenv("HEADLESS", "false")
         monkeypatch.setenv("DEFAULT_TIMEOUT", "not_a_number")
         monkeypatch.setenv("PAGE_LOAD_TIMEOUT", "30")
@@ -396,7 +396,7 @@ class TestEnvironmentConfigServiceValidation:
             "URL=http://test.com\n"
             "ORANGEHRM_USERNAME=user\n"
             # Missing ORANGEHRM_PASSWORD - should cause error
-            "BROWSER=chrome\n"
+            "PW_BROWSER=chrome\n"
             "HEADLESS=false\n"
             "DEFAULT_TIMEOUT=10\n"
             "PAGE_LOAD_TIMEOUT=30\n"

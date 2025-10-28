@@ -51,7 +51,7 @@ jobs:
           URL=${{ secrets.ORANGEHRM_URL || 'https://opensource-demo.orangehrmlive.com/web/index.php' }}
           ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
           ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
-          BROWSER=${{ matrix.browser }}
+          PW_BROWSER=${{ matrix.browser }}
           HEADLESS=True
           DEFAULT_TIMEOUT=10
           PAGE_LOAD_TIMEOUT=30

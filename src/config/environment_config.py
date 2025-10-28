@@ -60,7 +60,7 @@ class EnvironmentConfigService:
             browser_enum = BrowserType.from_string(browser_str)
             self._default_browser = browser_enum.value
         except ValueError as e:
-            raise ConfigurationException(f"Invalid BROWSER configuration: {e}") from e
+            raise ConfigurationException("PW_BROWSER", f"Invalid PW_BROWSER configuration: {e}") from e
 
         headless_str = self._get_required_env("HEADLESS")
         self._headless = headless_str.lower() == "true"
