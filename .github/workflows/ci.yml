@@ -399,6 +399,7 @@ jobs:
         if: always()
         run: |
           cd allure-history
+          rm -rf .git
           git init
           git add -A
           git commit -m "Deploy Allure report"
