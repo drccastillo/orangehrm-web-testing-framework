@@ -199,7 +199,8 @@ jobs:
               BROWSER_FLAGS="$BROWSER_FLAGS --browser $browser"
             done
           else
-            BROWSER_FLAGS="--browser firefox"
+            # Default for automatic triggers (push, PR) - run all browsers
+            BROWSER_FLAGS="--browser chromium --browser firefox --browser webkit"
           fi
 
           # Add --headed flag if needed
