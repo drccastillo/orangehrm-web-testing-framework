@@ -391,17 +391,19 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      - name: Setup Git for GitHub Pages
+      - name: Prepare clean directory for GitHub Pages
         if: always()
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p gh-pages-deploy
+          cp -r allure-history/* gh-pages-deploy/ || true
+          ls -la gh-pages-deploy/
 
       - name: Deploy Allure report to GitHub Pages
         if: always()
         run: |
-          cd allure-history
-          sudo rm -rf .git
+          cd gh-pages-deploy
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git init
           git add -A
           git commit -m "Deploy Allure report"
