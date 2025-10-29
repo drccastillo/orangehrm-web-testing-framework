@@ -139,118 +139,11 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # Job 3: Smoke Tests (Critical paths, runs on all branches)
+  # Job 3: Tests (All test suites using pytest markers)
   # ============================================================================
-  smoke-tests:
-    name: Smoke Tests
+  tests:
+    name: Tests (${{ matrix.browser }})
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
-      options: --ipc=host --init
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install UV
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Cache UV dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: uv-docker-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
-          restore-keys: |
-            uv-docker-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Create .env file
-        run: |
-          cat << EOF > .env
-          URL=${{ vars.ORANGEHRM_URL }}
-          ORANGEHRM_USERNAME=${{ secrets.ORANGEHRM_USERNAME }}
-          ORANGEHRM_PASSWORD=${{ secrets.ORANGEHRM_PASSWORD }}
-          PW_BROWSER=chromium
-          HEADLESS=True
-          DEFAULT_TIMEOUT=10
-          PAGE_LOAD_TIMEOUT=30
-          WINDOW_WIDTH=1920
-          WINDOW_HEIGHT=1080
-          MAXIMIZE_WINDOW=True
-          SCREENSHOT_ON_FAILURE=True
-          EOF
-
-      - name: Run smoke tests
-        run: |
-          # Build browser flags based on input
-          BROWSER_FLAGS=""
-          if [ "${{ github.event.inputs.browsers }}" == "all" ]; then
-            BROWSER_FLAGS="--browser chromium --browser firefox --browser webkit"
-          elif [ -n "${{ github.event.inputs.browsers }}" ]; then
-            # Convert "chromium,firefox" to "--browser chromium --browser firefox"
-            BROWSERS="${{ github.event.inputs.browsers }}"
-            for browser in ${BROWSERS//,/ }; do
-              BROWSER_FLAGS="$BROWSER_FLAGS --browser $browser"
-            done
-          else
-            # Default for automatic triggers (push, PR)
-            BROWSER_FLAGS="--browser chromium"
-          fi
-
-          # Add --headed flag if needed
-          HEADED_FLAG=""
-          if [ "${{ github.event.inputs.headless }}" == "false" ]; then
-            HEADED_FLAG="--headed"
-          fi
-
-          # Run tests
-          uv run pytest tests/ -m smoke -v --tb=short -n auto \
-            $BROWSER_FLAGS $HEADED_FLAG \
-            --alluredir=reports/allure-results \
-            --html=reports/pytest-report.html \
-            --self-contained-html
-        timeout-minutes: 10
-
-      - name: Upload HTML Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report-smoke
-          path: reports/pytest-report.html
-          retention-days: 30
-
-      - name: Upload Allure Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results-smoke
-          path: reports/allure-results/
-          retention-days: 30
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-smoke
-          path: |
-            test-results/
-            logs/
-            reports/screenshots/
-          retention-days: 30
-
-  # ============================================================================
-  # Job 4: Regression Tests (Full suite, main and develop branches)
-  # ============================================================================
-  regression-tests:
-    name: Regression Tests (${{ matrix.browser }})
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --init
@@ -298,7 +191,7 @@ jobs:
           SCREENSHOT_ON_FAILURE=True
           EOF
 
-      - name: Run regression tests
+      - name: Run tests
         run: |
           # Add --headed flag if needed
           HEADED_FLAG=""
@@ -306,7 +199,7 @@ jobs:
             HEADED_FLAG="--headed"
           fi
 
-          # Run tests with browser from matrix
+          # Run all tests (uses pytest markers: smoke, regression, leave, etc.)
           uv run pytest tests/ -v --tb=short -n auto \
             --browser ${{ matrix.browser }} $HEADED_FLAG \
             --alluredir=reports/allure-results \
@@ -318,7 +211,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: html-report-regression-${{ matrix.browser }}
+          name: html-report-${{ matrix.browser }}
           path: reports/pytest-report.html
           retention-days: 30
 
@@ -326,7 +219,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-regression-${{ matrix.browser }}
+          name: allure-results-${{ matrix.browser }}
           path: reports/allure-results/
           retention-days: 30
 
@@ -334,7 +227,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-regression-${{ matrix.browser }}
+          name: test-results-${{ matrix.browser }}
           path: |
             test-results/
             logs/
@@ -344,7 +237,7 @@ jobs:
   allure-report:
     name: Generate Allure Report
     runs-on: ubuntu-latest
-    needs: [smoke-tests, regression-tests]
+    needs: [tests]
     if: always()
     permissions:
       contents: write
