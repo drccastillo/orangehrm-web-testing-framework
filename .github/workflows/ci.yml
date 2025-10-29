@@ -199,7 +199,7 @@ jobs:
               BROWSER_FLAGS="$BROWSER_FLAGS --browser $browser"
             done
           else
-            BROWSER_FLAGS="--browser chromium"
+            BROWSER_FLAGS="--browser firefox"
           fi
 
           # Add --headed flag if needed
