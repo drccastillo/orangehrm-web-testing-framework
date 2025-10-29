@@ -343,6 +343,27 @@ def _take_screenshot(page, test_name: str):
         logger.error(f"Failed to save screenshot: {e}")
 
 
+@pytest.fixture(scope="session")
+def test_data_loader():
+    """
+    Provide TestDataLoader utility for loading JSON test data.
+
+    This fixture makes it easy to load test data in test files without
+    importing the TestDataLoader directly.
+
+    Returns:
+        TestDataLoader class
+
+    Example:
+        def test_with_data(test_data_loader):
+            data = test_data_loader.load_leave_period_data("happy_path_scenarios")
+            # Use data in test
+    """
+    from utils.data_loader import TestDataLoader
+
+    return TestDataLoader
+
+
 def pytest_addoption(parser):
     """
     Add custom command line options for pytest.

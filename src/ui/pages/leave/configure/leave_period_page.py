@@ -97,6 +97,41 @@ class LeavePeriodPage(LeaveBasePage):
         self.success_message: Locator = page.locator(".oxd-toast--success")
         self.error_message: Locator = page.locator(".oxd-input-field-error-message")
 
+    @property
+    def end_date_locator(self) -> Locator:
+        """
+        Locator for the calculated end date display element.
+
+        This locator targets the paragraph element that shows the automatically
+        calculated end date (one day before start date in following year).
+
+        Returns:
+            Playwright Locator for the end date text element
+
+        Example:
+            >>> # Use with Playwright expect() for assertions
+            >>> expect(leave_period_page.end_date_locator).to_contain_text("December 31")
+        """
+        return self.page.locator("p.orangehrm-leave-period").first
+
+    @property
+    def current_period_locator(self) -> Locator:
+        """
+        Locator for the current leave period display element.
+
+        This locator targets the paragraph element that shows the currently
+        configured leave period range (e.g., "2025-01-01 to 2025-12-31").
+
+        Returns:
+            Playwright Locator for the current period text element
+
+        Example:
+            >>> # Use with Playwright expect() for assertions
+            >>> expect(leave_period_page.current_period_locator).not_to_be_empty()
+            >>> expect(leave_period_page.current_period_locator).to_contain_text(" to ")
+        """
+        return self.page.locator("p.orangehrm-leave-period").nth(1)
+
     def select_start_month(self, month: str) -> "LeavePeriodPage":
         """
         Select the leave period start month from dropdown.

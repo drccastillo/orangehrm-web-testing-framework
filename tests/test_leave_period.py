@@ -6,10 +6,20 @@ including configuring the organization's leave period start date and validating
 end date calculations.
 
 Test Categories:
-    - Happy Path Tests: Standard leave period configurations
-    - Edge Cases: Boundary conditions and special dates
+    - Happy Path Tests: Standard leave period configurations (DATA-DRIVEN)
+    - Edge Cases: Boundary conditions and special dates (DATA-DRIVEN)
     - Validation Tests: Dynamic updates and error handling
     - Integration Tests: Navigation and state preservation
+    - Month Configuration Tests: All 12 months testing (DATA-DRIVEN)
+
+Data-Driven Testing:
+    This test suite uses JSON-based test data for improved maintainability.
+    Test data is loaded from: tests/data/leave_period_test_data.json
+
+    To add new test scenarios:
+        1. Edit leave_period_test_data.json
+        2. Add scenario to appropriate category (happy_path_scenarios, edge_cases, etc.)
+        3. Run tests - new scenarios will be automatically picked up
 
 Run tests:
     pytest tests/test_leave_period.py -v
@@ -26,59 +36,66 @@ import re
 import pytest
 from playwright.sync_api import expect
 
+from utils.data_loader import TestDataLoader
+from utils.logger import TestLogger
+
+# Initialize logger for this test module
+logger = TestLogger.get_logger(__name__)
+
 
 @pytest.mark.leave
 @pytest.mark.smoke
 class TestLeavePeriodHappyPath:
-    """Test standard leave period configuration scenarios."""
+    """
+    Test standard leave period configuration scenarios.
 
-    def test_configure_leave_period_january_first(self, leave_period_page):
+    This test class uses data-driven testing with JSON test data.
+    Test scenarios are loaded from: tests/data/leave_period_test_data.json
+    """
+
+    @pytest.mark.parametrize(
+        ("start_month", "start_date", "expected_end_display", "description"),
+        TestDataLoader.to_pytest_params(
+            TestDataLoader.load_leave_period_data("happy_path_scenarios"),
+            ["start_month", "start_date", "expected_end_display", "description"],
+        ),
+    )
+    def test_configure_leave_period_happy_path(
+        self,
+        leave_period_page,
+        start_month,
+        start_date,
+        expected_end_display,
+        description,
+    ):
         """
-        Configure leave period to start on January 1st.
+        Data-driven test for happy path leave period configurations.
 
         Scenario:
             Given I am on the Leave Period configuration page
-            When I select "January" as start month
-            And I select "01" as start date
-            Then the end date should be "December 31"
+            When I configure the leave period with test data
+            Then the end date should match expected value
             When I save the configuration
             Then I should see a success message
 
-        This is the most common leave period configuration (calendar year).
+        Test data is loaded from JSON file for easy maintenance.
+        Each scenario includes: start_month, start_date, expected_end_display, description
+
+        Args:
+            start_month: Start month for leave period
+            start_date: Start date for leave period
+            expected_end_display: Expected end date display
+            description: Test scenario description
         """
+
+        # Log test scenario for better reporting
+        logger.info(f"Testing scenario: {description}")
+
         # Arrange & Act - Configure leave period
-        leave_period_page.configure_leave_period("January", "01")
+        leave_period_page.configure_leave_period(start_month, start_date)
 
-        # Assert - Verify end date is calculated correctly
-        end_date = leave_period_page.get_end_date()
-        assert "December 31" in end_date
-
-        # Act - Save configuration
-        leave_period_page.save()
-
-        # Assert - Verify save was successful
-        expect(leave_period_page.success_message).to_be_visible(timeout=5000)
-
-    def test_configure_leave_period_april_first(self, leave_period_page):
-        """
-        Configure leave period to start on April 1st (fiscal year).
-
-        Scenario:
-            Given I am on the Leave Period configuration page
-            When I select "April" as start month
-            And I select "01" as start date
-            Then the end date should be "March 31"
-            When I save the configuration
-            Then I should see a success message
-
-        This tests a common fiscal year leave period configuration.
-        """
-        # Arrange & Act - Configure leave period
-        leave_period_page.configure_leave_period("April", "01")
-
-        # Assert - Verify end date is calculated correctly (March 31 of following year)
-        end_date = leave_period_page.get_end_date()
-        assert "March 31" in end_date
+        # Assert - Verify end date is calculated correctly using Playwright expect()
+        expect(leave_period_page.end_date_locator).to_contain_text(expected_end_display)
 
         # Act - Save configuration
         leave_period_page.save()
@@ -97,17 +114,15 @@ class TestLeavePeriodHappyPath:
 
         This verifies that users can see the currently configured leave period.
         """
-        # Act - Get current leave period
-        current_period = leave_period_page.get_current_leave_period()
-
-        # Assert - Verify current period is displayed and has expected format
-        assert current_period
-        assert " to " in current_period
+        # Assert - Verify current period is displayed using Playwright expect()
+        expect(leave_period_page.current_period_locator).not_to_be_empty()
+        expect(leave_period_page.current_period_locator).to_contain_text(" to ")
 
         # Verify format contains dates (basic validation)
         # Format should be like "2025-01-01 to 2025-12-31"
+        current_period = leave_period_page.get_current_leave_period()
         parts = current_period.split(" to ")
-        assert len(parts) == 2
+        assert len(parts) == 2  # Python value assertion - this is acceptable
 
     def test_method_chaining(self, leave_period_page):
         """
@@ -124,36 +139,66 @@ class TestLeavePeriodHappyPath:
         # Act - Use method chaining to configure and verify
         leave_period_page.select_start_month("June").select_start_date("15")
 
-        # Assert - Verify end date is calculated
-        end_date = leave_period_page.get_end_date()
-        assert "June 14" in end_date
+        # Assert - Verify end date is calculated using Playwright expect()
+        expect(leave_period_page.end_date_locator).to_contain_text("June 14")
 
         # Note: Not saving to avoid state pollution for other tests
 
 
 @pytest.mark.leave
 class TestLeavePeriodEdgeCases:
-    """Test edge cases and boundary conditions."""
+    """
+    Test edge cases and boundary conditions.
 
-    def test_february_last_day(self, leave_period_page):
+    This test class uses data-driven testing with JSON test data.
+    Edge case scenarios are loaded from: tests/data/leave_period_test_data.json
+    """
+
+    @pytest.mark.parametrize(
+        ("start_month", "start_date", "expected_end_display", "description"),
+        TestDataLoader.to_pytest_params(
+            TestDataLoader.load_leave_period_data("edge_cases"),
+            ["start_month", "start_date", "expected_end_display", "description"],
+        ),
+    )
+    def test_edge_case_configurations(
+        self,
+        leave_period_page,
+        start_month,
+        start_date,
+        expected_end_display,
+        description,
+    ):
         """
-        Test leave period starting on last day of February.
+        Data-driven test for edge case leave period configurations.
 
         Scenario:
             Given I am on the Leave Period configuration page
-            When I select "February" as start month
-            And I select "28" as start date
-            Then the end date should be "February 27"
+            When I configure the leave period with edge case data
+            Then the end date should be calculated correctly
             And the configuration should save successfully
 
-        This tests handling of shorter months.
-        """
-        # Arrange & Act - Configure leave period starting February 28
-        leave_period_page.configure_leave_period("February", "28")
+        Test data includes edge cases like:
+        - Last day of February (shorter month)
+        - Mid-month start dates
+        - Last day of 30-day months
+        - Last day of 31-day months
 
-        # Assert - Verify end date calculation (February 27 of following year)
-        end_date = leave_period_page.get_end_date()
-        assert "February 27" in end_date
+        Args:
+            start_month: Start month for leave period
+            start_date: Start date for leave period
+            expected_end_display: Expected end date display
+            description: Test scenario description
+        """
+
+        # Log test scenario for better reporting
+        logger.info(f"Testing edge case: {description}")
+
+        # Arrange & Act - Configure leave period with edge case
+        leave_period_page.configure_leave_period(start_month, start_date)
+
+        # Assert - Verify end date calculation handles edge case correctly using Playwright expect()
+        expect(leave_period_page.end_date_locator).to_contain_text(expected_end_display)
 
         # Act - Save configuration
         leave_period_page.save()
@@ -218,23 +263,23 @@ class TestLeavePeriodValidation:
         # Test Case 1: January -> December 31
         leave_period_page.select_start_month("January")
         leave_period_page.select_start_date("01")
+        expect(leave_period_page.end_date_locator).to_contain_text("December 31")
         end_date_jan = leave_period_page.get_end_date()
-        assert "December 31" in end_date_jan
 
         # Test Case 2: June -> May 31
         leave_period_page.select_start_month("June")
         leave_period_page.select_start_date("01")
+        expect(leave_period_page.end_date_locator).to_contain_text("May 31")
         end_date_jun = leave_period_page.get_end_date()
-        assert "May 31" in end_date_jun
 
         # Test Case 3: December -> November 30
         leave_period_page.select_start_month("December")
         leave_period_page.select_start_date("01")
+        expect(leave_period_page.end_date_locator).to_contain_text("November 30")
         end_date_dec = leave_period_page.get_end_date()
-        assert "November 30" in end_date_dec
 
         # Verify all dates are different (dynamic update working)
-        # Verify all dates are different
+        # Python value comparisons - these are acceptable
         assert end_date_jan != end_date_jun
         assert end_date_jun != end_date_dec
         assert end_date_jan != end_date_dec
@@ -386,9 +431,8 @@ class TestLeavePeriodSmoke:
         # Configure leave period
         leave_period_page.configure_leave_period("January", "01")
 
-        # Verify end date appears
-        end_date = leave_period_page.get_end_date()
-        assert end_date
+        # Verify end date appears using Playwright expect()
+        expect(leave_period_page.end_date_locator).not_to_be_empty()
 
         # Save configuration
         leave_period_page.save()
@@ -402,48 +446,55 @@ class TestLeavePeriodSmoke:
 
         Critical test to ensure users can see the current configuration.
         """
-        # Verify current leave period is displayed
-        current_period = leave_period_page.get_current_leave_period()
-        assert current_period
-        # Redundant check removed - not_to_be_empty() already covers this
+        # Verify current leave period is displayed using Playwright expect()
+        expect(leave_period_page.current_period_locator).not_to_be_empty()
 
 
 @pytest.mark.leave
 class TestLeavePeriodMonthConfiguration:
-    """Test various month configurations for thoroughness."""
+    """
+    Test various month configurations for thoroughness.
+
+    This test class uses data-driven testing with JSON test data.
+    All 12 months are tested using data from: tests/data/leave_period_test_data.json
+    """
 
     @pytest.mark.parametrize(
-        ("month", "expected_end_month"),
-        [
-            ("January", "December"),
-            ("February", "January"),
-            ("March", "February"),
-            ("April", "March"),
-            ("May", "April"),
-            ("June", "May"),
-            ("July", "June"),
-            ("August", "July"),
-            ("September", "August"),
-            ("October", "September"),
-            ("November", "October"),
-            ("December", "November"),
-        ],
+        ("start_month", "start_date", "expected_end_month"),
+        TestDataLoader.to_pytest_params(
+            TestDataLoader.load_leave_period_data("all_months"),
+            ["start_month", "start_date", "expected_end_month"],
+        ),
     )
-    def test_all_months_end_date_calculation(self, leave_period_page, month, expected_end_month):
+    def test_all_months_end_date_calculation(
+        self,
+        leave_period_page,
+        start_month,
+        start_date,
+        expected_end_month,
+    ):
         """
-        Test end date calculation for all possible start months.
+        Data-driven test for end date calculation across all 12 months.
 
         This parametrized test verifies that the end date calculation
-        works correctly for every month of the year.
+        works correctly for every month of the year, using JSON test data.
+
+        Scenario:
+            Given I am on the Leave Period configuration page
+            When I select a start month and date
+            Then the end date should contain the expected month
+
+        Test data covers all 12 months with expected end date calculations.
 
         Args:
-            month: Start month to test
-            expected_end_month: Expected month in the end date
+            start_month: Start month for leave period
+            start_date: Start date for leave period
+            expected_end_month: Expected month in end date
         """
-        # Arrange & Act - Configure leave period with specific month
-        leave_period_page.select_start_month(month)
-        leave_period_page.select_start_date("01")
 
-        # Assert - Verify end date contains expected month
-        end_date = leave_period_page.get_end_date()
-        assert expected_end_month in end_date
+        # Arrange & Act - Configure leave period with specific month
+        leave_period_page.select_start_month(start_month)
+        leave_period_page.select_start_date(start_date)
+
+        # Assert - Verify end date contains expected month using Playwright expect()
+        expect(leave_period_page.end_date_locator).to_contain_text(expected_end_month)

@@ -1,0 +1,209 @@
+{
+  "happy_path_scenarios": [
+    {
+      "id": "calendar_year",
+      "description": "Calendar year configuration (January 1st - most common)",
+      "start_month": "January",
+      "start_date": "01",
+      "expected_end_month": "December",
+      "expected_end_date": "31",
+      "expected_end_display": "December 31",
+      "tags": ["happy_path", "smoke"]
+    },
+    {
+      "id": "fiscal_year_april",
+      "description": "Fiscal year starting April 1st (common in many countries)",
+      "start_month": "April",
+      "start_date": "01",
+      "expected_end_month": "March",
+      "expected_end_date": "31",
+      "expected_end_display": "March 31",
+      "tags": ["happy_path", "smoke"]
+    },
+    {
+      "id": "fiscal_year_july",
+      "description": "Fiscal year starting July 1st",
+      "start_month": "July",
+      "start_date": "01",
+      "expected_end_month": "June",
+      "expected_end_date": "30",
+      "expected_end_display": "June 30",
+      "tags": ["happy_path"]
+    },
+    {
+      "id": "fiscal_year_october",
+      "description": "Fiscal year starting October 1st",
+      "start_month": "October",
+      "start_date": "01",
+      "expected_end_month": "September",
+      "expected_end_date": "30",
+      "expected_end_display": "September 30",
+      "tags": ["happy_path"]
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "february_last_day",
+      "description": "February 28th (shorter month handling)",
+      "start_month": "February",
+      "start_date": "28",
+      "expected_end_month": "February",
+      "expected_end_date": "27",
+      "expected_end_display": "February 27",
+      "tags": ["edge_case"]
+    },
+    {
+      "id": "mid_month_june",
+      "description": "Mid-month start date (June 15th)",
+      "start_month": "June",
+      "start_date": "15",
+      "expected_end_month": "June",
+      "expected_end_date": "14",
+      "expected_end_display": "June 14",
+      "tags": ["edge_case"]
+    },
+    {
+      "id": "last_day_december",
+      "description": "Last day of December",
+      "start_month": "December",
+      "start_date": "31",
+      "expected_end_month": "December",
+      "expected_end_date": "30",
+      "expected_end_display": "December 30",
+      "tags": ["edge_case"]
+    },
+    {
+      "id": "month_with_30_days",
+      "description": "Month with 30 days (September 30th)",
+      "start_month": "September",
+      "start_date": "30",
+      "expected_end_month": "September",
+      "expected_end_date": "29",
+      "expected_end_display": "September 29",
+      "tags": ["edge_case"]
+    }
+  ],
+  "all_months": [
+    {
+      "id": "month_january",
+      "start_month": "January",
+      "start_date": "01",
+      "expected_end_month": "December",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_february",
+      "start_month": "February",
+      "start_date": "01",
+      "expected_end_month": "January",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_march",
+      "start_month": "March",
+      "start_date": "01",
+      "expected_end_month": "February",
+      "expected_end_date": "28"
+    },
+    {
+      "id": "month_april",
+      "start_month": "April",
+      "start_date": "01",
+      "expected_end_month": "March",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_may",
+      "start_month": "May",
+      "start_date": "01",
+      "expected_end_month": "April",
+      "expected_end_date": "30"
+    },
+    {
+      "id": "month_june",
+      "start_month": "June",
+      "start_date": "01",
+      "expected_end_month": "May",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_july",
+      "start_month": "July",
+      "start_date": "01",
+      "expected_end_month": "June",
+      "expected_end_date": "30"
+    },
+    {
+      "id": "month_august",
+      "start_month": "August",
+      "start_date": "01",
+      "expected_end_month": "July",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_september",
+      "start_month": "September",
+      "start_date": "01",
+      "expected_end_month": "August",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_october",
+      "start_month": "October",
+      "start_date": "01",
+      "expected_end_month": "September",
+      "expected_end_date": "30"
+    },
+    {
+      "id": "month_november",
+      "start_month": "November",
+      "start_date": "01",
+      "expected_end_month": "October",
+      "expected_end_date": "31"
+    },
+    {
+      "id": "month_december",
+      "start_month": "December",
+      "start_date": "01",
+      "expected_end_month": "November",
+      "expected_end_date": "30"
+    }
+  ],
+  "validation_scenarios": [
+    {
+      "id": "dynamic_end_date_update",
+      "description": "Verify end date updates dynamically when month changes",
+      "test_sequence": [
+        {
+          "step": 1,
+          "action": "select_month",
+          "month": "January",
+          "expected_end": "December 31"
+        },
+        {
+          "step": 2,
+          "action": "select_month",
+          "month": "June",
+          "expected_end": "May 31"
+        },
+        {
+          "step": 3,
+          "action": "select_month",
+          "month": "December",
+          "expected_end": "November 30"
+        }
+      ],
+      "tags": ["validation"]
+    }
+  ],
+  "smoke_test_data": [
+    {
+      "id": "basic_configure_save",
+      "description": "Basic configure and save workflow",
+      "start_month": "January",
+      "start_date": "01",
+      "should_save": true,
+      "tags": ["smoke"]
+    }
+  ]
+}
