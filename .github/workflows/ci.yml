@@ -245,12 +245,12 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # Job 4: Regression Tests (Full suite, main branch only)
+  # Job 4: Regression Tests (Full suite, main and develop branches)
   # ============================================================================
   regression-tests:
     name: Regression Tests (${{ matrix.browser }})
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --init
@@ -307,7 +307,7 @@ jobs:
           fi
 
           # Run tests with browser from matrix
-          uv run pytest tests/ -m regression -v --tb=short -n auto \
+          uv run pytest tests/ -v --tb=short -n auto \
             --browser ${{ matrix.browser }} $HEADED_FLAG \
             --alluredir=reports/allure-results \
             --html=reports/pytest-report.html \
