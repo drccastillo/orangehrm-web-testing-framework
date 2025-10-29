@@ -147,6 +147,8 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright/python:v1.55.0-jammy
       options: --ipc=host --init
+    env:
+      HOME: /root
 
     strategy:
       fail-fast: false
