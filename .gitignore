@@ -79,7 +79,7 @@ uv.lock
 
 # Misc
 .claude/
-CLAUDE.md
+.claude/CLAUDE.md
 
 # Playwright
 node_modules/

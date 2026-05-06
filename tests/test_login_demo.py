@@ -29,7 +29,6 @@ logger = TestLogger.get_logger(__name__)
 
 
 # @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
-@pytest.mark.smoke
 def test_login_with_highlight_demo(login_page: LoginPage, config_service):
     """
     Demo: Login test with visual highlighting for debugging.
@@ -79,7 +78,6 @@ def test_login_with_highlight_demo(login_page: LoginPage, config_service):
 
 
 # @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
-@pytest.mark.smoke
 def test_invalid_login_with_highlight(login_page: LoginPage):
     """
     Demo: Invalid login attempt with visual highlighting.
@@ -128,7 +126,6 @@ def test_invalid_login_with_highlight(login_page: LoginPage):
 
 
 # @pytest.mark.skip(reason="Demo test with highlight - for development/debugging only")
-@pytest.mark.regression
 def test_method_chaining_with_highlight(login_page: LoginPage, config_service):
     """
     Demo: Method chaining with selective highlighting.
