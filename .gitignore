@@ -78,8 +78,6 @@ uv.lock
 *.bak
 
 # Misc
-.claude/
-.claude/CLAUDE.md
 
 # Playwright
 node_modules/
