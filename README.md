@@ -7,6 +7,27 @@
 
 Modern web test automation framework for OrangeHRM using Python, Pytest, and Playwright.
 
+> A reference implementation of senior-level QA engineering practices applied end-to-end to a public, well-known SaaS demo target ([opensource-demo.orangehrmlive.com](https://opensource-demo.orangehrmlive.com/web/index.php)). Built to demonstrate framework design, CI/CD discipline, and reporting — not just script writing.
+
+## ✨ Highlights at a Glance
+
+| Capability | What this repo shows |
+|------------|----------------------|
+| **Framework Design** | Page Object Model, Base Page, Functional Locators, Dependency Injection via `ConfigService` protocol, Method Chaining, SOLID |
+| **Cross-Browser** | Chromium, Firefox, WebKit — parametrized via `PW_BROWSER` env var and `workflow_dispatch` |
+| **Test Layers** | Integration (smoke + regression + login + leave) and framework unit tests under `unittests/` |
+| **CI/CD** | GitHub Actions: code quality (ruff + mypy + pyright + bandit), unit tests, smoke (parallel browsers), regression (main only), nightly scheduled runs |
+| **Reporting** | Allure HTML report auto-deployed to GitHub Pages on every main run |
+| **Strict Config** | Fail-fast on missing env vars (raises `ConfigurationException`) — no silent defaults |
+| **Tooling** | Python 3.13, UV package manager, pre-commit hooks, ruff format/lint, mypy strict |
+| **Containerized** | Docker support for Firefox/WebKit (with `HOME=/root` fix documented) |
+
+## 🎯 What this is (and isn't)
+
+**This IS** a portfolio reference for how I approach test automation framework design — abstractions, contracts, fail-fast configuration, observability, and CI/CD. **It uses a public demo target** ([orangehrmlive.com demo](https://opensource-demo.orangehrmlive.com/web/index.php)) to keep the entire codebase shareable under MIT.
+
+**This is NOT** a production framework for any client engagement. Any patterns shown here mirror — but do not derive from — work done under NDA elsewhere.
+
 ## 🏗️ Architecture and Design Patterns
 
 ### Implemented Patterns:
@@ -697,4 +718,14 @@ The framework has undergone significant refactoring to improve simplicity and ma
 
 ## 📄 License
 
-MIT
+[MIT License](LICENSE) — see the `LICENSE` file at the repository root.
+
+## 👤 Author
+
+**Darwin Ramiro Castillo Cuqui** — Senior QA Engineer & Industrial Engineer (UMSA)
+
+- GitHub: [@drccastillo](https://github.com/drccastillo)
+- Focus: test framework design, performance testing (k6), API contract testing, CI/CD discipline
+- Building toward a layered QA portfolio: this repo is the **UI automation reference**; companion repos cover API conformance, performance, and observability
+
+> Feedback, issues, and PRs welcome. If you spot a smell or a pattern that should be cleaner, open an issue — that's the whole point of an open reference framework.
