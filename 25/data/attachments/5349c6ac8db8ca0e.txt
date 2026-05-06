@@ -1,0 +1,7 @@
+00:49:19 - conftest - INFO - Creating Playwright browser: firefox (headless=True)
+00:49:19 - src.factories.browser_factory - INFO - Creating Playwright browser: firefox (headless=True, timeout=10)
+00:49:20 - src.factories.browser_factory - INFO - Launched Playwright browser: firefox (headless=True)
+00:49:20 - LoginPage - INFO - Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+00:49:24 - test_login_demo - INFO - Starting invalid login demo with visual highlights
+00:49:30 - test_login_demo - INFO - Invalid login handled correctly - error message displayed
+00:49:30 - conftest - INFO - Closing browser

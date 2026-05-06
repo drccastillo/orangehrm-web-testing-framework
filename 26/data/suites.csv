@@ -1,0 +1,2725 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+Test navigating from Leave to Dashboard and back.
+
+Verifies that returning to Leave module after visiting Dashboard
+works correctly.
+","2790","test_leave_to_dashboard_and_back[chromium]","tests","Wed Oct 29 21:55:46 UTC 2025","passed","Wed Oct 29 21:55:48 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Smoke test: Verify user dropdown is accessible.
+
+Critical test to ensure users can access account options.
+","832","test_smoke_user_dropdown_accessible[webkit]","tests","Wed Oct 29 21:58:25 UTC 2025","passed","Wed Oct 29 21:58:26 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test navigation works correctly after page refresh.
+
+Verifies that refreshing the page doesn't break navigation.
+","5547","test_navigation_with_page_refresh[webkit]","tests","Wed Oct 29 21:56:46 UTC 2025","passed","Wed Oct 29 21:56:51 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test that Leave Period page has global navigation header.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the global navigation header
+    And I should be able to access user dropdown
+    And I should be able to navigate to other modules
+
+This verifies the global navigation component is available.
+","128","test_leave_period_preserves_global_navigation[firefox]","tests","Wed Oct 29 21:57:15 UTC 2025","passed","Wed Oct 29 21:57:16 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","435","test_all_months_end_date_calculation[webkit-month_august]","tests","Wed Oct 29 21:59:11 UTC 2025","passed","Wed Oct 29 21:59:11 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation through all main modules sequentially.
+
+Simulates a user exploring different modules in the application,
+verifying that each navigation works correctly.
+","9319","test_navigate_through_all_main_modules[firefox]","tests","Wed Oct 29 21:55:51 UTC 2025","passed","Wed Oct 29 21:56:00 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test that Leave Period page has global navigation header.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the global navigation header
+    And I should be able to access user dropdown
+    And I should be able to navigate to other modules
+
+This verifies the global navigation component is available.
+","40","test_leave_period_preserves_global_navigation[chromium]","tests","Wed Oct 29 21:56:42 UTC 2025","passed","Wed Oct 29 21:56:42 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Test method chaining for fluent API.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I use method chaining to configure leave period
+    Then all methods should execute successfully
+    And the configuration should be saved
+
+This verifies that the fluent interface pattern works correctly.
+","401","test_method_chaining[firefox]","tests","Wed Oct 29 21:57:38 UTC 2025","passed","Wed Oct 29 21:57:39 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test that NavigationHeader is available on all authenticated pages.
+
+Verifies that the navigation header persists when navigating
+between different modules.
+","2819","test_navigation_header_available_on_all_pages[chromium]","tests","Wed Oct 29 21:57:30 UTC 2025","passed","Wed Oct 29 21:57:33 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","189","test_all_months_end_date_calculation[chromium-month_april]","tests","Wed Oct 29 21:58:11 UTC 2025","passed","Wed Oct 29 21:58:11 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test that Leave Period page maintains Leave module navigation.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see Leave module top bar
+    And I should be able to navigate to other Leave pages
+
+This verifies the Leave module top bar is available on Leave Period page.
+
+Note:
+    This test is skipped because the leave_period_page fixture navigates
+    directly to the Leave Period URL, which doesn't load the full Leave
+    module UI context. This is expected behavior for direct URL navigation.
+    The test would pass if navigating via the UI (Configure dropdown),
+    but that navigation method has locator issues.
+","0","test_leave_period_maintains_leave_navigation[webkit]","tests","Wed Oct 29 21:56:58 UTC 2025","skipped","Wed Oct 29 21:56:58 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Test navigation to Dashboard.
+
+Verifies that clicking Dashboard menu navigates to the main dashboard
+and the URL changes accordingly.
+","1470","test_navigate_to_dashboard[firefox]","tests","Wed Oct 29 21:58:21 UTC 2025","passed","Wed Oct 29 21:58:23 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigating from Leave to Dashboard and back.
+
+Verifies that returning to Leave module after visiting Dashboard
+works correctly.
+","3601","test_leave_to_dashboard_and_back[firefox]","tests","Wed Oct 29 21:55:50 UTC 2025","passed","Wed Oct 29 21:55:54 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Test navigation to Recruitment module.
+
+Verifies that clicking Recruitment menu navigates to the Recruitment
+module and the URL changes accordingly.
+","1340","test_navigate_to_recruitment[webkit]","tests","Wed Oct 29 21:57:31 UTC 2025","passed","Wed Oct 29 21:57:32 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that navigation preserves application state correctly.
+
+Verifies that navigating between modules using NavigationHeader
+doesn't cause state loss or errors.
+","5372","test_navigation_preserves_state[firefox]","tests","Wed Oct 29 21:58:55 UTC 2025","passed","Wed Oct 29 21:59:00 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Test navigation to Dashboard.
+
+Verifies that clicking Dashboard menu navigates to the main dashboard
+and the URL changes accordingly.
+","1080","test_navigate_to_dashboard[webkit]","tests","Wed Oct 29 21:57:53 UTC 2025","passed","Wed Oct 29 21:57:54 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1405","test_configure_leave_period_happy_path[firefox-fiscal_year_april]","tests","Wed Oct 29 21:59:13 UTC 2025","passed","Wed Oct 29 21:59:15 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test navigation to Admin module.
+
+Verifies that clicking Admin menu navigates to the Admin module
+and the URL changes accordingly.
+","1710","test_navigate_to_admin[firefox]","tests","Wed Oct 29 21:57:49 UTC 2025","passed","Wed Oct 29 21:57:51 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that URL changes correctly reflect navigation actions.
+
+Verifies that each navigation action results in a unique URL
+corresponding to the target module.
+","7589","test_url_changes_reflect_navigation[webkit]","tests","Wed Oct 29 21:56:54 UTC 2025","passed","Wed Oct 29 21:57:02 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Test typical HR Manager workflow.
+
+Workflow:
+1. Check dashboard for quick stats
+2. View employees in PIM
+3. Check leave requests
+4. Review recruitment pipeline
+","7920","test_hr_manager_workflow[firefox]","tests","Wed Oct 29 21:56:35 UTC 2025","passed","Wed Oct 29 21:56:43 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Smoke test: Verify user dropdown is accessible.
+
+Critical test to ensure users can access account options.
+","420","test_smoke_user_dropdown_accessible[chromium]","tests","Wed Oct 29 21:57:47 UTC 2025","passed","Wed Oct 29 21:57:47 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test that save button is enabled when page loads.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then the Save button should be enabled
+    And the Reset button should be enabled
+
+This verifies the page loads in a ready state.
+","30","test_save_button_enabled[webkit]","tests","Wed Oct 29 21:56:56 UTC 2025","passed","Wed Oct 29 21:56:56 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Smoke test: Verify Leave Period page loads successfully.
+
+Critical test to ensure the page is accessible and displays
+all essential elements.
+","44","test_smoke_leave_period_page_loads[webkit]","tests","Wed Oct 29 21:57:17 UTC 2025","passed","Wed Oct 29 21:57:17 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Smoke test: Basic cross-module navigation works.
+
+Critical test to ensure users can navigate between modules.
+","8393","test_smoke_basic_cross_module_navigation[webkit]","tests","Wed Oct 29 21:55:48 UTC 2025","passed","Wed Oct 29 21:55:56 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Verify user dropdown menu items appear when opened.
+
+Tests that clicking the user dropdown reveals all expected menu items
+(Change Password, About, Support, Logout).
+","888","test_user_dropdown_menu_items[webkit]","tests","Wed Oct 29 21:57:51 UTC 2025","passed","Wed Oct 29 21:57:52 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","160","test_all_months_end_date_calculation[chromium-month_january]","tests","Wed Oct 29 21:56:48 UTC 2025","passed","Wed Oct 29 21:56:48 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Verify current leave period is displayed on the page.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the current leave period displayed
+    And it should be in the format ""YYYY-MM-DD to YYYY-MM-DD""
+
+This verifies that users can see the currently configured leave period.
+","25","test_view_current_leave_period[webkit]","tests","Wed Oct 29 21:57:13 UTC 2025","passed","Wed Oct 29 21:57:13 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test that NavigationHeader is available on all authenticated pages.
+
+Verifies that the navigation header persists when navigating
+between different modules.
+","4580","test_navigation_header_available_on_all_pages[webkit]","tests","Wed Oct 29 21:58:22 UTC 2025","passed","Wed Oct 29 21:58:27 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Test navigation to Buzz module.
+
+Verifies that clicking Buzz menu navigates to the Buzz (social) module
+and the URL changes accordingly.
+","1369","test_navigate_to_buzz[webkit]","tests","Wed Oct 29 21:58:00 UTC 2025","passed","Wed Oct 29 21:58:02 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test logout functionality.
+
+Verifies that clicking logout redirects to login page and
+the session is terminated.
+","1718","test_logout_functionality[chromium]","tests","Wed Oct 29 21:57:19 UTC 2025","passed","Wed Oct 29 21:57:21 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test navigation to PIM module.
+
+Verifies that clicking PIM menu navigates to the PIM module
+and the URL changes accordingly.
+","2294","test_navigate_to_pim[webkit]","tests","Wed Oct 29 21:57:39 UTC 2025","passed","Wed Oct 29 21:57:41 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1226","test_edge_case_configurations[chromium-last_day_december]","tests","Wed Oct 29 21:58:01 UTC 2025","passed","Wed Oct 29 21:58:03 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test navigation to Leave module.
+
+Verifies that clicking Leave menu navigates to the Leave module from Dashboard.
+","2111","test_navigate_to_leave[chromium]","tests","Wed Oct 29 21:57:16 UTC 2025","passed","Wed Oct 29 21:57:18 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1214","test_edge_case_configurations[chromium-mid_month_june]","tests","Wed Oct 29 21:57:54 UTC 2025","passed","Wed Oct 29 21:57:55 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test typical employee self-service workflow.
+
+Workflow:
+1. View dashboard
+2. Update personal info (My Info)
+3. Apply for leave
+4. Submit timesheet
+","7538","test_employee_self_service_workflow[firefox]","tests","Wed Oct 29 21:56:50 UTC 2025","passed","Wed Oct 29 21:56:58 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Smoke test: Verify Leave Period page loads successfully.
+
+Critical test to ensure the page is accessible and displays
+all essential elements.
+","27","test_smoke_leave_period_page_loads[chromium]","tests","Wed Oct 29 21:56:49 UTC 2025","passed","Wed Oct 29 21:56:49 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test that navigation doesn't depend on previous navigation state.
+
+Verifies that each navigation action works independently,
+regardless of navigation history.
+","11120","test_navigation_state_independent[webkit]","tests","Wed Oct 29 21:56:38 UTC 2025","passed","Wed Oct 29 21:56:49 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","392","test_all_months_end_date_calculation[firefox-month_april]","tests","Wed Oct 29 21:59:35 UTC 2025","passed","Wed Oct 29 21:59:35 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation works correctly after page refresh.
+
+Verifies that refreshing the page doesn't break navigation.
+","5093","test_navigation_with_page_refresh[firefox]","tests","Wed Oct 29 21:56:55 UTC 2025","passed","Wed Oct 29 21:57:00 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Smoke test: Verify Leave Period page loads successfully.
+
+Critical test to ensure the page is accessible and displays
+all essential elements.
+","163","test_smoke_leave_period_page_loads[firefox]","tests","Wed Oct 29 21:57:27 UTC 2025","passed","Wed Oct 29 21:57:28 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test navigation to Maintenance module.
+
+Verifies that clicking Maintenance menu navigates to the Maintenance
+module and the URL changes accordingly.
+","1234","test_navigate_to_maintenance[firefox]","tests","Wed Oct 29 21:58:38 UTC 2025","passed","Wed Oct 29 21:58:39 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation to About page.
+
+Verifies that clicking About in the user dropdown
+opens the about dialog or page.
+","1075","test_about_opening[chromium]","tests","Wed Oct 29 21:57:27 UTC 2025","passed","Wed Oct 29 21:57:28 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test that NavigationHeader uses composition pattern correctly.
+
+Verifies that the nav_header attribute is available on page objects
+and works as expected via composition (not inheritance).
+","369","test_navigation_header_composition_pattern[chromium]","tests","Wed Oct 29 21:57:36 UTC 2025","passed","Wed Oct 29 21:57:36 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Smoke test: Basic cross-module navigation works.
+
+Critical test to ensure users can navigate between modules.
+","6236","test_smoke_basic_cross_module_navigation[firefox]","tests","Wed Oct 29 21:55:50 UTC 2025","passed","Wed Oct 29 21:55:57 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Verify all main menu items are visible after login.
+
+Tests that the navigation header displays all expected menu items
+for a logged-in user with standard permissions.
+","973","test_main_menu_items_visible[chromium]","tests","Wed Oct 29 21:57:06 UTC 2025","passed","Wed Oct 29 21:57:07 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Test method chaining for fluent API.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I use method chaining to configure leave period
+    Then all methods should execute successfully
+    And the configuration should be saved
+
+This verifies that the fluent interface pattern works correctly.
+","290","test_method_chaining[webkit]","tests","Wed Oct 29 21:57:23 UTC 2025","passed","Wed Oct 29 21:57:23 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Smoke test: Round-trip navigation works.
+
+Critical test to ensure users can navigate away and return.
+","4927","test_smoke_round_trip_navigation[webkit]","tests","Wed Oct 29 21:56:15 UTC 2025","passed","Wed Oct 29 21:56:20 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Test that Leave Period page maintains Leave module navigation.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see Leave module top bar
+    And I should be able to navigate to other Leave pages
+
+This verifies the Leave module top bar is available on Leave Period page.
+
+Note:
+    This test is skipped because the leave_period_page fixture navigates
+    directly to the Leave Period URL, which doesn't load the full Leave
+    module UI context. This is expected behavior for direct URL navigation.
+    The test would pass if navigating via the UI (Configure dropdown),
+    but that navigation method has locator issues.
+","0","test_leave_period_maintains_leave_navigation[firefox]","tests","Wed Oct 29 21:57:06 UTC 2025","skipped","Wed Oct 29 21:57:06 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Smoke test: Navigation header persists across modules.
+
+Critical test to ensure navigation header doesn't disappear.
+","8701","test_smoke_navigation_header_persistent[webkit]","tests","Wed Oct 29 21:56:02 UTC 2025","passed","Wed Oct 29 21:56:10 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Smoke test: Verify current leave period is always displayed.
+
+Critical test to ensure users can see the current configuration.
+","5","test_smoke_current_period_displayed[chromium]","tests","Wed Oct 29 21:56:40 UTC 2025","passed","Wed Oct 29 21:56:40 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","365","test_all_months_end_date_calculation[webkit-month_january]","tests","Wed Oct 29 21:57:11 UTC 2025","passed","Wed Oct 29 21:57:11 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Demo: Invalid login attempt with visual highlighting.
+
+Shows how to use highlight() when debugging error scenarios.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid credentials with highlights
+    Then: Error message should be visible and highlighted
+
+Args:
+    login_page: LoginPage instance
+","4329","test_invalid_login_with_highlight[firefox]","tests","Wed Oct 29 21:57:38 UTC 2025","passed","Wed Oct 29 21:57:43 UTC 2025","","test_login_demo","",""
+"
+Test navigation to Change Password page.
+
+Verifies that clicking Change Password in the user dropdown
+navigates to the password change page.
+","659","test_change_password_navigation[chromium]","tests","Wed Oct 29 21:57:34 UTC 2025","passed","Wed Oct 29 21:57:34 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test navigation to Maintenance module.
+
+Verifies that clicking Maintenance menu navigates to the Maintenance
+module and the URL changes accordingly.
+","1119","test_navigate_to_maintenance[webkit]","tests","Wed Oct 29 21:58:07 UTC 2025","passed","Wed Oct 29 21:58:08 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Demo: Login test with visual highlighting for debugging.
+
+This test shows how to use Playwright's native highlight() during development
+to visually identify which elements are being interacted with.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid credentials with visual highlights
+    Then: User should be redirected to dashboard
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with credentials
+","4221","test_login_with_highlight_demo[webkit]","tests","Wed Oct 29 21:57:17 UTC 2025","passed","Wed Oct 29 21:57:21 UTC 2025","","test_login_demo","",""
+"
+Smoke test: Verify basic configure and save workflow.
+
+Critical end-to-end test for the primary use case.
+","1222","test_smoke_configure_and_save[chromium]","tests","Wed Oct 29 21:56:57 UTC 2025","passed","Wed Oct 29 21:56:58 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test navigation to Leave Period from Leave List page.
+
+Scenario:
+    Given I am on the Leave List page
+    When I click Configure dropdown
+    And I click Leave Period menu item
+    Then I should navigate to Leave Period configuration page
+    And the page title should be ""Leave Period""
+
+This verifies navigation integration within the Leave module.
+
+TODO: Fix Configure dropdown locator in LeaveBasePage.
+      Current locator: li.oxd-topbar-body-nav-tab:has-text('Configure')
+      Issue: Element not clickable - may need more specific selector
+","0","test_navigate_to_leave_period_from_leave_list[chromium]","tests","Wed Oct 29 21:56:35 UTC 2025","skipped","Wed Oct 29 21:56:35 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Verify user dropdown is visible and clickable.
+
+Tests that the user dropdown button appears in the navigation header
+and can be interacted with.
+","378","test_user_dropdown_visible[webkit]","tests","Wed Oct 29 21:57:45 UTC 2025","passed","Wed Oct 29 21:57:46 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Demo: Method chaining with selective highlighting.
+
+Shows how to combine fluent API with strategic highlights for debugging.
+
+Scenario:
+    Given: User is on the login page
+    When: User previews elements with highlights
+    And: User executes login with method chaining
+    Then: Login should succeed
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service
+","2505","test_method_chaining_with_highlight[chromium]","tests","Wed Oct 29 21:57:00 UTC 2025","passed","Wed Oct 29 21:57:03 UTC 2025","","test_login_demo","",""
+"
+Test navigation to Support page.
+
+Verifies that clicking Support in the user dropdown
+navigates to the support page or opens support resources.
+","674","test_support_navigation[chromium]","tests","Wed Oct 29 21:57:41 UTC 2025","passed","Wed Oct 29 21:57:42 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","276","test_all_months_end_date_calculation[chromium-month_february]","tests","Wed Oct 29 21:58:04 UTC 2025","passed","Wed Oct 29 21:58:05 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test opening the user dropdown.
+
+Verifies that the user dropdown can be opened and menu items
+become visible.
+","281","test_open_user_dropdown[chromium]","tests","Wed Oct 29 21:57:26 UTC 2025","passed","Wed Oct 29 21:57:26 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test Leave to Time navigation workflow.
+
+Common workflow: Check leave balance, then view timesheets.
+","1399","test_navigate_leave_to_time_workflow[chromium]","tests","Wed Oct 29 21:56:11 UTC 2025","passed","Wed Oct 29 21:56:13 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test navigation to About page.
+
+Verifies that clicking About in the user dropdown
+opens the about dialog or page.
+","1158","test_about_opening[webkit]","tests","Wed Oct 29 21:58:03 UTC 2025","passed","Wed Oct 29 21:58:04 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test typical HR Manager workflow.
+
+Workflow:
+1. Check dashboard for quick stats
+2. View employees in PIM
+3. Check leave requests
+4. Review recruitment pipeline
+","5048","test_hr_manager_workflow[chromium]","tests","Wed Oct 29 21:56:16 UTC 2025","passed","Wed Oct 29 21:56:21 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Demo: Method chaining with selective highlighting.
+
+Shows how to combine fluent API with strategic highlights for debugging.
+
+Scenario:
+    Given: User is on the login page
+    When: User previews elements with highlights
+    And: User executes login with method chaining
+    Then: Login should succeed
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service
+","3191","test_method_chaining_with_highlight[webkit]","tests","Wed Oct 29 21:57:31 UTC 2025","passed","Wed Oct 29 21:57:34 UTC 2025","","test_login_demo","",""
+"
+Smoke test: Verify basic navigation works.
+
+Critical test to ensure users can navigate between modules.
+","4358","test_smoke_navigation_works[webkit]","tests","Wed Oct 29 21:58:26 UTC 2025","passed","Wed Oct 29 21:58:30 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test that save button is enabled when page loads.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then the Save button should be enabled
+    And the Reset button should be enabled
+
+This verifies the page loads in a ready state.
+","14","test_save_button_enabled[chromium]","tests","Wed Oct 29 21:56:34 UTC 2025","passed","Wed Oct 29 21:56:34 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Test round trip navigation with user dropdown interaction.
+
+Verifies that user dropdown works correctly after navigating
+between modules.
+","7089","test_round_trip_with_user_dropdown[firefox]","tests","Wed Oct 29 21:56:20 UTC 2025","passed","Wed Oct 29 21:56:27 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Verify user cannot login with empty username.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only password (no username)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","840","test_empty_username[webkit]","tests","Wed Oct 29 21:57:06 UTC 2025","passed","Wed Oct 29 21:57:07 UTC 2025","","test_login","",""
+"
+Verify user cannot login with empty password.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only username (no password)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","289","test_empty_password[chromium]","tests","Wed Oct 29 21:56:47 UTC 2025","passed","Wed Oct 29 21:56:47 UTC 2025","","test_login","",""
+"
+Test admin configuration workflow.
+
+Workflow:
+1. Access admin panel
+2. Configure system settings
+3. Return to dashboard
+4. Verify changes (navigate to relevant module)
+","3864","test_admin_configuration_workflow[webkit]","tests","Wed Oct 29 21:55:49 UTC 2025","passed","Wed Oct 29 21:55:53 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Verify user cannot login with empty password.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only username (no password)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","484","test_empty_password[webkit]","tests","Wed Oct 29 21:57:09 UTC 2025","passed","Wed Oct 29 21:57:10 UTC 2025","","test_login","",""
+"
+Test round trip navigation with user dropdown interaction.
+
+Verifies that user dropdown works correctly after navigating
+between modules.
+","4458","test_round_trip_with_user_dropdown[chromium]","tests","Wed Oct 29 21:56:07 UTC 2025","passed","Wed Oct 29 21:56:11 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Test navigation to Leave Period from Leave List page.
+
+Scenario:
+    Given I am on the Leave List page
+    When I click Configure dropdown
+    And I click Leave Period menu item
+    Then I should navigate to Leave Period configuration page
+    And the page title should be ""Leave Period""
+
+This verifies navigation integration within the Leave module.
+
+TODO: Fix Configure dropdown locator in LeaveBasePage.
+      Current locator: li.oxd-topbar-body-nav-tab:has-text('Configure')
+      Issue: Element not clickable - may need more specific selector
+","0","test_navigate_to_leave_period_from_leave_list[webkit]","tests","Wed Oct 29 21:56:58 UTC 2025","skipped","Wed Oct 29 21:56:58 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Test navigation to Directory module.
+
+Verifies that clicking Directory menu navigates to the Directory
+module and the URL changes accordingly.
+","901","test_navigate_to_directory[firefox]","tests","Wed Oct 29 21:58:31 UTC 2025","passed","Wed Oct 29 21:58:32 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Smoke test: Verify basic configure and save workflow.
+
+Critical end-to-end test for the primary use case.
+","1416","test_smoke_configure_and_save[webkit]","tests","Wed Oct 29 21:57:26 UTC 2025","passed","Wed Oct 29 21:57:28 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test typical employee self-service workflow.
+
+Workflow:
+1. View dashboard
+2. Update personal info (My Info)
+3. Apply for leave
+4. Submit timesheet
+","8096","test_employee_self_service_workflow[webkit]","tests","Wed Oct 29 21:56:43 UTC 2025","passed","Wed Oct 29 21:56:51 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","326","test_all_months_end_date_calculation[webkit-month_may]","tests","Wed Oct 29 21:59:05 UTC 2025","passed","Wed Oct 29 21:59:05 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation works after page interactions.
+
+Verifies that performing actions on a page doesn't break
+subsequent navigation.
+","3092","test_navigation_after_page_interaction[webkit]","tests","Wed Oct 29 21:56:42 UTC 2025","passed","Wed Oct 29 21:56:45 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test typical employee self-service workflow.
+
+Workflow:
+1. View dashboard
+2. Update personal info (My Info)
+3. Apply for leave
+4. Submit timesheet
+","5709","test_employee_self_service_workflow[chromium]","tests","Wed Oct 29 21:56:26 UTC 2025","passed","Wed Oct 29 21:56:32 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","523","test_all_months_end_date_calculation[firefox-month_may]","tests","Wed Oct 29 21:59:39 UTC 2025","passed","Wed Oct 29 21:59:40 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Navigation header persists across modules.
+
+Critical test to ensure navigation header doesn't disappear.
+","7859","test_smoke_navigation_header_persistent[firefox]","tests","Wed Oct 29 21:56:03 UTC 2025","passed","Wed Oct 29 21:56:11 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Test navigation to Admin module.
+
+Verifies that clicking Admin menu navigates to the Admin module
+and the URL changes accordingly.
+","1649","test_navigate_to_admin[webkit]","tests","Wed Oct 29 21:57:32 UTC 2025","passed","Wed Oct 29 21:57:34 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation works after page interactions.
+
+Verifies that performing actions on a page doesn't break
+subsequent navigation.
+","2432","test_navigation_after_page_interaction[chromium]","tests","Wed Oct 29 21:56:23 UTC 2025","passed","Wed Oct 29 21:56:26 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Verify error message is displayed when login fails with invalid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid username and password
+    And: User clicks the login button
+    Then: Error message should be visible
+    And: Error message should contain ""Invalid credentials""
+
+Args:
+    login_page: LoginPage instance
+","1288","test_invalid_login[chromium]","tests","Wed Oct 29 21:56:53 UTC 2025","passed","Wed Oct 29 21:56:55 UTC 2025","","test_login","",""
+"
+Test that navigation header remains consistent across all modules.
+
+Verifies that the same navigation options are available regardless
+of which module the user is currently viewing.
+","10541","test_navigation_header_consistent_across_modules[firefox]","tests","Wed Oct 29 21:56:23 UTC 2025","passed","Wed Oct 29 21:56:34 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1616","test_edge_case_configurations[firefox-mid_month_june]","tests","Wed Oct 29 21:59:09 UTC 2025","passed","Wed Oct 29 21:59:11 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test that save button is enabled when page loads.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then the Save button should be enabled
+    And the Reset button should be enabled
+
+This verifies the page loads in a ready state.
+","66","test_save_button_enabled[firefox]","tests","Wed Oct 29 21:57:04 UTC 2025","passed","Wed Oct 29 21:57:04 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Test multiple round trips between modules.
+
+Verifies that navigating back and forth multiple times
+works correctly without errors.
+","11799","test_multiple_round_trips[firefox]","tests","Wed Oct 29 21:56:00 UTC 2025","passed","Wed Oct 29 21:56:12 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Test navigation to Performance module.
+
+Verifies that clicking Performance menu navigates to the Performance
+module and the URL changes accordingly.
+","1435","test_navigate_to_performance[firefox]","tests","Wed Oct 29 21:58:12 UTC 2025","passed","Wed Oct 29 21:58:13 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","159","test_all_months_end_date_calculation[chromium-month_may]","tests","Wed Oct 29 21:58:10 UTC 2025","passed","Wed Oct 29 21:58:11 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1407","test_configure_leave_period_happy_path[webkit-fiscal_year_october]","tests","Wed Oct 29 21:58:52 UTC 2025","passed","Wed Oct 29 21:58:54 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","293","test_all_months_end_date_calculation[firefox-month_october]","tests","Wed Oct 29 21:59:54 UTC 2025","passed","Wed Oct 29 21:59:55 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Verify error message is displayed when login fails with invalid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid username and password
+    And: User clicks the login button
+    Then: Error message should be visible
+    And: Error message should contain ""Invalid credentials""
+
+Args:
+    login_page: LoginPage instance
+","1554","test_invalid_login[webkit]","tests","Wed Oct 29 21:57:19 UTC 2025","passed","Wed Oct 29 21:57:21 UTC 2025","","test_login","",""
+"
+Test Recruitment to Performance navigation workflow.
+
+Common workflow: Recruit employee, then manage performance.
+","3818","test_navigate_recruitment_to_performance_workflow[webkit]","tests","Wed Oct 29 21:56:35 UTC 2025","passed","Wed Oct 29 21:56:39 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1222","test_configure_leave_period_happy_path[chromium-fiscal_year_july]","tests","Wed Oct 29 21:57:54 UTC 2025","passed","Wed Oct 29 21:57:56 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test that end date updates when start date changes.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select different start months
+    Then the end date should update dynamically for each selection
+
+This verifies real-time calculation of end dates.
+","552","test_end_date_updates_dynamically[chromium]","tests","Wed Oct 29 21:57:17 UTC 2025","passed","Wed Oct 29 21:57:17 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Verify user cannot login with empty username and password.
+
+Scenario:
+    Given: User is on the login page
+    When: User clicks login button without entering credentials
+    Then: User should remain on the login page
+    And: URL should still contain ""auth/login""
+
+Args:
+    login_page: LoginPage instance
+","541","test_empty_credentials[firefox]","tests","Wed Oct 29 21:57:45 UTC 2025","passed","Wed Oct 29 21:57:46 UTC 2025","","test_login","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","306","test_all_months_end_date_calculation[webkit-month_october]","tests","Wed Oct 29 21:59:16 UTC 2025","passed","Wed Oct 29 21:59:16 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Verify user dropdown is accessible.
+
+Critical test to ensure users can access account options.
+","1262","test_smoke_user_dropdown_accessible[firefox]","tests","Wed Oct 29 21:58:56 UTC 2025","passed","Wed Oct 29 21:58:58 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","164","test_all_months_end_date_calculation[chromium-month_july]","tests","Wed Oct 29 21:58:17 UTC 2025","passed","Wed Oct 29 21:58:18 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Verify basic configure and save workflow.
+
+Critical end-to-end test for the primary use case.
+","1398","test_smoke_configure_and_save[firefox]","tests","Wed Oct 29 21:57:39 UTC 2025","passed","Wed Oct 29 21:57:40 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test navigation to About page.
+
+Verifies that clicking About in the user dropdown
+opens the about dialog or page.
+","1552","test_about_opening[firefox]","tests","Wed Oct 29 21:58:28 UTC 2025","passed","Wed Oct 29 21:58:30 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Verify current leave period is displayed on the page.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the current leave period displayed
+    And it should be in the format ""YYYY-MM-DD to YYYY-MM-DD""
+
+This verifies that users can see the currently configured leave period.
+","14","test_view_current_leave_period[chromium]","tests","Wed Oct 29 21:56:45 UTC 2025","passed","Wed Oct 29 21:56:45 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","299","test_all_months_end_date_calculation[webkit-month_july]","tests","Wed Oct 29 21:59:08 UTC 2025","passed","Wed Oct 29 21:59:09 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Verify fluent API (method chaining) works correctly for login flow.
+
+Scenario:
+    Given: User is on the login page
+    When: User chains enter_username, enter_password, and click_login methods
+    Then: User should be redirected to dashboard (login successful)
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with valid credentials
+","1972","test_method_chaining[webkit]","tests","Wed Oct 29 21:57:12 UTC 2025","passed","Wed Oct 29 21:57:14 UTC 2025","","test_login","",""
+"
+Demo: Invalid login attempt with visual highlighting.
+
+Shows how to use highlight() when debugging error scenarios.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid credentials with highlights
+    Then: Error message should be visible and highlighted
+
+Args:
+    login_page: LoginPage instance
+","3666","test_invalid_login_with_highlight[chromium]","tests","Wed Oct 29 21:56:58 UTC 2025","passed","Wed Oct 29 21:57:02 UTC 2025","","test_login_demo","",""
+"
+Test navigation to Directory module.
+
+Verifies that clicking Directory menu navigates to the Directory
+module and the URL changes accordingly.
+","719","test_navigate_to_directory[chromium]","tests","Wed Oct 29 21:57:23 UTC 2025","passed","Wed Oct 29 21:57:24 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation to Recruitment module.
+
+Verifies that clicking Recruitment menu navigates to the Recruitment
+module and the URL changes accordingly.
+","1631","test_navigate_to_recruitment[firefox]","tests","Wed Oct 29 21:57:52 UTC 2025","passed","Wed Oct 29 21:57:53 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Verify current leave period is displayed on the page.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the current leave period displayed
+    And it should be in the format ""YYYY-MM-DD to YYYY-MM-DD""
+
+This verifies that users can see the currently configured leave period.
+","87","test_view_current_leave_period[firefox]","tests","Wed Oct 29 21:57:27 UTC 2025","passed","Wed Oct 29 21:57:27 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","337","test_all_months_end_date_calculation[webkit-month_february]","tests","Wed Oct 29 21:58:46 UTC 2025","passed","Wed Oct 29 21:58:47 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Basic cross-module navigation works.
+
+Critical test to ensure users can navigate between modules.
+","4427","test_smoke_basic_cross_module_navigation[chromium]","tests","Wed Oct 29 21:55:46 UTC 2025","passed","Wed Oct 29 21:55:50 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Test that navigation header remains consistent across all modules.
+
+Verifies that the same navigation options are available regardless
+of which module the user is currently viewing.
+","9889","test_navigation_header_consistent_across_modules[webkit]","tests","Wed Oct 29 21:56:22 UTC 2025","passed","Wed Oct 29 21:56:32 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Test navigation to Performance module.
+
+Verifies that clicking Performance menu navigates to the Performance
+module and the URL changes accordingly.
+","1200","test_navigate_to_performance[chromium]","tests","Wed Oct 29 21:57:13 UTC 2025","passed","Wed Oct 29 21:57:14 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test round trip navigation with user dropdown interaction.
+
+Verifies that user dropdown works correctly after navigating
+between modules.
+","6337","test_round_trip_with_user_dropdown[webkit]","tests","Wed Oct 29 21:56:17 UTC 2025","passed","Wed Oct 29 21:56:23 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Demo: Method chaining with selective highlighting.
+
+Shows how to combine fluent API with strategic highlights for debugging.
+
+Scenario:
+    Given: User is on the login page
+    When: User previews elements with highlights
+    And: User executes login with method chaining
+    Then: Login should succeed
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service
+","2716","test_method_chaining_with_highlight[firefox]","tests","Wed Oct 29 21:57:46 UTC 2025","passed","Wed Oct 29 21:57:49 UTC 2025","","test_login_demo","",""
+"
+Test navigation to Time module.
+
+Verifies that clicking Time menu navigates to the Time module
+and the URL changes accordingly.
+","1365","test_navigate_to_time[webkit]","tests","Wed Oct 29 21:57:55 UTC 2025","passed","Wed Oct 29 21:57:57 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that navigation doesn't depend on previous navigation state.
+
+Verifies that each navigation action works independently,
+regardless of navigation history.
+","8641","test_navigation_state_independent[chromium]","tests","Wed Oct 29 21:56:22 UTC 2025","passed","Wed Oct 29 21:56:31 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Verify user dropdown is visible and clickable.
+
+Tests that the user dropdown button appears in the navigation header
+and can be interacted with.
+","366","test_user_dropdown_visible[chromium]","tests","Wed Oct 29 21:57:10 UTC 2025","passed","Wed Oct 29 21:57:11 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Test method chaining for fluent API.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I use method chaining to configure leave period
+    Then all methods should execute successfully
+    And the configuration should be saved
+
+This verifies that the fluent interface pattern works correctly.
+","170","test_method_chaining[chromium]","tests","Wed Oct 29 21:56:52 UTC 2025","passed","Wed Oct 29 21:56:53 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test navigation works correctly after page refresh.
+
+Verifies that refreshing the page doesn't break navigation.
+","4671","test_navigation_with_page_refresh[chromium]","tests","Wed Oct 29 21:56:24 UTC 2025","passed","Wed Oct 29 21:56:29 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test that different page objects can use the same NavigationHeader.
+
+Verifies that NavigationHeader is composable and can be used
+across different page object instances.
+","3806","test_multiple_page_objects_share_navigation[chromium]","tests","Wed Oct 29 21:57:42 UTC 2025","passed","Wed Oct 29 21:57:46 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Test that NavigationHeader uses composition pattern correctly.
+
+Verifies that the nav_header attribute is available on page objects
+and works as expected via composition (not inheritance).
+","526","test_navigation_header_composition_pattern[firefox]","tests","Wed Oct 29 21:58:46 UTC 2025","passed","Wed Oct 29 21:58:46 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1614","test_configure_leave_period_happy_path[firefox-calendar_year]","tests","Wed Oct 29 21:57:13 UTC 2025","passed","Wed Oct 29 21:57:14 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","165","test_all_months_end_date_calculation[chromium-month_october]","tests","Wed Oct 29 21:58:19 UTC 2025","passed","Wed Oct 29 21:58:19 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation to Performance module.
+
+Verifies that clicking Performance menu navigates to the Performance
+module and the URL changes accordingly.
+","1601","test_navigate_to_performance[webkit]","tests","Wed Oct 29 21:57:46 UTC 2025","passed","Wed Oct 29 21:57:47 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that navigation header remains consistent across all modules.
+
+Verifies that the same navigation options are available regardless
+of which module the user is currently viewing.
+","6580","test_navigation_header_consistent_across_modules[chromium]","tests","Wed Oct 29 21:56:12 UTC 2025","passed","Wed Oct 29 21:56:18 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1379","test_edge_case_configurations[firefox-last_day_december]","tests","Wed Oct 29 21:59:31 UTC 2025","passed","Wed Oct 29 21:59:32 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test navigation to PIM module.
+
+Verifies that clicking PIM menu navigates to the PIM module
+and the URL changes accordingly.
+","1965","test_navigate_to_pim[firefox]","tests","Wed Oct 29 21:57:59 UTC 2025","passed","Wed Oct 29 21:58:01 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1498","test_edge_case_configurations[webkit-february_last_day]","tests","Wed Oct 29 21:57:32 UTC 2025","passed","Wed Oct 29 21:57:34 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","237","test_all_months_end_date_calculation[webkit-month_november]","tests","Wed Oct 29 21:59:18 UTC 2025","passed","Wed Oct 29 21:59:18 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1237","test_configure_leave_period_happy_path[chromium-calendar_year]","tests","Wed Oct 29 21:56:36 UTC 2025","passed","Wed Oct 29 21:56:38 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test navigation to My Info module.
+
+Verifies that clicking My Info menu navigates to the My Info module
+and the URL changes accordingly.
+","967","test_navigate_to_my_info[chromium]","tests","Wed Oct 29 21:57:08 UTC 2025","passed","Wed Oct 29 21:57:09 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1218","test_configure_leave_period_happy_path[chromium-fiscal_year_april]","tests","Wed Oct 29 21:57:53 UTC 2025","passed","Wed Oct 29 21:57:55 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Verify fluent API (method chaining) works correctly for login flow.
+
+Scenario:
+    Given: User is on the login page
+    When: User chains enter_username, enter_password, and click_login methods
+    Then: User should be redirected to dashboard (login successful)
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with valid credentials
+","1472","test_method_chaining[chromium]","tests","Wed Oct 29 21:56:49 UTC 2025","passed","Wed Oct 29 21:56:51 UTC 2025","","test_login","",""
+"
+Test navigation to Directory module.
+
+Verifies that clicking Directory menu navigates to the Directory
+module and the URL changes accordingly.
+","1197","test_navigate_to_directory[webkit]","tests","Wed Oct 29 21:58:00 UTC 2025","passed","Wed Oct 29 21:58:01 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test rapid sequential navigation doesn't cause errors.
+
+Verifies that navigating quickly between modules doesn't
+cause race conditions or errors.
+","10176","test_rapid_sequential_navigation[firefox]","tests","Wed Oct 29 21:56:29 UTC 2025","passed","Wed Oct 29 21:56:40 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test Recruitment to Performance navigation workflow.
+
+Common workflow: Recruit employee, then manage performance.
+","2623","test_navigate_recruitment_to_performance_workflow[chromium]","tests","Wed Oct 29 21:56:17 UTC 2025","passed","Wed Oct 29 21:56:20 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test opening the user dropdown.
+
+Verifies that the user dropdown can be opened and menu items
+become visible.
+","326","test_open_user_dropdown[webkit]","tests","Wed Oct 29 21:58:07 UTC 2025","passed","Wed Oct 29 21:58:08 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Smoke test: Verify logout works.
+
+Critical test to ensure users can log out of the application.
+","1950","test_smoke_logout_works[webkit]","tests","Wed Oct 29 21:58:33 UTC 2025","passed","Wed Oct 29 21:58:35 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Verify user dropdown is visible and clickable.
+
+Tests that the user dropdown button appears in the navigation header
+and can be interacted with.
+","957","test_user_dropdown_visible[firefox]","tests","Wed Oct 29 21:58:04 UTC 2025","passed","Wed Oct 29 21:58:05 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Test navigation through all main modules sequentially.
+
+Simulates a user exploring different modules in the application,
+verifying that each navigation works correctly.
+","7622","test_navigate_through_all_main_modules[chromium]","tests","Wed Oct 29 21:55:46 UTC 2025","passed","Wed Oct 29 21:55:54 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test PIM to Leave navigation workflow.
+
+Common workflow: View employee in PIM, then assign leave.
+","5539","test_navigate_pim_to_leave_workflow[firefox]","tests","Wed Oct 29 21:56:20 UTC 2025","passed","Wed Oct 29 21:56:25 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test that navigation preserves application state correctly.
+
+Verifies that navigating between modules using NavigationHeader
+doesn't cause state loss or errors.
+","4931","test_navigation_preserves_state[webkit]","tests","Wed Oct 29 21:58:22 UTC 2025","passed","Wed Oct 29 21:58:27 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","415","test_all_months_end_date_calculation[firefox-month_august]","tests","Wed Oct 29 21:59:46 UTC 2025","passed","Wed Oct 29 21:59:47 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","225","test_all_months_end_date_calculation[firefox-month_november]","tests","Wed Oct 29 21:59:57 UTC 2025","passed","Wed Oct 29 21:59:57 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test that navigation preserves application state correctly.
+
+Verifies that navigating between modules using NavigationHeader
+doesn't cause state loss or errors.
+","3738","test_navigation_preserves_state[chromium]","tests","Wed Oct 29 21:57:38 UTC 2025","passed","Wed Oct 29 21:57:42 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1353","test_configure_leave_period_happy_path[webkit-fiscal_year_april]","tests","Wed Oct 29 21:58:36 UTC 2025","passed","Wed Oct 29 21:58:37 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test navigation to Admin module.
+
+Verifies that clicking Admin menu navigates to the Admin module
+and the URL changes accordingly.
+","1163","test_navigate_to_admin[chromium]","tests","Wed Oct 29 21:57:05 UTC 2025","passed","Wed Oct 29 21:57:06 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Smoke test: Round-trip navigation works.
+
+Critical test to ensure users can navigate away and return.
+","4797","test_smoke_round_trip_navigation[firefox]","tests","Wed Oct 29 21:56:18 UTC 2025","passed","Wed Oct 29 21:56:23 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Smoke test: Verify logout works.
+
+Critical test to ensure users can log out of the application.
+","1987","test_smoke_logout_works[firefox]","tests","Wed Oct 29 21:59:08 UTC 2025","passed","Wed Oct 29 21:59:10 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1337","test_edge_case_configurations[webkit-mid_month_june]","tests","Wed Oct 29 21:58:39 UTC 2025","passed","Wed Oct 29 21:58:41 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test navigation to Time module.
+
+Verifies that clicking Time menu navigates to the Time module
+and the URL changes accordingly.
+","1743","test_navigate_to_time[firefox]","tests","Wed Oct 29 21:58:18 UTC 2025","passed","Wed Oct 29 21:58:20 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation to Recruitment module.
+
+Verifies that clicking Recruitment menu navigates to the Recruitment
+module and the URL changes accordingly.
+","1049","test_navigate_to_recruitment[chromium]","tests","Wed Oct 29 21:57:02 UTC 2025","passed","Wed Oct 29 21:57:03 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation to Leave module.
+
+Verifies that clicking Leave menu navigates to the Leave module from Dashboard.
+","2407","test_navigate_to_leave[firefox]","tests","Wed Oct 29 21:58:09 UTC 2025","passed","Wed Oct 29 21:58:11 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Smoke test: Verify logout works.
+
+Critical test to ensure users can log out of the application.
+","1338","test_smoke_logout_works[chromium]","tests","Wed Oct 29 21:57:46 UTC 2025","passed","Wed Oct 29 21:57:47 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test that Leave Period page maintains Leave module navigation.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see Leave module top bar
+    And I should be able to navigate to other Leave pages
+
+This verifies the Leave module top bar is available on Leave Period page.
+
+Note:
+    This test is skipped because the leave_period_page fixture navigates
+    directly to the Leave Period URL, which doesn't load the full Leave
+    module UI context. This is expected behavior for direct URL navigation.
+    The test would pass if navigating via the UI (Configure dropdown),
+    but that navigation method has locator issues.
+","0","test_leave_period_maintains_leave_navigation[chromium]","tests","Wed Oct 29 21:56:35 UTC 2025","skipped","Wed Oct 29 21:56:35 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","526","test_all_months_end_date_calculation[firefox-month_march]","tests","Wed Oct 29 21:59:24 UTC 2025","passed","Wed Oct 29 21:59:25 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1360","test_configure_leave_period_happy_path[webkit-fiscal_year_july]","tests","Wed Oct 29 21:58:42 UTC 2025","passed","Wed Oct 29 21:58:43 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test admin configuration workflow.
+
+Workflow:
+1. Access admin panel
+2. Configure system settings
+3. Return to dashboard
+4. Verify changes (navigate to relevant module)
+","3167","test_admin_configuration_workflow[firefox]","tests","Wed Oct 29 21:55:50 UTC 2025","passed","Wed Oct 29 21:55:53 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Test PIM to Leave navigation workflow.
+
+Common workflow: View employee in PIM, then assign leave.
+","5197","test_navigate_pim_to_leave_workflow[webkit]","tests","Wed Oct 29 21:56:16 UTC 2025","passed","Wed Oct 29 21:56:21 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test navigation to Time module.
+
+Verifies that clicking Time menu navigates to the Time module
+and the URL changes accordingly.
+","953","test_navigate_to_time[chromium]","tests","Wed Oct 29 21:57:22 UTC 2025","passed","Wed Oct 29 21:57:23 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test reset button restores previous values.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    And I have configured a leave period
+    When I change the start month and date
+    And I click the Reset button
+    Then the values should return to the previous state
+
+This verifies that users can discard changes before saving.
+","1103","test_reset_functionality[firefox]","tests","Wed Oct 29 21:58:05 UTC 2025","passed","Wed Oct 29 21:58:06 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Smoke test: Verify main navigation menu is visible.
+
+Critical test to ensure the navigation header renders correctly
+after login.
+","403","test_smoke_main_menu_visible[webkit]","tests","Wed Oct 29 21:58:19 UTC 2025","passed","Wed Oct 29 21:58:20 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Verify user can login successfully with valid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid username and password
+    And: User clicks the login button
+    Then: User should be redirected to the dashboard page
+
+Args:
+    login_page: LoginPage instance (already navigated to login page)
+    config_service: Configuration service with valid test credentials
+","1411","test_valid_login[webkit]","tests","Wed Oct 29 21:57:15 UTC 2025","passed","Wed Oct 29 21:57:16 UTC 2025","","test_login","",""
+"
+Verify user cannot login with empty username and password.
+
+Scenario:
+    Given: User is on the login page
+    When: User clicks login button without entering credentials
+    Then: User should remain on the login page
+    And: URL should still contain ""auth/login""
+
+Args:
+    login_page: LoginPage instance
+","665","test_empty_credentials[webkit]","tests","Wed Oct 29 21:57:26 UTC 2025","passed","Wed Oct 29 21:57:27 UTC 2025","","test_login","",""
+"
+Verify user dropdown menu items appear when opened.
+
+Tests that clicking the user dropdown reveals all expected menu items
+(Change Password, About, Support, Logout).
+","1185","test_user_dropdown_menu_items[firefox]","tests","Wed Oct 29 21:58:13 UTC 2025","passed","Wed Oct 29 21:58:14 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Test Admin to PIM navigation workflow.
+
+Common workflow: Admin creates user, then views in PIM.
+","3698","test_navigate_admin_to_pim_workflow[webkit]","tests","Wed Oct 29 21:56:05 UTC 2025","passed","Wed Oct 29 21:56:09 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test Recruitment to Performance navigation workflow.
+
+Common workflow: Recruit employee, then manage performance.
+","5103","test_navigate_recruitment_to_performance_workflow[firefox]","tests","Wed Oct 29 21:56:43 UTC 2025","passed","Wed Oct 29 21:56:48 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","192","test_all_months_end_date_calculation[webkit-month_december]","tests","Wed Oct 29 21:59:20 UTC 2025","passed","Wed Oct 29 21:59:21 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","375","test_all_months_end_date_calculation[webkit-month_march]","tests","Wed Oct 29 21:58:50 UTC 2025","passed","Wed Oct 29 21:58:51 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Verify user dropdown menu items appear when opened.
+
+Tests that clicking the user dropdown reveals all expected menu items
+(Change Password, About, Support, Logout).
+","298","test_user_dropdown_menu_items[chromium]","tests","Wed Oct 29 21:57:15 UTC 2025","passed","Wed Oct 29 21:57:15 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Demo: Invalid login attempt with visual highlighting.
+
+Shows how to use highlight() when debugging error scenarios.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid credentials with highlights
+    Then: Error message should be visible and highlighted
+
+Args:
+    login_page: LoginPage instance
+","4247","test_invalid_login_with_highlight[webkit]","tests","Wed Oct 29 21:57:24 UTC 2025","passed","Wed Oct 29 21:57:28 UTC 2025","","test_login_demo","",""
+"
+Verify all main menu items are visible after login.
+
+Tests that the navigation header displays all expected menu items
+for a logged-in user with standard permissions.
+","1793","test_main_menu_items_visible[firefox]","tests","Wed Oct 29 21:57:55 UTC 2025","passed","Wed Oct 29 21:57:57 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Verify user cannot login with empty username.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only password (no username)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","545","test_empty_username[firefox]","tests","Wed Oct 29 21:57:13 UTC 2025","passed","Wed Oct 29 21:57:14 UTC 2025","","test_login","",""
+"
+Test reset button restores previous values.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    And I have configured a leave period
+    When I change the start month and date
+    And I click the Reset button
+    Then the values should return to the previous state
+
+This verifies that users can discard changes before saving.
+","913","test_reset_functionality[webkit]","tests","Wed Oct 29 21:57:44 UTC 2025","passed","Wed Oct 29 21:57:45 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","158","test_all_months_end_date_calculation[chromium-month_december]","tests","Wed Oct 29 21:58:25 UTC 2025","passed","Wed Oct 29 21:58:25 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Verify current leave period is always displayed.
+
+Critical test to ensure users can see the current configuration.
+","13","test_smoke_current_period_displayed[webkit]","tests","Wed Oct 29 21:57:01 UTC 2025","passed","Wed Oct 29 21:57:01 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test navigation to Support page.
+
+Verifies that clicking Support in the user dropdown
+navigates to the support page or opens support resources.
+","1777","test_support_navigation[firefox]","tests","Wed Oct 29 21:58:45 UTC 2025","passed","Wed Oct 29 21:58:47 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test performance review workflow.
+
+Workflow:
+1. View employee in PIM
+2. Check employee performance
+3. Review attendance (Time)
+4. Check leave history
+","7037","test_performance_review_workflow[firefox]","tests","Wed Oct 29 21:56:09 UTC 2025","passed","Wed Oct 29 21:56:16 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Verify user cannot login with empty username and password.
+
+Scenario:
+    Given: User is on the login page
+    When: User clicks login button without entering credentials
+    Then: User should remain on the login page
+    And: URL should still contain ""auth/login""
+
+Args:
+    login_page: LoginPage instance
+","278","test_empty_credentials[chromium]","tests","Wed Oct 29 21:56:59 UTC 2025","passed","Wed Oct 29 21:56:59 UTC 2025","","test_login","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1572","test_configure_leave_period_happy_path[firefox-fiscal_year_july]","tests","Wed Oct 29 21:59:20 UTC 2025","passed","Wed Oct 29 21:59:22 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test navigating from Leave to Dashboard and back.
+
+Verifies that returning to Leave module after visiting Dashboard
+works correctly.
+","4898","test_leave_to_dashboard_and_back[webkit]","tests","Wed Oct 29 21:55:49 UTC 2025","passed","Wed Oct 29 21:55:54 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Test logout functionality.
+
+Verifies that clicking logout redirects to login page and
+the session is terminated.
+","1712","test_logout_functionality[webkit]","tests","Wed Oct 29 21:57:57 UTC 2025","passed","Wed Oct 29 21:57:59 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","363","test_all_months_end_date_calculation[webkit-month_april]","tests","Wed Oct 29 21:59:00 UTC 2025","passed","Wed Oct 29 21:59:01 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test admin configuration workflow.
+
+Workflow:
+1. Access admin panel
+2. Configure system settings
+3. Return to dashboard
+4. Verify changes (navigate to relevant module)
+","2019","test_admin_configuration_workflow[chromium]","tests","Wed Oct 29 21:55:46 UTC 2025","passed","Wed Oct 29 21:55:48 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Demo: Login test with visual highlighting for debugging.
+
+This test shows how to use Playwright's native highlight() during development
+to visually identify which elements are being interacted with.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid credentials with visual highlights
+    Then: User should be redirected to dashboard
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with credentials
+","4183","test_login_with_highlight_demo[firefox]","tests","Wed Oct 29 21:57:30 UTC 2025","passed","Wed Oct 29 21:57:34 UTC 2025","","test_login_demo","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1606","test_configure_leave_period_happy_path[webkit-calendar_year]","tests","Wed Oct 29 21:57:01 UTC 2025","passed","Wed Oct 29 21:57:03 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Verify all critical login page elements are visible on page load.
+
+Scenario:
+    Given: User is on the login page
+    When: Page finishes loading
+    Then: Username field should be visible
+    And: Password field should be visible
+    And: Login button should be visible
+    And: Login logo should be visible
+
+Args:
+    login_page: LoginPage instance
+","712","test_login_page_elements_visible[webkit]","tests","Wed Oct 29 21:57:23 UTC 2025","passed","Wed Oct 29 21:57:24 UTC 2025","","test_login","",""
+"
+Test multiple round trips between modules.
+
+Verifies that navigating back and forth multiple times
+works correctly without errors.
+","12671","test_multiple_round_trips[webkit]","tests","Wed Oct 29 21:55:59 UTC 2025","passed","Wed Oct 29 21:56:12 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1561","test_edge_case_configurations[firefox-february_last_day]","tests","Wed Oct 29 21:57:50 UTC 2025","passed","Wed Oct 29 21:57:52 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","244","test_all_months_end_date_calculation[firefox-month_december]","tests","Wed Oct 29 21:59:57 UTC 2025","passed","Wed Oct 29 21:59:57 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test opening the user dropdown.
+
+Verifies that the user dropdown can be opened and menu items
+become visible.
+","609","test_open_user_dropdown[firefox]","tests","Wed Oct 29 21:58:30 UTC 2025","passed","Wed Oct 29 21:58:31 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test navigation to Buzz module.
+
+Verifies that clicking Buzz menu navigates to the Buzz (social) module
+and the URL changes accordingly.
+","898","test_navigate_to_buzz[firefox]","tests","Wed Oct 29 21:58:21 UTC 2025","passed","Wed Oct 29 21:58:21 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1208","test_configure_leave_period_happy_path[chromium-fiscal_year_october]","tests","Wed Oct 29 21:58:03 UTC 2025","passed","Wed Oct 29 21:58:04 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Test performance review workflow.
+
+Workflow:
+1. View employee in PIM
+2. Check employee performance
+3. Review attendance (Time)
+4. Check leave history
+","7617","test_performance_review_workflow[webkit]","tests","Wed Oct 29 21:56:08 UTC 2025","passed","Wed Oct 29 21:56:16 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","168","test_all_months_end_date_calculation[chromium-month_august]","tests","Wed Oct 29 21:58:18 UTC 2025","passed","Wed Oct 29 21:58:18 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test rapid sequential navigation doesn't cause errors.
+
+Verifies that navigating quickly between modules doesn't
+cause race conditions or errors.
+","7042","test_rapid_sequential_navigation[chromium]","tests","Wed Oct 29 21:56:12 UTC 2025","passed","Wed Oct 29 21:56:19 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test navigation to My Info module.
+
+Verifies that clicking My Info menu navigates to the My Info module
+and the URL changes accordingly.
+","1208","test_navigate_to_my_info[webkit]","tests","Wed Oct 29 21:57:38 UTC 2025","passed","Wed Oct 29 21:57:39 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test Admin to PIM navigation workflow.
+
+Common workflow: Admin creates user, then views in PIM.
+","4541","test_navigate_admin_to_pim_workflow[firefox]","tests","Wed Oct 29 21:56:07 UTC 2025","passed","Wed Oct 29 21:56:12 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test that different page objects can use the same NavigationHeader.
+
+Verifies that NavigationHeader is composable and can be used
+across different page object instances.
+","4547","test_multiple_page_objects_share_navigation[webkit]","tests","Wed Oct 29 21:58:12 UTC 2025","passed","Wed Oct 29 21:58:17 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Verify fluent API (method chaining) works correctly for login flow.
+
+Scenario:
+    Given: User is on the login page
+    When: User chains enter_username, enter_password, and click_login methods
+    Then: User should be redirected to dashboard (login successful)
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with valid credentials
+","1334","test_method_chaining[firefox]","tests","Wed Oct 29 21:57:24 UTC 2025","passed","Wed Oct 29 21:57:25 UTC 2025","","test_login","",""
+"
+Test navigation through all main modules sequentially.
+
+Simulates a user exploring different modules in the application,
+verifying that each navigation works correctly.
+","10068","test_navigate_through_all_main_modules[webkit]","tests","Wed Oct 29 21:55:49 UTC 2025","passed","Wed Oct 29 21:55:59 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Verify all main menu items are visible after login.
+
+Tests that the navigation header displays all expected menu items
+for a logged-in user with standard permissions.
+","692","test_main_menu_items_visible[webkit]","tests","Wed Oct 29 21:57:38 UTC 2025","passed","Wed Oct 29 21:57:39 UTC 2025","TestNavigationHeaderVisibility","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","304","test_all_months_end_date_calculation[firefox-month_february]","tests","Wed Oct 29 21:59:17 UTC 2025","passed","Wed Oct 29 21:59:18 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test multiple round trips between modules.
+
+Verifies that navigating back and forth multiple times
+works correctly without errors.
+","9001","test_multiple_round_trips[chromium]","tests","Wed Oct 29 21:55:53 UTC 2025","passed","Wed Oct 29 21:56:02 UTC 2025","TestRoundTripNavigation","test_cross_module_navigation","",""
+"
+Test that URL changes correctly reflect navigation actions.
+
+Verifies that each navigation action results in a unique URL
+corresponding to the target module.
+","6625","test_url_changes_reflect_navigation[chromium]","tests","Wed Oct 29 21:56:35 UTC 2025","passed","Wed Oct 29 21:56:41 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Test that URL changes correctly reflect navigation actions.
+
+Verifies that each navigation action results in a unique URL
+corresponding to the target module.
+","8210","test_url_changes_reflect_navigation[firefox]","tests","Wed Oct 29 21:57:00 UTC 2025","passed","Wed Oct 29 21:57:08 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Smoke test: Verify basic navigation works.
+
+Critical test to ensure users can navigate between modules.
+","5487","test_smoke_navigation_works[firefox]","tests","Wed Oct 29 21:59:02 UTC 2025","passed","Wed Oct 29 21:59:07 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test that different page objects can use the same NavigationHeader.
+
+Verifies that NavigationHeader is composable and can be used
+across different page object instances.
+","5563","test_multiple_page_objects_share_navigation[firefox]","tests","Wed Oct 29 21:58:56 UTC 2025","passed","Wed Oct 29 21:59:01 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1457","test_edge_case_configurations[firefox-month_with_30_days]","tests","Wed Oct 29 21:59:33 UTC 2025","passed","Wed Oct 29 21:59:34 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for happy path leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with test data
+    Then the end date should match expected value
+    When I save the configuration
+    Then I should see a success message
+
+Test data is loaded from JSON file for easy maintenance.
+Each scenario includes: start_month, start_date, expected_end_display, description
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1475","test_configure_leave_period_happy_path[firefox-fiscal_year_october]","tests","Wed Oct 29 21:59:28 UTC 2025","passed","Wed Oct 29 21:59:29 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","438","test_all_months_end_date_calculation[firefox-month_june]","tests","Wed Oct 29 21:59:43 UTC 2025","passed","Wed Oct 29 21:59:44 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Verify error message is displayed when login fails with invalid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid username and password
+    And: User clicks the login button
+    Then: Error message should be visible
+    And: Error message should contain ""Invalid credentials""
+
+Args:
+    login_page: LoginPage instance
+","1790","test_invalid_login[firefox]","tests","Wed Oct 29 21:57:34 UTC 2025","passed","Wed Oct 29 21:57:36 UTC 2025","","test_login","",""
+"
+Test logout functionality.
+
+Verifies that clicking logout redirects to login page and
+the session is terminated.
+","3061","test_logout_functionality[firefox]","tests","Wed Oct 29 21:58:27 UTC 2025","passed","Wed Oct 29 21:58:30 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Smoke test: Verify basic navigation works.
+
+Critical test to ensure users can navigate between modules.
+","3087","test_smoke_navigation_works[chromium]","tests","Wed Oct 29 21:57:44 UTC 2025","passed","Wed Oct 29 21:57:47 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Smoke test: Verify main navigation menu is visible.
+
+Critical test to ensure the navigation header renders correctly
+after login.
+","1747","test_smoke_main_menu_visible[firefox]","tests","Wed Oct 29 21:58:52 UTC 2025","passed","Wed Oct 29 21:58:54 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test navigation to Buzz module.
+
+Verifies that clicking Buzz menu navigates to the Buzz (social) module
+and the URL changes accordingly.
+","671","test_navigate_to_buzz[chromium]","tests","Wed Oct 29 21:57:21 UTC 2025","passed","Wed Oct 29 21:57:22 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Verify user can login successfully with valid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid username and password
+    And: User clicks the login button
+    Then: User should be redirected to the dashboard page
+
+Args:
+    login_page: LoginPage instance (already navigated to login page)
+    config_service: Configuration service with valid test credentials
+","1348","test_valid_login[firefox]","tests","Wed Oct 29 21:57:28 UTC 2025","passed","Wed Oct 29 21:57:29 UTC 2025","","test_login","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1406","test_edge_case_configurations[webkit-last_day_december]","tests","Wed Oct 29 21:58:53 UTC 2025","passed","Wed Oct 29 21:58:54 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1224","test_edge_case_configurations[chromium-february_last_day]","tests","Wed Oct 29 21:57:00 UTC 2025","passed","Wed Oct 29 21:57:01 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Test reset button restores previous values.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    And I have configured a leave period
+    When I change the start month and date
+    And I click the Reset button
+    Then the values should return to the previous state
+
+This verifies that users can discard changes before saving.
+","740","test_reset_functionality[chromium]","tests","Wed Oct 29 21:57:09 UTC 2025","passed","Wed Oct 29 21:57:09 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Verify all critical login page elements are visible on page load.
+
+Scenario:
+    Given: User is on the login page
+    When: Page finishes loading
+    Then: Username field should be visible
+    And: Password field should be visible
+    And: Login button should be visible
+    And: Login logo should be visible
+
+Args:
+    login_page: LoginPage instance
+","470","test_login_page_elements_visible[firefox]","tests","Wed Oct 29 21:57:40 UTC 2025","passed","Wed Oct 29 21:57:41 UTC 2025","","test_login","",""
+"
+Demo: Login test with visual highlighting for debugging.
+
+This test shows how to use Playwright's native highlight() during development
+to visually identify which elements are being interacted with.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid credentials with visual highlights
+    Then: User should be redirected to dashboard
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with credentials
+","3922","test_login_with_highlight_demo[chromium]","tests","Wed Oct 29 21:56:52 UTC 2025","passed","Wed Oct 29 21:56:56 UTC 2025","","test_login_demo","",""
+"
+Test navigation to Change Password page.
+
+Verifies that clicking Change Password in the user dropdown
+navigates to the password change page.
+","1648","test_change_password_navigation[firefox]","tests","Wed Oct 29 21:58:46 UTC 2025","passed","Wed Oct 29 21:58:48 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Smoke test: Round-trip navigation works.
+
+Critical test to ensure users can navigate away and return.
+","3987","test_smoke_round_trip_navigation[chromium]","tests","Wed Oct 29 21:56:03 UTC 2025","passed","Wed Oct 29 21:56:07 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Verify user cannot login with empty username.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only password (no username)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","880","test_empty_username[chromium]","tests","Wed Oct 29 21:56:44 UTC 2025","passed","Wed Oct 29 21:56:45 UTC 2025","","test_login","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","312","test_all_months_end_date_calculation[webkit-month_june]","tests","Wed Oct 29 21:59:05 UTC 2025","passed","Wed Oct 29 21:59:05 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","169","test_all_months_end_date_calculation[chromium-month_march]","tests","Wed Oct 29 21:58:03 UTC 2025","passed","Wed Oct 29 21:58:03 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1313","test_edge_case_configurations[webkit-month_with_30_days]","tests","Wed Oct 29 21:58:57 UTC 2025","passed","Wed Oct 29 21:58:58 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Smoke test: Verify current leave period is always displayed.
+
+Critical test to ensure users can see the current configuration.
+","8","test_smoke_current_period_displayed[firefox]","tests","Wed Oct 29 21:57:10 UTC 2025","passed","Wed Oct 29 21:57:10 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Test Admin to PIM navigation workflow.
+
+Common workflow: Admin creates user, then views in PIM.
+","2078","test_navigate_admin_to_pim_workflow[chromium]","tests","Wed Oct 29 21:55:57 UTC 2025","passed","Wed Oct 29 21:55:59 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","441","test_all_months_end_date_calculation[firefox-month_july]","tests","Wed Oct 29 21:59:45 UTC 2025","passed","Wed Oct 29 21:59:46 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation to Leave module.
+
+Verifies that clicking Leave menu navigates to the Leave module from Dashboard.
+","3438","test_navigate_to_leave[webkit]","tests","Wed Oct 29 21:57:46 UTC 2025","passed","Wed Oct 29 21:57:50 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test Leave to Time navigation workflow.
+
+Common workflow: Check leave balance, then view timesheets.
+","2815","test_navigate_leave_to_time_workflow[firefox]","tests","Wed Oct 29 21:56:33 UTC 2025","passed","Wed Oct 29 21:56:35 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Data-driven test for edge case leave period configurations.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I configure the leave period with edge case data
+    Then the end date should be calculated correctly
+    And the configuration should save successfully
+
+Test data includes edge cases like:
+- Last day of February (shorter month)
+- Mid-month start dates
+- Last day of 30-day months
+- Last day of 31-day months
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_display: Expected end date display
+    description: Test scenario description
+","1223","test_edge_case_configurations[chromium-month_with_30_days]","tests","Wed Oct 29 21:58:09 UTC 2025","passed","Wed Oct 29 21:58:10 UTC 2025","TestLeavePeriodEdgeCases","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","169","test_all_months_end_date_calculation[chromium-month_june]","tests","Wed Oct 29 21:58:12 UTC 2025","passed","Wed Oct 29 21:58:12 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test PIM to Leave navigation workflow.
+
+Common workflow: View employee in PIM, then assign leave.
+","3696","test_navigate_pim_to_leave_workflow[chromium]","tests","Wed Oct 29 21:56:04 UTC 2025","passed","Wed Oct 29 21:56:07 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test that end date updates when start date changes.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select different start months
+    Then the end date should update dynamically for each selection
+
+This verifies real-time calculation of end dates.
+","928","test_end_date_updates_dynamically[webkit]","tests","Wed Oct 29 21:57:54 UTC 2025","passed","Wed Oct 29 21:57:55 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Smoke test: Navigation header persists across modules.
+
+Critical test to ensure navigation header doesn't disappear.
+","5101","test_smoke_navigation_header_persistent[chromium]","tests","Wed Oct 29 21:55:54 UTC 2025","passed","Wed Oct 29 21:55:59 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Test navigation to PIM module.
+
+Verifies that clicking PIM menu navigates to the PIM module
+and the URL changes accordingly.
+","1038","test_navigate_to_pim[chromium]","tests","Wed Oct 29 21:57:10 UTC 2025","passed","Wed Oct 29 21:57:11 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that NavigationHeader uses composition pattern correctly.
+
+Verifies that the nav_header attribute is available on page objects
+and works as expected via composition (not inheritance).
+","304","test_navigation_header_composition_pattern[webkit]","tests","Wed Oct 29 21:58:32 UTC 2025","passed","Wed Oct 29 21:58:32 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","176","test_all_months_end_date_calculation[chromium-month_november]","tests","Wed Oct 29 21:58:24 UTC 2025","passed","Wed Oct 29 21:58:25 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test navigation to Maintenance module.
+
+Verifies that clicking Maintenance menu navigates to the Maintenance
+module and the URL changes accordingly.
+","836","test_navigate_to_maintenance[chromium]","tests","Wed Oct 29 21:57:28 UTC 2025","passed","Wed Oct 29 21:57:29 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","348","test_all_months_end_date_calculation[webkit-month_september]","tests","Wed Oct 29 21:59:15 UTC 2025","passed","Wed Oct 29 21:59:16 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Smoke test: Verify main navigation menu is visible.
+
+Critical test to ensure the navigation header renders correctly
+after login.
+","403","test_smoke_main_menu_visible[chromium]","tests","Wed Oct 29 21:57:40 UTC 2025","passed","Wed Oct 29 21:57:40 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test performance review workflow.
+
+Workflow:
+1. View employee in PIM
+2. Check employee performance
+3. Review attendance (Time)
+4. Check leave history
+","6132","test_performance_review_workflow[chromium]","tests","Wed Oct 29 21:56:01 UTC 2025","passed","Wed Oct 29 21:56:07 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","399","test_all_months_end_date_calculation[firefox-month_january]","tests","Wed Oct 29 21:57:22 UTC 2025","passed","Wed Oct 29 21:57:22 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test that Leave Period page has global navigation header.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the global navigation header
+    And I should be able to access user dropdown
+    And I should be able to navigate to other modules
+
+This verifies the global navigation component is available.
+","112","test_leave_period_preserves_global_navigation[webkit]","tests","Wed Oct 29 21:57:07 UTC 2025","passed","Wed Oct 29 21:57:07 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Test navigation to My Info module.
+
+Verifies that clicking My Info menu navigates to the My Info module
+and the URL changes accordingly.
+","1402","test_navigate_to_my_info[firefox]","tests","Wed Oct 29 21:58:02 UTC 2025","passed","Wed Oct 29 21:58:04 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test navigation to Support page.
+
+Verifies that clicking Support in the user dropdown
+navigates to the support page or opens support resources.
+","1216","test_support_navigation[webkit]","tests","Wed Oct 29 21:58:18 UTC 2025","passed","Wed Oct 29 21:58:19 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Verify user cannot login with empty password.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters only username (no password)
+    And: User clicks the login button
+    Then: User should remain on the login page
+
+Args:
+    login_page: LoginPage instance
+","559","test_empty_password[firefox]","tests","Wed Oct 29 21:57:19 UTC 2025","passed","Wed Oct 29 21:57:19 UTC 2025","","test_login","",""
+"
+Test that end date updates when start date changes.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select different start months
+    Then the end date should update dynamically for each selection
+
+This verifies real-time calculation of end dates.
+","1724","test_end_date_updates_dynamically[firefox]","tests","Wed Oct 29 21:58:19 UTC 2025","passed","Wed Oct 29 21:58:20 UTC 2025","TestLeavePeriodValidation","test_leave_period","",""
+"
+Test navigation to Dashboard.
+
+Verifies that clicking Dashboard menu navigates to the main dashboard
+and the URL changes accordingly.
+","692","test_navigate_to_dashboard[chromium]","tests","Wed Oct 29 21:57:18 UTC 2025","passed","Wed Oct 29 21:57:19 UTC 2025","TestNavigationHeaderMainMenu","test_navigation_header","",""
+"
+Test that NavigationHeader is available on all authenticated pages.
+
+Verifies that the navigation header persists when navigating
+between different modules.
+","4162","test_navigation_header_available_on_all_pages[firefox]","tests","Wed Oct 29 21:58:35 UTC 2025","passed","Wed Oct 29 21:58:40 UTC 2025","TestNavigationHeaderIntegration","test_navigation_header","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","164","test_all_months_end_date_calculation[chromium-month_september]","tests","Wed Oct 29 21:58:18 UTC 2025","passed","Wed Oct 29 21:58:18 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test rapid sequential navigation doesn't cause errors.
+
+Verifies that navigating quickly between modules doesn't
+cause race conditions or errors.
+","9470","test_rapid_sequential_navigation[webkit]","tests","Wed Oct 29 21:56:26 UTC 2025","passed","Wed Oct 29 21:56:36 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""
+"
+Test navigation to Change Password page.
+
+Verifies that clicking Change Password in the user dropdown
+navigates to the password change page.
+","1499","test_change_password_navigation[webkit]","tests","Wed Oct 29 21:58:13 UTC 2025","passed","Wed Oct 29 21:58:14 UTC 2025","TestNavigationHeaderUserDropdown","test_navigation_header","",""
+"
+Test typical HR Manager workflow.
+
+Workflow:
+1. Check dashboard for quick stats
+2. View employees in PIM
+3. Check leave requests
+4. Review recruitment pipeline
+","7156","test_hr_manager_workflow[webkit]","tests","Wed Oct 29 21:56:30 UTC 2025","passed","Wed Oct 29 21:56:37 UTC 2025","TestCommonUserWorkflows","test_cross_module_navigation","",""
+"
+Verify user can login successfully with valid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid username and password
+    And: User clicks the login button
+    Then: User should be redirected to the dashboard page
+
+Args:
+    login_page: LoginPage instance (already navigated to login page)
+    config_service: Configuration service with valid test credentials
+","1311","test_valid_login[chromium]","tests","Wed Oct 29 21:56:50 UTC 2025","passed","Wed Oct 29 21:56:52 UTC 2025","","test_login","",""
+"
+Test Leave to Time navigation workflow.
+
+Common workflow: Check leave balance, then view timesheets.
+","2307","test_navigate_leave_to_time_workflow[webkit]","tests","Wed Oct 29 21:56:27 UTC 2025","passed","Wed Oct 29 21:56:29 UTC 2025","TestSequentialNavigation","test_cross_module_navigation","",""
+"
+Test navigation to Leave Period from Leave List page.
+
+Scenario:
+    Given I am on the Leave List page
+    When I click Configure dropdown
+    And I click Leave Period menu item
+    Then I should navigate to Leave Period configuration page
+    And the page title should be ""Leave Period""
+
+This verifies navigation integration within the Leave module.
+
+TODO: Fix Configure dropdown locator in LeaveBasePage.
+      Current locator: li.oxd-topbar-body-nav-tab:has-text('Configure')
+      Issue: Element not clickable - may need more specific selector
+","0","test_navigate_to_leave_period_from_leave_list[firefox]","tests","Wed Oct 29 21:57:06 UTC 2025","skipped","Wed Oct 29 21:57:06 UTC 2025","TestLeavePeriodIntegration","test_leave_period","",""
+"
+Data-driven test for end date calculation across all 12 months.
+
+This parametrized test verifies that the end date calculation
+works correctly for every month of the year, using JSON test data.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select a start month and date
+    Then the end date should contain the expected month
+
+Test data covers all 12 months with expected end date calculations.
+
+Args:
+    start_month: Start month for leave period
+    start_date: Start date for leave period
+    expected_end_month: Expected month in end date
+","501","test_all_months_end_date_calculation[firefox-month_september]","tests","Wed Oct 29 21:59:51 UTC 2025","passed","Wed Oct 29 21:59:51 UTC 2025","TestLeavePeriodMonthConfiguration","test_leave_period","",""
+"
+Test that navigation doesn't depend on previous navigation state.
+
+Verifies that each navigation action works independently,
+regardless of navigation history.
+","11216","test_navigation_state_independent[firefox]","tests","Wed Oct 29 21:56:41 UTC 2025","passed","Wed Oct 29 21:56:52 UTC 2025","TestNavigationConsistency","test_cross_module_navigation","",""
+"
+Verify all critical login page elements are visible on page load.
+
+Scenario:
+    Given: User is on the login page
+    When: Page finishes loading
+    Then: Username field should be visible
+    And: Password field should be visible
+    And: Login button should be visible
+    And: Login logo should be visible
+
+Args:
+    login_page: LoginPage instance
+","427","test_login_page_elements_visible[chromium]","tests","Wed Oct 29 21:56:56 UTC 2025","passed","Wed Oct 29 21:56:57 UTC 2025","","test_login","",""
+"
+Test navigation works after page interactions.
+
+Verifies that performing actions on a page doesn't break
+subsequent navigation.
+","3589","test_navigation_after_page_interaction[firefox]","tests","Wed Oct 29 21:56:47 UTC 2025","passed","Wed Oct 29 21:56:50 UTC 2025","TestNavigationPerformance","test_cross_module_navigation","",""

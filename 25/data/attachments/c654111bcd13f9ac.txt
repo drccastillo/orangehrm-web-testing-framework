@@ -1,0 +1,13 @@
+00:49:16 - conftest - INFO - Creating Playwright browser: firefox (headless=True)
+00:49:16 - src.factories.browser_factory - INFO - Creating Playwright browser: firefox (headless=True, timeout=10)
+00:49:16 - src.factories.browser_factory - INFO - Launched Playwright browser: firefox (headless=True)
+00:49:17 - LoginPage - INFO - Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+00:49:21 - LoginPage - INFO - Logging in with username: Admin
+00:49:28 - conftest - INFO - Dashboard page loaded successfully
+00:49:28 - NavigationHeader - INFO - Navigating to Leave module
+00:49:33 - conftest - INFO - Leave page loaded successfully
+00:49:33 - LeaveListPage - INFO - Navigating to Leave Period
+00:49:36 - conftest - INFO - Leave Period page loaded successfully
+00:49:36 - NavigationHeader - INFO - Logging out
+00:49:37 - conftest - INFO - Logout successful in teardown
+00:49:37 - conftest - INFO - Closing browser

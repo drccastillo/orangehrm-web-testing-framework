@@ -1,0 +1,7 @@
+21:57:42 - conftest - INFO - Creating Playwright browser: firefox (headless=True)
+21:57:42 - src.factories.browser_factory - INFO - Creating Playwright browser: firefox (headless=True, timeout=10)
+21:57:44 - src.factories.browser_factory - INFO - Launched Playwright browser: firefox (headless=True)
+21:57:45 - LoginPage - INFO - Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+21:57:46 - test_login_demo - INFO - Starting method chaining demo with selective highlights
+21:57:49 - test_login_demo - INFO - Method chaining demo completed successfully
+21:57:49 - conftest - INFO - Closing browser

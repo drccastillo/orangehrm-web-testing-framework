@@ -1,0 +1,168 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+Smoke test: Verify basic navigation works.
+
+Critical test to ensure users can navigate between modules.
+","0","test_smoke_navigation_works[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Verify user can login successfully with valid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid username and password
+    And: User clicks the login button
+    Then: User should be redirected to the dashboard page
+
+Args:
+    login_page: LoginPage instance (already navigated to login page)
+    config_service: Configuration service with valid test credentials
+","0","test_valid_login[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","","test_login","",""
+"
+Demo: Invalid login attempt with visual highlighting.
+
+Shows how to use highlight() when debugging error scenarios.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid credentials with highlights
+    Then: Error message should be visible and highlighted
+
+Args:
+    login_page: LoginPage instance
+","0","test_invalid_login_with_highlight[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","","test_login_demo","",""
+"
+Demo: Login test with visual highlighting for debugging.
+
+This test shows how to use Playwright's native highlight() during development
+to visually identify which elements are being interacted with.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters valid credentials with visual highlights
+    Then: User should be redirected to dashboard
+
+Args:
+    login_page: LoginPage instance
+    config_service: Configuration service with credentials
+","0","test_login_with_highlight_demo[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","","test_login_demo","",""
+"
+Smoke test: Basic cross-module navigation works.
+
+Critical test to ensure users can navigate between modules.
+","0","test_smoke_basic_cross_module_navigation[firefox]","tests","Wed Oct 29 00:14:12 UTC 2025","broken","Wed Oct 29 00:14:12 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Smoke test: Verify basic configure and save workflow.
+
+Critical end-to-end test for the primary use case.
+","0","test_smoke_configure_and_save[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Smoke test: Navigation header persists across modules.
+
+Critical test to ensure navigation header doesn't disappear.
+","0","test_smoke_navigation_header_persistent[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Smoke test: Verify logout works.
+
+Critical test to ensure users can log out of the application.
+","0","test_smoke_logout_works[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Test method chaining for fluent API.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I use method chaining to configure leave period
+    Then all methods should execute successfully
+    And the configuration should be saved
+
+This verifies that the fluent interface pattern works correctly.
+","0","test_method_chaining[firefox]","tests","Wed Oct 29 00:14:12 UTC 2025","broken","Wed Oct 29 00:14:12 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Configure leave period to start on April 1st (fiscal year).
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select ""April"" as start month
+    And I select ""01"" as start date
+    Then the end date should be ""March 31""
+    When I save the configuration
+    Then I should see a success message
+
+This tests a common fiscal year leave period configuration.
+","0","test_configure_leave_period_april_first[firefox]","tests","Wed Oct 29 00:14:12 UTC 2025","broken","Wed Oct 29 00:14:12 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Smoke test: Verify user dropdown is accessible.
+
+Critical test to ensure users can access account options.
+","0","test_smoke_user_dropdown_accessible[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Configure leave period to start on January 1st.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    When I select ""January"" as start month
+    And I select ""01"" as start date
+    Then the end date should be ""December 31""
+    When I save the configuration
+    Then I should see a success message
+
+This is the most common leave period configuration (calendar year).
+","0","test_configure_leave_period_january_first[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""
+"
+Verify error message is displayed when login fails with invalid credentials.
+
+Scenario:
+    Given: User is on the login page
+    When: User enters invalid username and password
+    And: User clicks the login button
+    Then: Error message should be visible
+    And: Error message should contain ""Invalid credentials""
+
+Args:
+    login_page: LoginPage instance
+","0","test_invalid_login[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","","test_login","",""
+"
+Smoke test: Round-trip navigation works.
+
+Critical test to ensure users can navigate away and return.
+","0","test_smoke_round_trip_navigation[firefox]","tests","Wed Oct 29 00:14:12 UTC 2025","broken","Wed Oct 29 00:14:12 UTC 2025","TestCrossModuleNavigationSmoke","test_cross_module_navigation","",""
+"
+Smoke test: Verify current leave period is always displayed.
+
+Critical test to ensure users can see the current configuration.
+","0","test_smoke_current_period_displayed[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Verify all critical login page elements are visible on page load.
+
+Scenario:
+    Given: User is on the login page
+    When: Page finishes loading
+    Then: Username field should be visible
+    And: Password field should be visible
+    And: Login button should be visible
+    And: Login logo should be visible
+
+Args:
+    login_page: LoginPage instance
+","0","test_login_page_elements_visible[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","","test_login","",""
+"
+Smoke test: Verify Leave Period page loads successfully.
+
+Critical test to ensure the page is accessible and displays
+all essential elements.
+","0","test_smoke_leave_period_page_loads[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestLeavePeriodSmoke","test_leave_period","",""
+"
+Smoke test: Verify main navigation menu is visible.
+
+Critical test to ensure the navigation header renders correctly
+after login.
+","0","test_smoke_main_menu_visible[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestNavigationHeaderSmoke","test_navigation_header","",""
+"
+Verify current leave period is displayed on the page.
+
+Scenario:
+    Given I am on the Leave Period configuration page
+    Then I should see the current leave period displayed
+    And it should be in the format ""YYYY-MM-DD to YYYY-MM-DD""
+
+This verifies that users can see the currently configured leave period.
+","0","test_view_current_leave_period[firefox]","tests","Wed Oct 29 00:14:13 UTC 2025","broken","Wed Oct 29 00:14:13 UTC 2025","TestLeavePeriodHappyPath","test_leave_period","",""

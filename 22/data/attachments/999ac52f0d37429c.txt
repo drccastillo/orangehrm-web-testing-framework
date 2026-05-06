@@ -1,0 +1,5 @@
+00:19:55 - conftest - INFO - Creating Playwright browser: chromium (headless=True)
+00:19:55 - src.factories.browser_factory - INFO - Creating Playwright browser: chromium (headless=True, timeout=10)
+00:19:55 - src.factories.browser_factory - INFO - Launched Playwright browser: chromium (headless=True)
+00:19:55 - LoginPage - INFO - Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+00:19:57 - conftest - INFO - Closing browser

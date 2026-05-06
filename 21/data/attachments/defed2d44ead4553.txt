@@ -1,0 +1,2 @@
+00:16:31 - conftest - INFO - Creating Playwright browser: firefox (headless=True)
+00:16:31 - src.factories.browser_factory - INFO - Creating Playwright browser: firefox (headless=True, timeout=10)

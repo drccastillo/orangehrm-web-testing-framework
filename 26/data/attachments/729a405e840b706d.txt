@@ -1,0 +1,15 @@
+21:56:46 - conftest - INFO - Creating Playwright browser: chromium (headless=True)
+21:56:46 - src.factories.browser_factory - INFO - Creating Playwright browser: chromium (headless=True, timeout=10)
+21:56:46 - src.factories.browser_factory - INFO - Launched Playwright browser: chromium (headless=True)
+21:56:46 - LoginPage - INFO - Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+21:56:48 - LoginPage - INFO - Logging in with username: Admin
+21:56:49 - conftest - INFO - Dashboard page loaded successfully
+21:56:49 - NavigationHeader - INFO - Navigating to Leave module
+21:56:51 - conftest - INFO - Leave page loaded successfully
+21:56:51 - LeaveListPage - INFO - Navigating to Leave Period
+21:56:52 - conftest - INFO - Leave Period page loaded successfully
+21:56:52 - LeavePeriodPage - INFO - Selecting start month: June
+21:56:53 - LeavePeriodPage - INFO - Selecting start date: 15
+21:56:53 - NavigationHeader - INFO - Logging out
+21:56:53 - conftest - INFO - Logout successful in teardown
+21:56:53 - conftest - INFO - Closing browser

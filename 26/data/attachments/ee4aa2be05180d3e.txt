@@ -1,0 +1,5 @@
+INFO     conftest:conftest.py:111 Creating Playwright browser: chromium (headless=True)
+INFO     src.factories.browser_factory:browser_factory.py:83 Creating Playwright browser: chromium (headless=True, timeout=10)
+INFO     src.factories.browser_factory:browser_factory.py:137 Launched Playwright browser: chromium (headless=True)
+INFO     LoginPage:base_page.py:294 Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+INFO     conftest:conftest.py:126 Closing browser

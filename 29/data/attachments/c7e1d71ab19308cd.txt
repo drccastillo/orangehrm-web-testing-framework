@@ -1,0 +1,2 @@
+17:01:03 - conftest - INFO - Creating Playwright browser: webkit (headless=True)
+17:01:03 - src.factories.browser_factory - INFO - Creating Playwright browser: webkit (headless=True, timeout=10)

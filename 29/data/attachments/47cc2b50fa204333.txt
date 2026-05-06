@@ -1,0 +1,2 @@
+INFO     conftest:conftest.py:111 Creating Playwright browser: firefox (headless=True)
+INFO     src.factories.browser_factory:browser_factory.py:83 Creating Playwright browser: firefox (headless=True, timeout=10)

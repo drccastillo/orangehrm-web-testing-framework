@@ -1,0 +1,7 @@
+INFO     conftest:conftest.py:111 Creating Playwright browser: firefox (headless=True)
+INFO     src.factories.browser_factory:browser_factory.py:83 Creating Playwright browser: firefox (headless=True, timeout=10)
+INFO     src.factories.browser_factory:browser_factory.py:137 Launched Playwright browser: firefox (headless=True)
+INFO     LoginPage:base_page.py:294 Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+INFO     test_login_demo:test_login_demo.py:148 Starting method chaining demo with selective highlights
+INFO     test_login_demo:test_login_demo.py:170 Method chaining demo completed successfully
+INFO     conftest:conftest.py:126 Closing browser

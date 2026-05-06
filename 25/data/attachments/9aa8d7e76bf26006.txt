@@ -1,0 +1,12 @@
+INFO     conftest:conftest.py:111 Creating Playwright browser: webkit (headless=True)
+INFO     src.factories.browser_factory:browser_factory.py:83 Creating Playwright browser: webkit (headless=True, timeout=10)
+INFO     src.factories.browser_factory:browser_factory.py:137 Launched Playwright browser: webkit (headless=True)
+INFO     LoginPage:base_page.py:294 Navigating to: https://opensource-demo.orangehrmlive.com/web/index.php
+INFO     LoginPage:login_page.py:110 Logging in with username: Admin
+INFO     conftest:conftest.py:215 Dashboard page loaded successfully
+INFO     NavigationHeader:navigation_header.py:234 Navigating to Dashboard
+INFO     NavigationHeader:navigation_header.py:144 Navigating to PIM module
+INFO     NavigationHeader:navigation_header.py:131 Navigating to Admin module
+INFO     NavigationHeader:navigation_header.py:301 Logging out
+INFO     conftest:conftest.py:224 Logout successful in teardown
+INFO     conftest:conftest.py:126 Closing browser
